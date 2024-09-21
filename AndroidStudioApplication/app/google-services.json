@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "252589818867",
+    "project_id": "sgm-management-c98cd",
+    "storage_bucket": "sgm-management-c98cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252589818867:android:880341599245e685818886",
+        "android_client_info": {
+          "package_name": "com.example.sep490_supergymmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuRSqvyEO2Do04yj716Jq67e_iOcrvfNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
