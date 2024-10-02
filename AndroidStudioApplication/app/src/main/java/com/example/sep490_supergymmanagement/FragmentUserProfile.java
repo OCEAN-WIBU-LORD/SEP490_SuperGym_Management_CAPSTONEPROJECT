@@ -30,6 +30,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sep490_supergymmanagement.fragments.BMI_Statistic_Fragment;
+import com.example.sep490_supergymmanagement.fragments.FeedbackFragment;
 import com.example.sep490_supergymmanagement.fragments.HomeFragment;
 import com.example.sep490_supergymmanagement.models.User;
 import com.example.sep490_supergymmanagement.repositories.UserResp;
@@ -64,7 +66,7 @@ public class FragmentUserProfile extends Fragment {
     private static final int REQUEST_CALL_PHONE_PERMISSION = 1;
     private static final String PHONE_NUMBER = "0978788128";
     private Boolean isAuthenticated = false;
-    private Button takePermission, cardViewer, generateQrCodeBtn;;
+    private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack;
     private CardView returnBtn, editProfile;
     private FirebaseAuth mAuth;
 
@@ -113,6 +115,9 @@ public class FragmentUserProfile extends Fragment {
         tvPhone = view.findViewById(R.id.tvPhone);
         tvDob = view.findViewById(R.id.tvDob);
         userAvatarImg = view.findViewById(R.id.userAvatarImg);
+        btn_bmi_Statistic = view.findViewById(R.id.bmi_Statistic);
+
+        btnFeedBack = view.findViewById(R.id.btnFeedBack);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -121,7 +126,9 @@ public class FragmentUserProfile extends Fragment {
         //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
         editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
         returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
+        btn_bmi_Statistic.setOnClickListener(V -> replaceFragment(new BMI_Statistic_Fragment()));
 
+        btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
         logOutBtn = view.findViewById(R.id.logOutBtn);
         logOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -328,7 +328,7 @@
                             android:id="@+id/image_user4"
                             android:layout_width="55dp"
                             android:layout_height="55dp"
-                            android:background="@drawable/homebg"
+                            android:background="@drawable/baseline_history_24"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.cardview.widget.CardView>
@@ -340,7 +340,7 @@
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
                         android:fontFamily="@font/calibri"
-                        android:text="Personal Information"
+                        android:text="History Payment"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline5"
@@ -428,7 +428,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/text_price49"
+                        android:id="@+id/btnFeedBack"
                         android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
@@ -804,7 +804,7 @@
                             android:id="@+id/image_user1"
                             android:layout_width="55dp"
                             android:layout_height="55dp"
-                            android:background="@drawable/infor_icon"
+                            android:background="@drawable/baseline_health_and_safety_24"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -826,7 +826,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/text_price"
+                        android:id="@+id/bmi_Statistic"
                         android:layout_width="101dp"
                         android:layout_height="40dp"
                         android:layout_marginTop="-5dp"

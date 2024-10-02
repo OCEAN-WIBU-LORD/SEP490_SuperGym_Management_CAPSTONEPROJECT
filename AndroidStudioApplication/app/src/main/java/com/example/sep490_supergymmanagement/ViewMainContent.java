@@ -55,13 +55,10 @@ import java.util.Objects;
 public class ViewMainContent extends AppCompatActivity {
 
     ActivityViewMainContentBinding binding;
-    Fragment homeFragment;
-    Fragment userProfileFragment;
-    Fragment appointmentFragment;
-    Fragment searchFragment;
-    Fragment activeFragment;
-    Fragment geminiFragment;
-    Fragment appointmentListDoctorFragment;
+    Fragment homeFragment, userProfileFragment,
+            appointmentFragment, searchFragment,
+            activeFragment, geminiFragment,
+            appointmentListDoctorFragment;
     String fragmentType = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +84,7 @@ public class ViewMainContent extends AppCompatActivity {
                         .commit();
             } else {
                 // User-specific setup
-                appointmentFragment = new AppointmentFragment();
+                appointmentFragment = new ProgressActivity();
                 searchFragment = new SearchFragment();
                 fragmentType = "User";
 

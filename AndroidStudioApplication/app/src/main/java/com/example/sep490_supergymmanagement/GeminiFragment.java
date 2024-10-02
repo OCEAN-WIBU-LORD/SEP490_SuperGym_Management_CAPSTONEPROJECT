@@ -119,7 +119,7 @@ public class GeminiFragment extends Fragment {
 
 
     public void buttonCallGeminiAPI(View view){
-        GenerativeModel gm = new GenerativeModel("gemini-1.5-pro",
+        GenerativeModel gm = new GenerativeModel("gemini-1.5-flash",
                 "AIzaSyDXLYx3ij16NZVjfGUi63q9OHIyU-YTeMk");
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
         Content content = new Content.Builder()
@@ -177,7 +177,7 @@ public class GeminiFragment extends Fragment {
 
 
     public void buttonCallGeminiVisionAPI(View view){
-        GenerativeModel gm = new GenerativeModel("gemini-1.5-pro",
+        GenerativeModel gm = new GenerativeModel("gemini-1.5-flash",
                 "AIzaSyDXLYx3ij16NZVjfGUi63q9OHIyU-YTeMk");
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
         Bitmap bitmap = imageSent;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background of the progress bar -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="#2C2C2C"/> <!-- Dark gray background -->
+            <corners android:radius="8dp"/>  <!-- Rounded corners -->
+        </shape>
+    </item>
+
+    <!-- Progress layer (this will be managed by Java) -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <layer-list>
+
+                <!-- Top part (grey) -->
+                <item android:id="@+id/top_part">
+                    <shape android:shape="rectangle">
+                        <solid android:color="#808080"/> <!-- Gray color -->
+                    </shape>
+                </item>
+
+                <!-- Bottom part (green) -->
+                <item android:id="@+id/bottom_part">
+                    <shape android:shape="rectangle">
+                        <solid android:color="#00FF00"/> <!-- Green color -->
+                    </shape>
+                </item>
+
+            </layer-list>
+        </clip>
+    </item>
+
+</layer-list>
