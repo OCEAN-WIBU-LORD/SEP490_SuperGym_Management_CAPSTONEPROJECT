@@ -1,0 +1,35 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background circle (track) -->
+    <item>
+        <shape
+            android:shape="ring"
+            android:innerRadiusRatio="3"
+            android:thicknessRatio="18"
+            android:useLevel="false">
+            <solid android:color="#FFC517" />
+            <stroke
+                android:width="2dp"
+                android:color="#DD3B3B" />
+        </shape>
+    </item>
+
+    <!-- Progress circle (foreground track) -->
+    <item>
+        <shape
+            android:shape="ring"
+            android:innerRadiusRatio="3"
+            android:thicknessRatio="18"
+            android:useLevel="true">
+            <gradient
+                android:startColor="#FF0000"
+            android:centerColor="#FF7F00"
+            android:endColor="#0000FF"
+            android:angle="270" />             <!-- Set the angle to 270 degrees -->
+            <stroke
+                android:width="2dp"
+                android:color="#388E3C" />
+        </shape>
+    </item>
+
+</layer-list>

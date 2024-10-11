@@ -18,6 +18,9 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#613EEA</color>
+    <color name="waterColor">#96d2f4</color>
+    <color name="perfectBlue">#13E4FF</color>
+
 
     <color name="background_color">#FAFAFE</color>
     <color name="blue">#1648CE</color>

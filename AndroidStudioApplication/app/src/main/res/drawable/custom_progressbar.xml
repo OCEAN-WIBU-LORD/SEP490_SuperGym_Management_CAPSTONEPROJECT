@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <!-- Background of the ProgressBar -->
+        <shape android:shape="rectangle">
+            <corners android:radius="30dp" />
+            <solid android:color="#E0E0E0" /> <!-- Light background color -->
+        </shape>
+    </item>
+    <item>
+        <!-- Progress of the ProgressBar -->
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="30dp" />
+                <solid android:color="#C4D800" /> <!-- Yellow progress color -->
+            </shape>
+        </clip>
+    </item>
+</layer-list>

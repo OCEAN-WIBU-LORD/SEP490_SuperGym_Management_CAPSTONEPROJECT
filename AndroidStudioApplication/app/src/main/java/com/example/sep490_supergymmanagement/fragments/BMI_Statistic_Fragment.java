@@ -1,6 +1,7 @@
 package com.example.sep490_supergymmanagement.fragments;
 
 
+import com.example.sep490_supergymmanagement.animations.CupOfWaterView;
 import com.example.sep490_supergymmanagement.models.UserStatistics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -8,15 +9,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
+
+import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import android.app.AlertDialog;
@@ -58,20 +65,23 @@ public class BMI_Statistic_Fragment extends Fragment {
     // Firebase Database reference
     private DatabaseReference databaseReference;
 
-    private Button saveBtn;
+    private Button saveBtn, clearButton;
 
     // Views
     private CardView selectDateButton;
-    private CardView btnReturnBtn, editBMICard, editCaloriesCard, editStepsCard, editWaterIntakeCard, allTimeStatistic;
-    private TextView DatePicked, txtBMITextView, txtBMIStatus, txtcaloriesTextView, stepsTextView, txtWaterTextView;
+    private LinearLayout advanceInfoContentLayout;
+    private CardView btnReturnBtn, editBMICard, editCaloriesCard, editStepsCard, editWaterIntakeCard, allTimeStatistic, userWater, editAdvanceCard, dropdownBtn;
+    private TextView DatePicked, DatePicked3, txtBMITextView, txtBMIStatus, txtcaloriesTextView, stepsTextView, txtWaterTextView, appearText;
 
     // Get the current year, month, and day
     // Set up the Calendar instance for the current date
     Calendar calendar = Calendar.getInstance();
 
     private int year, month , day ;
-     private String userId,  selectedDate;
+     private String userId,  selectedDate, datePicked;
     private SimpleDateFormat dateFormat;
+    private Animation cardClickAnimation;
+    CupOfWaterView cupOfWaterView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,6 +101,7 @@ public class BMI_Statistic_Fragment extends Fragment {
         // Get reference to the button
         selectDateButton = view.findViewById(R.id.selectDateButton);
         DatePicked = view.findViewById(R.id.DatePicked);
+        DatePicked3 = view.findViewById(R.id.DatePicked3);
 
         // Get the references for TextView and CardView
         txtBMITextView = view.findViewById(R.id.txtBMITextView);
@@ -103,11 +114,26 @@ public class BMI_Statistic_Fragment extends Fragment {
         stepsTextView = view.findViewById(R.id.stepsTextView);
         txtWaterTextView = view.findViewById(R.id.txtWaterTextView);
         editWaterIntakeCard = view.findViewById(R.id.editWater);
+        userWater= view.findViewById(R.id.userWater);
+
+         cupOfWaterView = view.findViewById(R.id.cupOfWater);
+
+        advanceInfoContentLayout = view.findViewById(R.id.advanceInfoContentLayout);
+        advanceInfoContentLayout.setVisibility(View.GONE);
+        editAdvanceCard = view.findViewById(R.id.editAdvanceCard);
+        dropdownBtn = view.findViewById(R.id.dropdownBtn);
+        appearText = view.findViewById(R.id.appearText);
+        appearText.setVisibility(View.VISIBLE);
 
         //date Selected
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
+
+
+
+         cardClickAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.card_click_animation);
+
 
         // Set the DatePicked TextView to the current date
         String currentDate = day + "/" + (month + 1) + "/" + year;
@@ -129,8 +155,22 @@ public class BMI_Statistic_Fragment extends Fragment {
 
         // getUserStatisticsFromFirebase(userId, selectedDate);
         saveBtn = view.findViewById(R.id.saveBtn);
+
+        // Inside the onCreateView method
+        clearButton = view.findViewById(R.id.clearButton);
         functionAllButton();
+        displayWaterLevel();
         return view;
+    }
+
+    private void displayWaterLevel(){
+        // Assuming txtWaterTextView contains the water in liters (for example "1")
+        String waterText = txtWaterTextView.getText().toString();
+        float waterInLiters = Float.parseFloat(waterText);  // Convert to float
+
+        float maxLiters = 2.0f;  // The maximum capacity of the cup is 2 liters
+        cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters);  // Set the initial water level
+
     }
 
 
@@ -167,7 +207,10 @@ public class BMI_Statistic_Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showInputDialog(txtWaterTextView, "Edit Water Intake", "Enter water intake (liters)");
+                displayWaterLevel();
             }
+
+
         });
 
         // Set an OnClickListener on the button to show the DatePickerDialog
@@ -180,6 +223,7 @@ public class BMI_Statistic_Fragment extends Fragment {
                         String selectedDate = day + "/" + (month + 1) + "/" + year;
                         DatePicked.setText(selectedDate);
 
+
                         // Now fetch the statistics for the selected date
                         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                         if (currentUser != null) {
@@ -188,6 +232,7 @@ public class BMI_Statistic_Fragment extends Fragment {
                     },
                     year, month, day
             );
+            displayWaterLevel();
 
             // Show the DatePickerDialog
             datePickerDialog.show();
@@ -203,6 +248,7 @@ public class BMI_Statistic_Fragment extends Fragment {
 
         // Set an OnClickListener on the button to show the DatePickerDialog
         selectDateButton.setOnClickListener(v -> {
+
             // Create and show a DatePickerDialog, passing in the Activity context
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     getActivity(), // Use getActivity() to get the parent activity context
@@ -227,17 +273,80 @@ public class BMI_Statistic_Fragment extends Fragment {
             datePickerDialog.show();
         });
 
+        userWater.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                v.startAnimation(cardClickAnimation);
+                String datePicked = DatePicked.getText().toString().trim();
+                if(compareDates(datePicked)){
+                    if(checkUserInput()){
+                            saveStatisticsToFirebase(userId, datePicked,
+                                    Double.valueOf(txtBMITextView.getText().toString().trim()),
+                                    txtBMIStatus.getText().toString().trim(),
+                                    Integer.valueOf(txtcaloriesTextView.getText().toString().trim()),
+                                    Integer.valueOf(stepsTextView.getText().toString().trim()),
+                                    ( Double.valueOf(txtWaterTextView.getText().toString().trim())+0.25));
+                            txtWaterTextView.setText(String.valueOf(Double.valueOf(txtWaterTextView.getText().toString().trim())+0.25));
+                             controlWaterAnimation();
+                            displayWaterLevel();
+
+                    }else{
+                        Toast.makeText(getContext(), "Please check Again, The Input Is Null", Toast.LENGTH_SHORT).show();
+
+                    }
+                }else{
+                    Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
+
+                }
+
+
+            }
+        });
 
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveStatisticsToFirebase(userId, String.valueOf(DatePicked.getText()),
-                        Double.valueOf(txtBMITextView.getText().toString().trim()),
-                        txtBMIStatus.getText().toString().trim(),
-                        Integer.valueOf(txtcaloriesTextView.getText().toString().trim()),
-                        Integer.valueOf((stepsTextView.getText().toString().trim())),
-                        Double.valueOf(txtWaterTextView.getText().toString().trim()));
+                String datePicked = DatePicked.getText().toString().trim();
+
+                if (compareDates(datePicked)) {
+                    saveStatisticsToFirebase(userId, datePicked,
+                            Double.valueOf(txtBMITextView.getText().toString().trim()),
+                            txtBMIStatus.getText().toString().trim(),
+                            Integer.valueOf(txtcaloriesTextView.getText().toString().trim()),
+                            Integer.valueOf(stepsTextView.getText().toString().trim()),
+                            Double.valueOf(txtWaterTextView.getText().toString().trim()));
+                            displayWaterLevel();
+                } else {
+                    Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Set click listener for edit card to toggle visibility
+        dropdownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (advanceInfoContentLayout.getVisibility() == View.GONE) {
+                    advanceInfoContentLayout.setVisibility(View.VISIBLE); // Expand
+                    appearText.setVisibility(View.GONE);
+                } else {
+                    advanceInfoContentLayout.setVisibility(View.GONE); // Collapse
+                    appearText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+
+
+
+
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearAllFields();
             }
         });
 
@@ -246,6 +355,69 @@ public class BMI_Statistic_Fragment extends Fragment {
     }
 
 
+    public void controlWaterAnimation(){
+        // Get current water level and increase it by a small amount
+        float currentLevel = cupOfWaterView.getWaterLevel();
+        float newLevel = Math.min(currentLevel + 0.125f, 1f);  // Cap the water level at 1.0 (full)
+
+        // Animate the water level change
+        ObjectAnimator animator = ObjectAnimator.ofFloat(cupOfWaterView, "waterLevel", currentLevel, newLevel);
+        animator.setDuration(1000);  // 1 second animation
+        animator.setInterpolator(new DecelerateInterpolator());  // Smooth animation
+        animator.start();
+    }
+
+    public boolean checkUserInput(){
+        if(txtBMITextView.getText().toString().trim().equals("None")){
+            Toast.makeText(getContext(), "Please Input The BMI before saving.", Toast.LENGTH_SHORT).show();
+            return false;
+        }else if(txtcaloriesTextView.getText().toString().trim() == null){
+            Toast.makeText(getContext(), "Please Input The Calories before saving.", Toast.LENGTH_SHORT).show();
+            return false;
+        }else if(txtWaterTextView.getText().toString().trim() == null){
+            Toast.makeText(getContext(), "Please Input The Water before saving.", Toast.LENGTH_SHORT).show();
+            return false;
+        }else if(stepsTextView.getText().toString().trim() == null){
+            Toast.makeText(getContext(), "Please Input The Steps before saving.", Toast.LENGTH_SHORT).show();
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public boolean compareDates(String datePickedString) {
+        // Step 1: Get the current date
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String currentDateString = dateFormat.format(calendar.getTime());
+
+        // Step 2: Parse the DatePicked string
+        try {
+            // Parse the DatePicked string to a Date object
+            Date datePicked = dateFormat.parse(datePickedString);
+
+            // Parse the current date string to a Date object
+            Date currentDate = dateFormat.parse(currentDateString);
+
+            // Step 3: Compare the two dates
+            if (datePicked.compareTo(currentDate) < 0) {
+                // datePicked is earlier than the current date
+                return true;
+            } else if (datePicked.compareTo(currentDate) > 0) {
+                // datePicked is later than the current date
+                Toast.makeText(getActivity(), "The picked date is later than the current date", Toast.LENGTH_SHORT).show();
+                return false;
+            } else {
+                // Both dates are the same
+                return true;
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Error parsing the date", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
 
     // Method to save BMI and statistics to Firebase
     private void saveStatisticsToFirebase(String userId, String date, double bmi, String bmiStatus, int calories, int steps, double waterIntake) {
@@ -257,6 +429,7 @@ public class BMI_Statistic_Fragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Data saved successfully
+                        DatePicked3.setText("");
                         Toast.makeText(getContext(), "Data saved successfully", Toast.LENGTH_SHORT).show();
                     } else {
                         // Failed to save data
@@ -288,6 +461,8 @@ public class BMI_Statistic_Fragment extends Fragment {
 
                         // Update the DatePicked TextView with the selected date
                         DatePicked.setText(selectedDate);
+                        DatePicked3.setText("");
+                        displayWaterLevel();
                     }
                 } else {
                     // Handle case where no data exists for the selected date
@@ -301,18 +476,43 @@ public class BMI_Statistic_Fragment extends Fragment {
                 Toast.makeText(getContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        displayWaterLevel();
     }
 
     private void displayNoData() {
         // Display "None" in all TextViews when no data is found for the selected date
         txtBMITextView.setText("None");
         txtBMIStatus.setText("None");
-        txtcaloriesTextView.setText("None");
-        stepsTextView.setText("None");
-        txtWaterTextView.setText("None");
+        txtcaloriesTextView.setText("0");
+        stepsTextView.setText("0");
+        txtWaterTextView.setText("0");
 
         // Optionally, update the DatePicked TextView as well
-        DatePicked.setText("No data available");
+        DatePicked3.setText("No data available");
+        displayWaterLevel();
+    }
+
+    // Create a method to clear all input fields and reset the date
+    private void clearAllFields() {
+        // Reset BMI text fields
+        txtBMITextView.setText("None");
+        txtBMIStatus.setText("None");
+
+        // Reset Calories, Steps, and Water Intake text fields
+        txtcaloriesTextView.setText("0");
+        stepsTextView.setText("0");
+        txtWaterTextView.setText("0");
+
+        // Reset the date to the current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String currentDate = day + "/" + (month + 1) + "/" + year;
+        DatePicked.setText(currentDate);
+
+        // Optionally reset any other UI elements or variables
+        Toast.makeText(getContext(), "All fields have been cleared", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -470,6 +670,8 @@ public class BMI_Statistic_Fragment extends Fragment {
         }
         return "Unknown";
     }
+
+
 
 
 
