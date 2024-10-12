@@ -191,7 +191,8 @@ public class FragmentUserProfile extends Fragment {
     private  void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.add(R.id.frame_layout, fragment);  // Use add instead of replace
+        fragmentTransaction.addToBackStack(null);  // Add to backstack so user can go back
         fragmentTransaction.commit();
     }
 

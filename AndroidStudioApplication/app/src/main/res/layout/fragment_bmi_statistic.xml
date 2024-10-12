@@ -189,12 +189,12 @@
                         android:elevation="8dp"
                         android:gravity="center"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="10dp">
 
 
                         <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
                             android:layout_marginEnd="16dp"
                             android:contentDescription="BMI Icon"
                             android:src="@drawable/bmilogocolorvip" />
@@ -209,7 +209,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="BMI"
                                 android:textColor="@color/light_red"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -218,7 +218,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="22.4 "
                                 android:textColor="@color/light_red"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/txtBMIStatus"
@@ -231,15 +231,15 @@
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/editBMI"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginTop="-20dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginTop="-10dp"
                             app:cardBackgroundColor="@color/lightBlue"
                             app:cardCornerRadius="10dp">
 
                             <ImageView
                                 android:id="@+id/btnEdit"
-                                android:layout_width="wrap_content"
+                                android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_gravity="center"
                                 android:background="@drawable/baseline_create_24" />
@@ -271,18 +271,18 @@
                         android:elevation="8dp"
                         android:gravity="center"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:padding="10dp">
 
                         <ImageView
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
                             android:contentDescription="Steps Icon"
                             android:src="@drawable/step_icon" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="25dp"
+                            android:layout_marginRight="30dp"
                             android:orientation="vertical">
 
                             <TextView
@@ -290,7 +290,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Steps"
                                 android:textColor="@color/light_red"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -299,23 +299,23 @@
                                 android:layout_height="wrap_content"
                                 android:text="1230"
                                 android:textColor="@color/light_red"
-                                android:textSize="14sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Steps"
                                 android:textColor="@color/black"
-                                android:textSize="14sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/editStepsCard"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="-40dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginLeft="-35dp"
                     android:layout_marginTop="10dp"
                     app:cardBackgroundColor="@color/lightBlue"
                     app:cardCornerRadius="10dp"
@@ -351,12 +351,12 @@
                 android:elevation="8dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="10dp">
 
                 <ImageView
                     android:id="@+id/imageView9"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:contentDescription="Calories Icon"
                     android:src="@drawable/calories_burned"
                     app:layout_constraintStart_toStartOf="parent"
@@ -375,7 +375,7 @@
                         android:layout_height="wrap_content"
                         android:text="Calories Burned"
                         android:textColor="@color/light_red"
-                        android:textSize="18sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -386,14 +386,14 @@
                             android:layout_height="wrap_content"
                             android:text="2350"
                             android:textColor="@color/black"
-                            android:textSize="16sp" />
+                            android:textSize="12sp" />
                         <TextView
                             android:id="@+id/kcal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=" kcal"
                             android:textColor="@color/black"
-                            android:textSize="16sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -461,8 +461,8 @@
 
                     <ImageView
                         android:id="@+id/imageView11"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
                         android:contentDescription="Water Icon"
                         android:src="@drawable/baseline_water_drop_24"
                         app:layout_constraintStart_toStartOf="parent"
@@ -549,13 +549,14 @@
                 android:elevation="8dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/appearText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Advance Information"
+                    android:visibility="invisible"
                     android:textColor="@color/light_red"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -593,7 +594,7 @@
                             android:layout_height="wrap_content"
                             android:text="Advance Information"
                             android:textColor="@color/light_red"
-                            android:textSize="18sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -606,7 +607,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Heart Rate: "
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/txtAdvanceTextView"
@@ -614,7 +615,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="2350"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/txtAdvanceInfor"
@@ -622,7 +623,7 @@
                                 android:layout_height="wrap_content"
                                 android:text=" Beats"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -635,7 +636,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Body Fat: "
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/txtBodyFat"
@@ -643,7 +644,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="20"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/percentage"
@@ -651,7 +652,7 @@
                                 android:layout_height="wrap_content"
                                 android:text=" %"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
 
                     </LinearLayout>

@@ -360,7 +360,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                         @Override
                         public void onCallback(List<User> objects) {
                             progressBar.setVisibility(View.GONE);
-                            //    Toast.makeText(getActivity(), "Save Successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Save Successful", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {

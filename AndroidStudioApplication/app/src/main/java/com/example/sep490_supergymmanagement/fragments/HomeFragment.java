@@ -65,8 +65,6 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_home2, container, false);
         mAuth = FirebaseAuth.getInstance();
-        logOut = rootView.findViewById
-                (R.id.logOut);
         //profileId = findViewById(R.id.profileId);
         doctorImage = rootView.findViewById(R.id.doctor_image);
         doctorName = rootView.findViewById(R.id.doctor_name);
@@ -199,21 +197,6 @@ public class HomeFragment extends Fragment {
                // progressBar.setVisibility(View.GONE);
             }
         });
-
-        logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
-                Toast.makeText(getActivity(), "Log Out successfully", Toast.LENGTH_SHORT).show();
-                getActivity().finish();
-            }
-        });
-
-
-
-
         return rootView;
     }
 }
