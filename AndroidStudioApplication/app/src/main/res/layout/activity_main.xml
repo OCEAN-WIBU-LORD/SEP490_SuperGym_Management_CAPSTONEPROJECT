@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgroundvip1"
+    android:background="@drawable/backgroundvippro"
     tools:context=".MainActivity">
 
 
@@ -23,13 +23,15 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="301dp"
-        android:layout_height="51dp"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:shadowColor="#80000000"
         android:shadowDx="2"
         android:shadowDy="2"
+        android:padding="10dp"
+        android:fontFamily="@font/roboto"
         android:shadowRadius="4"
-        android:text="Your Gym, Your Health"
+        android:text="SuperGym Phòng tập Gym số 1 Hòa Lạc"
         android:textAlignment="center"
         android:textColor="@color/red"
         android:textSize="28sp"

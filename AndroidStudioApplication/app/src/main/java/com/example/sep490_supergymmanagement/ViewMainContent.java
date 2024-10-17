@@ -153,7 +153,7 @@ public class ViewMainContent extends AppCompatActivity {
                     } else if (itemId == R.id.shorts) {
                         replaceFragment(new SearchFragment());
                     } else if (itemId == R.id.subscriptions) {
-                        replaceFragment(new AppointmentListDoctorFragment());
+                        replaceFragment(new ScheduleTrainer());
                     } else if (itemId == R.id.library) {
                         replaceFragment(new FragmentUserProfile());
                     }

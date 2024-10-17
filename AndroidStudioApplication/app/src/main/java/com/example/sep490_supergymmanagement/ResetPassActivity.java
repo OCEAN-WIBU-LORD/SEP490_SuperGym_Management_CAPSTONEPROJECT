@@ -18,41 +18,22 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
-import androidx.annotation.NonNull;
-
-import com.example.sep490_supergymmanagement.models.User;
-import com.example.sep490_supergymmanagement.repositories.UserResp;
-import com.example.sep490_supergymmanagement.repositories.callbacks.Callback;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.Firebase;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
-public class RegisterActivity extends AppCompatActivity {
+public class ResetPassActivity extends AppCompatActivity {
 
-    EditText editTextName, editTextEmail, editTextPassword, editTextRePassword;
+    EditText editTextCurrentPass, editTextEmail, editTextPassword, editTextRePassword;
     MaterialButton buttonReg;
-    TextView forgotPassTv;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
+    TextView forgotPassTv;
     private boolean isPasswordVisible = false;
     private boolean isRePasswordVisible = false;
 
@@ -61,8 +42,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null && mAuth.getCurrentUser().isEmailVerified()) {
-            Intent intent = new Intent(getApplicationContext(), ViewMainContent.class);
+        if (currentUser == null && mAuth.getCurrentUser().isEmailVerified()) {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -71,13 +52,13 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.reset_password_screen);
 
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
-        editTextName = findViewById(R.id.name);
-        editTextPassword = findViewById(R.id.password);
-        editTextRePassword = findViewById(R.id.re_password);
+        editTextCurrentPass = findViewById(R.id.current_password);
+        editTextPassword = findViewById(R.id.new_password);
+        editTextRePassword = findViewById(R.id.confirm_re_password);
         buttonReg = findViewById(R.id.registerbtn);
         progressBar = findViewById(R.id.progressBar);
         forgotPassTv = findViewById(R.id.forgotPassTv);
@@ -90,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         // Find the return button by its ID
         ImageButton returnButton = findViewById(R.id.btnReturn);
 
@@ -139,27 +121,27 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Call the registerUser function
                 progressBar.setVisibility(View.VISIBLE);
-                String name = editTextName.getText().toString().trim();
-                String email = editTextEmail.getText().toString().trim();
-                String password = editTextPassword.getText().toString().trim();
-                String rePassword = editTextRePassword.getText().toString().trim();
+                String editTextEmailTxt = editTextEmail.getText().toString().trim();
+                String editTextCurrentPassTxt = editTextCurrentPass.getText().toString().trim();
+                String editTextPasswordTxt = editTextPassword.getText().toString().trim();
+                String editTextRePasswordTxt = editTextRePassword.getText().toString().trim();
                 // Validate the inputs
-                if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(getApplicationContext(), "Name is required", Toast.LENGTH_SHORT).show();
-                    editTextName.setError("Name is required");
-                    editTextName.requestFocus();
-                    progressBar.setVisibility(View.GONE);
-                    return;
-                }
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), "Email is required", Toast.LENGTH_SHORT).show();
-                    editTextEmail.setError("Email is required");
+                if (TextUtils.isEmpty(editTextEmailTxt)) {
+                    Toast.makeText(getApplicationContext(), "Gmail is required", Toast.LENGTH_SHORT).show();
+                    editTextEmail.setError("Gmail is required");
                     editTextEmail.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
+                if (TextUtils.isEmpty(editTextCurrentPassTxt)) {
+                    Toast.makeText(getApplicationContext(), "Current Password is required", Toast.LENGTH_SHORT).show();
+                    editTextCurrentPass.setError("Current Password is required");
+                    editTextCurrentPass.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
 
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(editTextEmailTxt).matches()) {
                     Toast.makeText(getApplicationContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
                     editTextEmail.setError("Please enter a valid email");
                     editTextEmail.requestFocus();
@@ -167,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (TextUtils.isEmpty(password)) {
+                if (TextUtils.isEmpty(editTextPasswordTxt)) {
                     Toast.makeText(getApplicationContext(), "Password is required", Toast.LENGTH_SHORT).show();
                     editTextPassword.setError("Password is required");
                     editTextPassword.requestFocus();
@@ -175,7 +157,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (password.length() < 6) {
+                if (editTextPasswordTxt.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password should be at least 6 characters long", Toast.LENGTH_SHORT).show();
                     editTextPassword.setError("Password should be at least 6 characters long");
                     editTextPassword.requestFocus();
@@ -183,81 +165,59 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (!password.equals(rePassword)) {
+                if (!editTextPasswordTxt.equals(editTextRePasswordTxt)) {
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                     editTextRePassword.setError("Passwords do not match");
                     editTextRePassword.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
+                // Reauthenticate the user with their current password
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    AuthCredential credential = EmailAuthProvider.getCredential(editTextEmailTxt, editTextCurrentPassTxt);
 
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
-                                    FirebaseUser user = mAuth.getCurrentUser();
-
-                                    if (user == null) {
-                                        Toast.makeText(RegisterActivity.this, "Register account failed. Please try again.",
-                                                Toast.LENGTH_SHORT).show();
-                                        Log.e(TAG, "User is null");
-                                        return;
-                                    }
-
-                                    // Create user
-                                    User newUser = new User(user.getUid(), name, email, null, null, null, null, null, null, "user", null);
-                                    // Save user to database
-                                    new UserResp().createUser(newUser, new Callback<User>() {
-                                        @Override
-                                        public void onCallback(List<User> objects) {
-                                            if (objects != null && !objects.isEmpty()) {
-                                                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            Toast.makeText(RegisterActivity.this, "Account Created. Please verify your email.",
-                                                                    Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                                            startActivity(intent);
-                                                            finish();
-                                                        } else {
-                                                            Toast.makeText(RegisterActivity.this, "Error sending verification email.", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                Toast.makeText(RegisterActivity.this, "Error creating user in database.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-
+                    user.reauthenticate(credential).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // If reauthentication is successful, update the password
+                            user.updatePassword(editTextRePasswordTxt).addOnCompleteListener(updateTask -> {
+                                if (updateTask.isSuccessful()) {
+                                    sendConfirmationEmail(user);
                                 } else {
-                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                        showLoginPrompt();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
+                                    Toast.makeText(ResetPassActivity.this, "Password update failed: " + updateTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                                progressBar.setVisibility(View.GONE);
+                            });
+                        } else {
+                            Toast.makeText(ResetPassActivity.this, "Reauthentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    });
+                    }
             }
         });
     }
 
-    private void showLoginPrompt() {
-        new AlertDialog.Builder(this)
-                .setTitle("Account Already Exists")
-                .setMessage("An account with this email already exists. Would you like to log in instead?")
-                .setPositiveButton("Log In", (dialog, which) -> {
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+    private void showToastAndError(EditText editText, String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        editText.setError(message);
+        editText.requestFocus();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void sendConfirmationEmail(FirebaseUser user) {
+        user.sendEmailVerification().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(ResetPassActivity.this, "Password reset successfully. Please verify your email for confirmation.", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.putExtra("password_reset_success", true);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(ResetPassActivity.this, "Failed to send confirmation email.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     private void togglePasswordVisibility(EditText editText, boolean isPasswordField) {
         if (isPasswordField) {

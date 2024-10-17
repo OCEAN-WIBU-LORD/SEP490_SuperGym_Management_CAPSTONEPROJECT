@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -68,7 +69,7 @@ public class FragmentUserProfile extends Fragment {
     private static final int REQUEST_CALL_PHONE_PERMISSION = 1;
     private static final String PHONE_NUMBER = "0978788128";
     private Boolean isAuthenticated = false;
-    private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn;
+    private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn, resetPasswordBtn;
     private CardView returnBtn, editProfile;
     private FirebaseAuth mAuth;
 
@@ -122,7 +123,7 @@ public class FragmentUserProfile extends Fragment {
         btnFeedBack = view.findViewById(R.id.btnFeedBack);
 
         dietBtn = view.findViewById(R.id.dietBtn);
-
+        resetPasswordBtn = view.findViewById(R.id.resetPasswordBtn);
         mAuth = FirebaseAuth.getInstance();
 
         returnBtn  = view.findViewById(R.id.returnBtn);
@@ -134,17 +135,62 @@ public class FragmentUserProfile extends Fragment {
         dietBtn.setOnClickListener(V -> replaceFragment(new Diet_Eating_Fragment()));
 
         btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
+
+        resetPasswordBtn.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start ScheduleTrainerDetailsActivity
+                Intent intent = new Intent(getActivity(), ResetPassActivity.class); // Assuming ScheduleTrainerDetails is now an Activity
+                startActivity(intent);
+            }
+        });
         logOutBtn = view.findViewById(R.id.logOutBtn);
         logOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
-                Toast.makeText(getActivity(), "Log Out successfully", Toast.LENGTH_SHORT).show();
-                getActivity().finish();
+                // Inflate the custom layout for the dialog
+                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                View dialogView = inflater.inflate(R.layout.dialog_logout_confirmation, null);
+
+                // Create a new dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setView(dialogView);
+
+                // Find the buttons and set their click listeners
+                Button btnYes = dialogView.findViewById(R.id.btn_yes);
+                Button btnNo = dialogView.findViewById(R.id.btn_no);
+
+                // Create the dialog
+                AlertDialog dialog = builder.create();
+
+                // Handle the Yes button click
+                btnYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Perform logout operation
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        Toast.makeText(getActivity(), "Log Out successfully", Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
+                        dialog.dismiss(); // Dismiss the dialog
+                    }
+                });
+
+                // Handle the No button click
+                btnNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss(); // Just dismiss the dialog
+                    }
+                });
+
+                // Show the dialog
+                dialog.show();
             }
         });
+
+
 
 
         // Find the button and set up a click listener

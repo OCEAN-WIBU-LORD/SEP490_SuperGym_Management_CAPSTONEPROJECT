@@ -22,7 +22,7 @@ public class TrainerResp {
 
     //get list appointment
     public void getDoctors(Callback<Trainer> callback) {
-        Query query = databaseReference.child("doctors").orderByChild("name");
+        Query query = databaseReference.child("Doctors").orderByChild("name");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
