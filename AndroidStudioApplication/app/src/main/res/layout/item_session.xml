@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    android:backgroundTint="#212121">
+
+    <!-- Container chính để quản lý layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Container Ngày Tháng -->
+        <LinearLayout
+            android:id="@+id/date_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!-- Tháng -->
+            <TextView
+                android:id="@+id/session_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feb"
+                android:textSize="14sp"
+                android:textColor="@android:color/white" />
+
+            <!-- Ngày -->
+            <TextView
+                android:id="@+id/session_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Tên buổi tập -->
+        <TextView
+            android:id="@+id/session_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="CHEST"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/date_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/session_muscle_group"
+            android:layout_marginStart="8dp" />
+
+        <!-- Các nhóm cơ tập luyện -->
+        <TextView
+            android:id="@+id/session_muscle_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="TRICEPS, SHOULDERS"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/session_name"
+            app:layout_constraintStart_toStartOf="@id/session_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="4dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

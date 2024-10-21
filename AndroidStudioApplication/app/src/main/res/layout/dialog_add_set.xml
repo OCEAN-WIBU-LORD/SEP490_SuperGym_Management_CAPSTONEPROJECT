@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- EditText for inputting reps -->
+    <EditText
+        android:id="@+id/edit_text_reps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter reps"
+        android:inputType="number" />
+
+    <!-- EditText for inputting weight -->
+    <EditText
+        android:id="@+id/edit_text_weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter weight (kg)"
+        android:inputType="numberDecimal" />
+
+    <!-- Correct Button ID to be confirmed -->
+    <Button
+        android:id="@+id/button_add_set"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Set" />
+</LinearLayout>
