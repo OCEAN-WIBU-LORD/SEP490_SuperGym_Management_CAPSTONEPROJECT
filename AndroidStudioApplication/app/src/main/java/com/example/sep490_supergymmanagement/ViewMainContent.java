@@ -229,10 +229,9 @@ public class ViewMainContent extends AppCompatActivity {
         shortsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(ViewMainContent.this, HomeActivity.class);
+                startActivity(intent);
                 dialog.dismiss();
-                Toast.makeText(ViewMainContent.this,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
-
             }
         });
 

@@ -22,12 +22,12 @@ import java.util.Calendar;
 
 public class DateGenerator {
 
-    private static int selectedDay = 1; // Default to the first day of the month
+    private static int selectedDay ; // Default to the first day of the month
 
-    public static void generateMonthDates(Context context, LinearLayout daysLayout) {
+    public static void generateMonthDates(Context context, LinearLayout daysLayout, int dayNumber) {
         // Clear any existing views in the layout
         daysLayout.removeAllViews();
-
+        selectedDay = dayNumber;
         // Get the current date
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1); // Start at the first day of the month

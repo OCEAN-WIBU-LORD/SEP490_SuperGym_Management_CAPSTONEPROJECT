@@ -25,6 +25,32 @@
         android:exported="false"
         android:theme="@style/Theme.SEP490SuperGymManagement" />
 
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".AddSessionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".SessionDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".AddExerciseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+
+        <activity
+            android:name=".ExerciseDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".SelectExerciseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+
     <activity
         android:name=".ForgotPassword"
         android:exported="false"

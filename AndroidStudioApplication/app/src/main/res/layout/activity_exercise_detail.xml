@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- RecyclerView for displaying sets -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_sets"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Button to add a new set -->
+    <Button
+        android:id="@+id/button_add_set"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Set" />
+</LinearLayout>

@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-17T14:40:22.899669900Z">
+        <DropdownSelection timestamp="2024-10-21T02:41:49.528797500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=R5CT21TP92V" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Acer\.android\avd\S24_Ultra_SamSung_API_34.avd" />
             </handle>
           </Target>
         </DropdownSelection>
