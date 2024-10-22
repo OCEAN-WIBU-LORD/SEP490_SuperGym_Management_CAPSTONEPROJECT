@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,11 +32,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.example.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.example.sep490_supergymmanagement.fragments.BMI_Statistic_Fragment;
 import com.example.sep490_supergymmanagement.fragments.Diet_Eating_Fragment;
 import com.example.sep490_supergymmanagement.fragments.Diet_Fragment2;
 import com.example.sep490_supergymmanagement.fragments.FeedbackFragment;
 import com.example.sep490_supergymmanagement.fragments.HomeFragment;
+import com.example.sep490_supergymmanagement.models.QrCodeRequest;
+import com.example.sep490_supergymmanagement.models.QrCodeResponse;
 import com.example.sep490_supergymmanagement.models.User;
 import com.example.sep490_supergymmanagement.repositories.UserResp;
 import com.example.sep490_supergymmanagement.repositories.callbacks.Callback;
@@ -49,9 +54,19 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.zip.GZIPInputStream;
+import android.util.Base64;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
+import android.util.Base64;
 
 
 import android.graphics.Color;
@@ -60,9 +75,14 @@ import android.view.Display;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class FragmentUserProfile extends Fragment {
 
@@ -79,9 +99,9 @@ public class FragmentUserProfile extends Fragment {
     private ConstraintLayout logOutBtn;
 
     private int currentQrIndex = 0; // To keep track of which QR code is currently being shown
-    private String[] qrCodes = new String[4]; // Store QR code data
-    private String[] qrNames = new String[4]; // Store QR code membership names
-    private String[] priceSubsInfo = new String[4];
+    private List<String> qrCodes = new ArrayList<>(); // Store QR code data
+    private List<String> qrNames = new ArrayList<>(); // Store QR code membership names
+    private List<String> priceSubsInfo = new ArrayList<>(); // Store QR code prices
     private String userInforTransfer;
 
 
@@ -527,100 +547,131 @@ public class FragmentUserProfile extends Fragment {
 
 
 
-
     private void generateQrCodeDialog() {
-        // Define the QR code data for the three different choices
-        qrCodes[0] = "00020101021238500010A000000727012000069704260106ODGLAB0208QRIBFTTA530370454065000005802VN630477F4";
-        qrCodes[1] = "00020101021238500010A000000727012000069704260106ODGLAB0208QRIBFTTA5303704540712000005802VN63048B7B";
-        qrCodes[2] = "00020101021238500010A000000727012000069704260106ODGLAB0208QRIBFTTA5303704540722000005802VN6304BA5D";
-        qrCodes[3] = "00020101021238500010A000000727012000069704260106ODGLAB0208QRIBFTTA5303704540735000005802VN6304C220";
-        // Define the QR code names corresponding to each QR code
-        qrNames[0] = "Membership 1 Month";
-        qrNames[1] = "Membership 3 Months";
-        qrNames[2] = "Membership 6 Months";
-        qrNames[3] = "Membership 1 Year";
-        priceSubsInfo[0] = "500.000VND";
-        priceSubsInfo[1] = "1.200.000VND";
-        priceSubsInfo[2] = "2.200.000VND";
-        priceSubsInfo[3] = "3.500.000VND";
+        // Fetch the QR codes dynamically using the Retrofit API call
+        ApiService apiService = RetrofitClient.getApiService();
 
+        // Assuming you have the user UID stored
+        String uid = mAuth.getUid(); // Replace this with the actual user UID
+        QrCodeRequest request = new QrCodeRequest(uid);
 
+        // Call the API to generate QR codes
+        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
+            @Override
+            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Get the QR items from the API response
+                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
 
-        // Create the AlertDialog and set up its layout
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.qr_code_dialog, null);
+                    // Check if the list is not empty
+                    if (!qrItems.isEmpty()) {
+                        // Clear any existing data
+                        qrCodes.clear();
+                        qrNames.clear();
+                        priceSubsInfo.clear();
 
-        ImageView qrCodeImageView = dialogView.findViewById(R.id.qrCodeImageView);
-        TextView qrCodeInfo = dialogView.findViewById(R.id.tvQrInfo);
-        TextView priceSubs = dialogView.findViewById(R.id.priceSubs);
-        TextView tvUserInfor = dialogView.findViewById(R.id.tvUserInfor);
-        Button btnPrevQr = dialogView.findViewById(R.id.btnPrevQr);
-        Button btnNextQr = dialogView.findViewById(R.id.btnNextQr);
+                        for (QrCodeResponse.QrItem qrItem : qrItems) {
+                            qrCodes.add(qrItem.getQrDataUrl()); // Get the QR data URL
+                            qrNames.add(qrItem.getCourseDetails().getCourseName()); // Get the course name
+                            priceSubsInfo.add(qrItem.getCourseDetails().getCoursePrice() + " VND"); // Get the course price
+                        }
 
+                        // Create the AlertDialog and set up its layout
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                        LayoutInflater inflater = getLayoutInflater();
+                        View dialogView = inflater.inflate(R.layout.qr_code_dialog, null);
 
+                        ImageView qrCodeImageView = dialogView.findViewById(R.id.qrCodeImageView);
+                        TextView qrCodeInfo = dialogView.findViewById(R.id.tvQrInfo);
+                        TextView priceSubs = dialogView.findViewById(R.id.priceSubs);
+                        TextView tvUserInfor = dialogView.findViewById(R.id.tvUserInfor);
+                        Button btnPrevQr = dialogView.findViewById(R.id.btnPrevQr);
+                        Button btnNextQr = dialogView.findViewById(R.id.btnNextQr);
 
-        TextView tvUserTransferNote = dialogView.findViewById(R.id.tvUserTransferNote);
-        tvUserTransferNote.setText(Html.fromHtml("<u>Please Transfer with your Description above for us to check and further confirmation!</u>"));
+                        TextView tvUserTransferNote = dialogView.findViewById(R.id.tvUserTransferNote);
+                        tvUserTransferNote.setText(Html.fromHtml("<u>Please Transfer with your Description above for us to check and further confirmation!</u>"));
 
-        Button btnCopyText = dialogView.findViewById(R.id.btnCopyText);
+                        Button btnCopyText = dialogView.findViewById(R.id.btnCopyText);
+                        btnCopyText.setOnClickListener(v -> {
+                            String textToCopy = tvUserInfor.getText().toString(); // Get the text from the TextView
 
-        btnCopyText.setOnClickListener(v -> {
-            String textToCopy = tvUserInfor.getText().toString(); // Get the text from the TextView
+                            // Use ClipboardManager to copy the text
+                            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("Copied Text", textToCopy);
+                            clipboard.setPrimaryClip(clip);
 
-            // Use ClipboardManager to copy the text
-            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Copied Text", textToCopy);
-            clipboard.setPrimaryClip(clip);
+                            // Show a Toast message to indicate the text was copied
+                            Toast.makeText(getContext(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+                        });
 
-            // Show a Toast message to indicate the text was copied
-            Toast.makeText(getContext(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+                        if (userInforTransfer != null) {
+                            tvUserInfor.setText(userInforTransfer);
+                        }
+
+                        // Display the first QR code and its corresponding course info
+                        currentQrIndex = 0; // Initialize the index to 0
+                        updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
+
+                        // Handle the "Next" button click to go to the next QR code
+                        btnNextQr.setOnClickListener(v -> {
+                            currentQrIndex = (currentQrIndex + 1) % qrCodes.size(); // Loop to the next QR code
+                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
+                        });
+
+                        // Handle the "Previous" button click to go to the previous QR code
+                        btnPrevQr.setOnClickListener(v -> {
+                            currentQrIndex = (currentQrIndex - 1 + qrCodes.size()) % qrCodes.size(); // Loop to the previous QR code
+                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
+                        });
+
+                        builder.setView(dialogView)
+                                .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                                .create()
+                                .show();
+                    } else {
+                        // Handle the case when no QR codes are returned
+                        Toast.makeText(requireContext(), "No QR codes available", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Handle the case when the API call fails
+                    Toast.makeText(requireContext(), "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
+                // Handle the case when the API call fails
+                Log.e("Error", "Failed to fetch QR codes", t);
+                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
-
-
-
-        if (userInforTransfer != null){
-            tvUserInfor.setText(userInforTransfer);
-        }
-
-
-        // Display the first QR code
-        updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-
-        // Handle the "Next" button click to go to the next QR code
-        btnNextQr.setOnClickListener(v -> {
-            currentQrIndex = (currentQrIndex + 1) % qrCodes.length; // Loop to the next QR code
-            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo,priceSubs,  currentQrIndex);
-        });
-
-        // Handle the "Previous" button click to go to the previous QR code
-        btnPrevQr.setOnClickListener(v -> {
-            currentQrIndex = (currentQrIndex - 1 + qrCodes.length) % qrCodes.length; // Loop to the previous QR code
-            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo,priceSubs, currentQrIndex);
-        });
-
-        builder.setView(dialogView)
-                .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
-                .create()
-                .show();
     }
 
-    private void updateQrCodeDisplay(ImageView qrCodeImageView, TextView qrCodeInfo,TextView priceSubs, int index) {
+    private void updateQrCodeDisplay(ImageView qrCodeImageView, TextView qrCodeInfo, TextView priceSubs, int index) {
         try {
-            // Generate the QR code using ZXing
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            BitMatrix bitMatrix = new com.google.zxing.qrcode.QRCodeWriter().encode(
-                    qrCodes[index], BarcodeFormat.QR_CODE, 400, 400);
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            // Check if the qrCodes.get(index) is a Data URI
+            if (qrCodes.get(index).startsWith("data:image/png;base64,")) {
+                String base64 = qrCodes.get(index).substring("data:image/png;base64,".length());
+                byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                qrCodeImageView.setImageBitmap(decodedByte);
+            } else {
+                // Generate the QR code using ZXing if it's not a Data URI
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                BitMatrix bitMatrix = new com.google.zxing.qrcode.QRCodeWriter().encode(
+                        qrCodes.get(index), BarcodeFormat.QR_CODE, 400, 400);
+                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+                qrCodeImageView.setImageBitmap(bitmap);
+            }
 
-            // Update the ImageView with the QR code and the TextView with the membership name
-            qrCodeImageView.setImageBitmap(bitmap);
-            qrCodeInfo.setText(qrNames[index]); // Display the membership name
-            priceSubs.setText(priceSubsInfo[index]);
-        } catch (WriterException e) {
+            // Update the TextViews
+            qrCodeInfo.setText(qrNames.get(index)); // Display the membership name
+            priceSubs.setText(priceSubsInfo.get(index)); // Display the price
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "Error generating QR Code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error displaying QR Code", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 }
