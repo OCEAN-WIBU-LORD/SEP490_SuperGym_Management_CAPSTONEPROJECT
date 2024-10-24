@@ -40,6 +40,9 @@ public class ScheduleTrainer extends Fragment {
     private GridLayout calendarGrid;
     private Button newEventButton, outfitsButton, adviceButton;
     private ImageButton backButton, refreshButton, addButton, outfitsNavButton, scheduleNavButton;
+    private int dayNumber;
+    private int theSelectedMonth;
+    private int monthPicked;
 
     // Factory method to create a new instance of this fragment using the provided parameters.
     public static ScheduleTrainer newInstance(String param1, String param2) {
@@ -99,10 +102,12 @@ public class ScheduleTrainer extends Fragment {
                         calendar.set(Calendar.YEAR, selectedYear);
                         calendar.set(Calendar.MONTH, selectedMonth);
 
+
+
                         // Format and update the calendarMonth TextView
                         String monthName = new SimpleDateFormat("MMMM", Locale.getDefault()).format(calendar.getTime());
                         calendarMonth.setText(String.format("%s %d", monthName, selectedYear));
-
+                        monthPicked = selectedMonth;
                         // Refresh the calendar grid based on the new month and year
                         updateCalendarGrid(selectedYear, selectedMonth);
                     },
@@ -123,17 +128,19 @@ public class ScheduleTrainer extends Fragment {
 
             datePickerDialog.show();
         });
+
     }
 
 
     private void updateCalendarGrid(int year, int month) {
         // Clear the previous views in the GridLayout
         calendarGrid.removeAllViews();
-
         // Get the number of days in the selected month and year
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
+        // Save the selected month to a global variable
+        this.theSelectedMonth = month;
         int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
         // Loop to generate days for the selected month and add them to the GridLayout
@@ -160,6 +167,11 @@ public class ScheduleTrainer extends Fragment {
                 public void onClick(View v) {
                     // Create an Intent to start ScheduleTrainerDetailsActivity
                     Intent intent = new Intent(getActivity(), ScheduleTrainerDetails.class); // Assuming ScheduleTrainerDetails is now an Activity
+
+                    // Pass a number (for example, the day number)
+                    dayNumber = Integer.parseInt(dayView.getText().toString()); // Example number
+                    intent.putExtra("day_number", dayNumber);
+                    Toast.makeText(getActivity(), "Selected: " + dayNumber, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                 }
             });
@@ -255,6 +267,14 @@ public class ScheduleTrainer extends Fragment {
                 public void onClick(View v) {
                     // Create an Intent to start ScheduleTrainerDetailsActivity
                     Intent intent = new Intent(getActivity(), ScheduleTrainerDetails.class); // Assuming ScheduleTrainerDetails is now an Activity
+                    // Pass a number (for example, the day number)
+                    dayNumber = Integer.parseInt(dayView.getText().toString()); // Example number
+                    intent.putExtra("day_number", dayNumber);
+                    // Pass the selected month (which was stored when the user selected a month)
+                    intent.putExtra("calendar_real",theSelectedMonth);
+
+                    Toast.makeText(getActivity(), "Selected: " + dayNumber, Toast.LENGTH_SHORT).show();
+
                     startActivity(intent);
                 }
             });

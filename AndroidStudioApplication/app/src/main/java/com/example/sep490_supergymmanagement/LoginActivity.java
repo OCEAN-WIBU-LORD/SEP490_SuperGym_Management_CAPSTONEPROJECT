@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     private boolean isPasswordVisible = false;
     private Timer loginTimer;
-    TextView textView;
+    TextView textView, forgotPassTv;
 
     private long lastUserInteractionTime; // Store the last interaction timestamp
     private static final long INACTIVITY_TIMEOUT = 600000000; // 10 minutes in milliseconds
@@ -68,7 +68,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        Intent intent = getIntent();
+        if (intent != null && intent.getBooleanExtra("password_reset_success", false)) {
+            Toast.makeText(LoginActivity.this, "Password reset successful. Please log in with your new password.", Toast.LENGTH_LONG).show();
+        }
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
@@ -76,6 +79,16 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         handler = new Handler();
         startInactivityCheck(); // Start periodic checks
+        forgotPassTv = findViewById(R.id.forgotPassTv);
+
+        forgotPassTv.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start ScheduleTrainerDetailsActivity
+                Intent intent = new Intent(getApplicationContext(), ForgotPassword.class); // Assuming ScheduleTrainerDetails is now an Activity
+                startActivity(intent);
+            }
+        });
 
         // Find the return button by its ID
         ImageButton returnButton = findViewById(R.id.btnReturn);

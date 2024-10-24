@@ -662,7 +662,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/text_price44"
+                        android:id="@+id/resetPasswordBtn"
                         android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"

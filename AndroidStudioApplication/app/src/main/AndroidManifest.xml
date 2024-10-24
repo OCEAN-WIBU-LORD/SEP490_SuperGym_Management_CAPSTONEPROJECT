@@ -4,6 +4,7 @@
 
     <application
         android:allowBackup="true"
+	android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -11,39 +12,91 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SEP490SuperGymManagement"
-        tools:targetApi="31">
+        android:hardwareAccelerated="true"
+    android:largeHeap="true"
+    tools:targetApi="31">
+
+    <!-- Declare activities with proper exported attributes and themes -->
+    <activity
+        android:name=".EvenCalendar"
+        android:exported="false" />
+
+    <activity
+        android:name=".GeminiFragment"
+        android:exported="false"
+        android:theme="@style/Theme.SEP490SuperGymManagement" />
+
         <activity
-            android:name=".EvenCalendar"
-            android:exported="false" />
-        <activity
-            android:name=".GeminiFragment"
+            android:name=".HomeActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
-            android:name=".FragmentEditProfile"
+            android:name=".AddSessionActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
-            android:name=".FragmentUserProfile"
-            android:exported="false" />
+            android:name=".SessionDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
-            android:name=".ViewMainContent"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".AddExerciseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+        <activity
+            android:name=".ExerciseDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".SelectExerciseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
 
-</manifest>
+    <activity
+        android:name=".ForgotPassword"
+        android:exported="false"
+        android:theme="@style/Theme.SEP490SuperGymManagement" />
+
+    <activity
+        android:name=".ResetPassActivity"
+        android:exported="false"
+        android:theme="@style/Theme.SEP490SuperGymManagement" />
+
+    <activity
+        android:name=".FragmentEditProfile"
+        android:exported="false"
+        android:theme="@style/Theme.SEP490SuperGymManagement" />
+
+     <activity
+            android:name=".ScheduleTrainerDetails"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+
+    <activity
+        android:name=".FragmentUserProfile"
+        android:exported="false" />
+
+    <activity
+        android:name=".ViewMainContent"
+        android:exported="false" />
+
+    <activity
+        android:name=".LoginActivity"
+        android:exported="false" />
+
+    <activity
+        android:name=".RegisterActivity"
+        android:exported="false" />
+
+    <!-- MainActivity is exported to allow it to launch the app -->
+    <activity
+        android:name=".MainActivity"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+</application>
+
+    </manifest>

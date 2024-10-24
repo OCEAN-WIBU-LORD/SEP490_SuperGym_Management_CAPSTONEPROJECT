@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sep490_supergymmanagement.ExerciseDetailActivity;
-import com.example.sep490_supergymmanagement.R;
 import com.example.sep490_supergymmanagement.SelectExerciseActivity;
 import com.example.sep490_supergymmanagement.SessionDataHolder;
 import com.example.sep490_supergymmanagement.adapters.SelectedExerciseAdapter;
@@ -195,13 +194,13 @@ public class AddSessionActivity extends AppCompatActivity {
         session.setEndTime(endTimeString);                          // Set the end time
         session.setUserId(userId);                                  // Gán userId cho session
 
-        // Save the session to Firebase under "users/{userId}/sessions"
+// Save the session to Firebase under "sessions"
         if (userId != null) {
-            DatabaseReference userSessionsRef = FirebaseDatabase.getInstance().getReference("users")
-                    .child(userId)
-                    .child("sessions");
+            // Save session under "sessions" node, with a child node using session ID
+            DatabaseReference sessionsRef = FirebaseDatabase.getInstance().getReference("Session");
 
-            userSessionsRef.child(session.getId()).setValue(session)
+            // Push the session data with userId
+            sessionsRef.child(session.getId()).setValue(session)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Session saved successfully!", Toast.LENGTH_SHORT).show();
                         // Optionally clear the SessionDataHolder after saving
@@ -212,7 +211,7 @@ public class AddSessionActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Failed to get user ID. Please log in.", Toast.LENGTH_SHORT).show();
         }
-    }
+}
 
     // Show muscle group selection dialog
     private void showMuscleGroupDialog() {

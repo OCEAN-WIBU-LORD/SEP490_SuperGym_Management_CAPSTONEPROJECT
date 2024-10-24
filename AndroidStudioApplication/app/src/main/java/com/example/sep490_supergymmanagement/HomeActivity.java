@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sep490_supergymmanagement.adapters.SessionAdapter;
 import com.example.sep490_supergymmanagement.models.Session;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,7 +21,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,6 +84,8 @@ public class HomeActivity extends AppCompatActivity {
 
     // Lấy danh sách các buổi tập từ Firebase và cập nhật RecyclerView
     private void fetchSessionsFromFirebase() {
+        DatabaseReference sessionsRef = FirebaseDatabase.getInstance().getReference("Session");  // Truy cập trực tiếp vào node "sessions"
+
         if (sessionsRef != null) {
             sessionsRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -96,8 +98,8 @@ public class HomeActivity extends AppCompatActivity {
                         // Lấy dữ liệu của từng session
                         Session session = sessionSnapshot.getValue(Session.class);
 
-                        // Thêm session vào danh sách
-                        if (session != null) {
+                        // Thêm session vào danh sách nếu session có userId khớp với user hiện tại
+                        if (session != null && userId != null && userId.equals(session.getUserId())) {
                             sessionList.add(session);
                         }
                     }

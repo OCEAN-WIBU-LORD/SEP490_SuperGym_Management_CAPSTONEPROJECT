@@ -42,4 +42,9 @@
     <color name="colorBlue">#1648CE</color>
     <color name="colorLightRed">#FAE9E9</color>
     <color name="colorGreyText">#575A61</color>
+
+    <color name="colorSelected">#FF8800</color>  <!-- Orange color when selected -->
+    <color name="colorPressed">#FF5722</color>   <!-- Deep orange when pressed -->
+    <color name="colorFocused">#FFC107</color>   <!-- Amber color when focused -->
+    <color name="colorNormal">#D3D3D3</color>    <!-- Light gray for default state -->
 </resources>

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
@@ -21,6 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import androidx.annotation.NonNull;
 
+import com.example.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.example.sep490_supergymmanagement.apiadapter.RetrofitClient;
+import com.example.sep490_supergymmanagement.models.RegisterUserDto;
 import com.example.sep490_supergymmanagement.models.User;
 import com.example.sep490_supergymmanagement.repositories.UserResp;
 import com.example.sep490_supergymmanagement.repositories.callbacks.Callback;
@@ -31,7 +35,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText editTextName, editTextEmail, editTextPassword, editTextRePassword;
     MaterialButton buttonReg;
+    TextView forgotPassTv;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     private boolean isPasswordVisible = false;
@@ -78,7 +86,16 @@ public class RegisterActivity extends AppCompatActivity {
         editTextRePassword = findViewById(R.id.re_password);
         buttonReg = findViewById(R.id.registerbtn);
         progressBar = findViewById(R.id.progressBar);
+        forgotPassTv = findViewById(R.id.forgotPassTv);
 
+        forgotPassTv.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start ScheduleTrainerDetailsActivity
+                Intent intent = new Intent(getApplicationContext(), ForgotPassword.class); // Assuming ScheduleTrainerDetails is now an Activity
+                startActivity(intent);
+            }
+        });
         // Find the return button by its ID
         ImageButton returnButton = findViewById(R.id.btnReturn);
 
@@ -180,58 +197,33 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
-                                    FirebaseUser user = mAuth.getCurrentUser();
+// Create a user DTO for API call
+                RegisterUserDto registerUserDto = new RegisterUserDto(name, email, password);
 
-                                    if (user == null) {
-                                        Toast.makeText(RegisterActivity.this, "Register account failed. Please try again.",
-                                                Toast.LENGTH_SHORT).show();
-                                        Log.e(TAG, "User is null");
-                                        return;
-                                    }
+// Call the API to register the user
+                ApiService apiService = RetrofitClient.getApiService();
+                Call<Void> call = apiService.registerUser(registerUserDto);
+                call.enqueue(new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(RegisterActivity.this, "Account Created. Please verify your email.",
+                                    Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (response.code() == 409) { // Check if the status code is 409 Conflict
+                            showLoginPrompt(); // Show the login prompt if the email is already registered
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Error creating user: " + response.message(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-                                    // Create user
-                                    User newUser = new User(user.getUid(), name, email, null, null, null, null, null, null, "user", null);
-                                    // Save user to database
-                                    new UserResp().createUser(newUser, new Callback<User>() {
-                                        @Override
-                                        public void onCallback(List<User> objects) {
-                                            if (objects != null && !objects.isEmpty()) {
-                                                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            Toast.makeText(RegisterActivity.this, "Account Created. Please verify your email.",
-                                                                    Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                                            startActivity(intent);
-                                                            finish();
-                                                        } else {
-                                                            Toast.makeText(RegisterActivity.this, "Error sending verification email.", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                Toast.makeText(RegisterActivity.this, "Error creating user in database.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-
-                                } else {
-                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                        showLoginPrompt();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-                        });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(RegisterActivity.this, "Failed to register: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
