@@ -84,6 +84,8 @@ public class HomeActivity extends AppCompatActivity {
 
     // Lấy danh sách các buổi tập từ Firebase và cập nhật RecyclerView
     private void fetchSessionsFromFirebase() {
+        DatabaseReference sessionsRef = FirebaseDatabase.getInstance().getReference("Session");  // Truy cập trực tiếp vào node "sessions"
+
         if (sessionsRef != null) {
             sessionsRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -96,8 +98,8 @@ public class HomeActivity extends AppCompatActivity {
                         // Lấy dữ liệu của từng session
                         Session session = sessionSnapshot.getValue(Session.class);
 
-                        // Thêm session vào danh sách
-                        if (session != null) {
+                        // Thêm session vào danh sách nếu session có userId khớp với user hiện tại
+                        if (session != null && userId != null && userId.equals(session.getUserId())) {
                             sessionList.add(session);
                         }
                     }
