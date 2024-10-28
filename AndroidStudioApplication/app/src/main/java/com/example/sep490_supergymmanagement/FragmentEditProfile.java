@@ -54,8 +54,10 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -313,12 +315,11 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(getActivity(), "User not authenticated", Toast.LENGTH_SHORT).show();
-            return; // Handle the case where the user is not authenticated
+            return;
         }
         progressBar.setVisibility(View.VISIBLE);
         String userId = user.getUid();
 
-        // Get user data
         new UserResp().getUser(userId, new Callback<User>() {
             @Override
             public void onCallback(List<User> users) {
@@ -326,14 +327,18 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                     User updatedUser = users.get(0);
                     updatedUser.setName(editName.getText().toString().trim());
 
-                    // Date of Birth
-                    @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    // Handle Date of Birth and save it as a timestamp
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                     try {
-                        Timestamp dob = new Timestamp((sdf.parse(dobText.getText().toString().trim()).getTime()) / 1000);
-                        updatedUser.setDob(dob);
+                        Date dob = sdf.parse(dobText.getText().toString().trim());
+                        if (dob != null) {
+                            long dobTimestamp = dob.getTime(); // Convert date to timestamp in milliseconds
+                            updatedUser.setDobTimestamp(dobTimestamp); // Assuming there's a field in User to store timestamp
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getActivity(), "Invalid date format", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
                         return;
                     }
 
@@ -342,20 +347,18 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                     updatedUser.setGender(genderText.getText().toString().trim());
 
                     try {
-                        updatedUser.setIdCard(new JSONObject().put("id", cccdText.getText().toString().trim()));
-                    } catch (JSONException e) {
+                        updatedUser.setIdCard( cccdText.getText().toString().trim());
+                    } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getActivity(), "Error setting ID card", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
                         return;
                     }
 
-                    // User Avatar
                     Bitmap bitmap = ((BitmapDrawable) userAvatarImg.getDrawable()).getBitmap();
                     String avatarBase64 = bitmapToBase64(bitmap);
                     updatedUser.setUserAvatar(avatarBase64);
 
-
-                    // Save updated user data to Firebase
                     new UserResp().updateUser(updatedUser, new Callback<User>() {
                         @Override
                         public void onCallback(List<User> objects) {
@@ -372,11 +375,12 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
     }
 
 
+
+
     public Bitmap base64ToBitmap(String base64Str) throws IllegalArgumentException {
         byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
-
     private void loadUserAvatar() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -393,53 +397,37 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                                 userAvatarImg.setImageBitmap(avatarBitmap);
                             } catch (IllegalArgumentException e) {
                                 e.printStackTrace();
-                                // Handle the case where the Base64 string could not be decoded
                             }
                         }
-                        // Retrieve and set other user data
+
                         String name = dataSnapshot.child("name").getValue(String.class);
-
-                        String dob = "";
-                        DataSnapshot dobSnapshot = dataSnapshot.child("dob").child("time");
+                        DataSnapshot dobSnapshot = dataSnapshot.child("dob");
                         if (dobSnapshot.exists()) {
-                            long dobTimestamp = dobSnapshot.getValue(Long.class);
-                            if (dobTimestamp != 0) {
-                                com.google.firebase.Timestamp dobTs = new com.google.firebase.Timestamp(dobTimestamp, 0);
-                                dob = new SimpleDateFormat("dd/MM/yyyy").format(dobTs.toDate());
-                            }
+                            int year = dobSnapshot.child("year").getValue(Integer.class) + 1900; // Adjust year as needed
+                            int month = dobSnapshot.child("month").getValue(Integer.class); // Month is 0-based in Date
+                            int day = dobSnapshot.child("date").getValue(Integer.class);
+
+                            // Create the Date object
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(year, month, day);
+                            Date dob = calendar.getTime();
+                            String dobText1 = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dob);
+                            dobText.setText(dobText1);
+                        } else {
+                            dobText.setText("");
+                            System.out.println("DOB data is missing or malformed");
                         }
-
-
 
                         String address = dataSnapshot.child("address").getValue(String.class);
                         String phone = dataSnapshot.child("phone").getValue(String.class);
                         String gender = dataSnapshot.child("gender").getValue(String.class);
+                        String idCardNo = dataSnapshot.child("idCard").getValue(String.class);
 
-                        GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator = new GenericTypeIndicator<HashMap<String, Object>>() {};
-                        HashMap<String, Object> cccd = dataSnapshot.child("idCard").getValue(genericTypeIndicator);
-                        String idCardNo = "";
-                        if (cccd != null) {
-                            idCardNo = Objects.requireNonNull(cccd.get("id")).toString();
-                        }
-
-                        if (name != null) {
-                            editName.setText(name);
-                        }
-                        if (dob != null) {
-                            dobText.setText(dob);
-                        }
-                        if (address != null) {
-                            addressText.setText(address);
-                        }
-                        if (phone != null) {
-                            editPhone.setText(phone);
-                        }
-                        if (cccd != null) {
-                            cccdText.setText(idCardNo);
-                        }
-                        if (gender != null) {
-                            genderText.setText(gender);
-                        }
+                        if (name != null) editName.setText(name);
+                        if (address != null) addressText.setText(address);
+                        if (phone != null) editPhone.setText(phone);
+                        if (idCardNo != null) cccdText.setText(idCardNo);
+                        if (gender != null) genderText.setText(gender);
                     }
                 }
 
@@ -450,4 +438,5 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
             });
         }
     }
+
 }

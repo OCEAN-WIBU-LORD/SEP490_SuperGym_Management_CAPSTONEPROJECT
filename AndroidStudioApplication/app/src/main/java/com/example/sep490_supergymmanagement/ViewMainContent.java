@@ -275,7 +275,7 @@ public class ViewMainContent extends AppCompatActivity {
         }
     }
     public interface DoctorCheckCallback {
-        void onChecked(boolean isDoctor);
+        void onChecked(boolean isTrainer);
     }
     private void isUserATrainer(DoctorCheckCallback callback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

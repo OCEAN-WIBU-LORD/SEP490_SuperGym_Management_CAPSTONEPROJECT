@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ import com.example.sep490_supergymmanagement.fragments.Diet_Eating_Fragment;
 import com.example.sep490_supergymmanagement.fragments.Diet_Fragment2;
 import com.example.sep490_supergymmanagement.fragments.FeedbackFragment;
 import com.example.sep490_supergymmanagement.fragments.HomeFragment;
+import com.example.sep490_supergymmanagement.models.MembershipPackage;
 import com.example.sep490_supergymmanagement.models.QrCodeRequest;
 import com.example.sep490_supergymmanagement.models.QrCodeResponse;
 import com.example.sep490_supergymmanagement.models.User;
@@ -55,8 +57,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.io.ByteArrayInputStream;
@@ -98,11 +103,18 @@ public class FragmentUserProfile extends Fragment {
     private TextView tvName, tvPhone, tvDob;
     private ConstraintLayout logOutBtn;
 
+    private String dobText;
+
+
+    private Date dob;
+
     private int currentQrIndex = 0; // To keep track of which QR code is currently being shown
     private List<String> qrCodes = new ArrayList<>(); // Store QR code data
     private List<String> qrNames = new ArrayList<>(); // Store QR code membership names
     private List<String> priceSubsInfo = new ArrayList<>(); // Store QR code prices
     private String userInforTransfer;
+
+
 
 
     public FragmentUserProfile() {
@@ -155,6 +167,7 @@ public class FragmentUserProfile extends Fragment {
         dietBtn.setOnClickListener(V -> replaceFragment(new Diet_Eating_Fragment()));
 
         btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
+
 
         resetPasswordBtn.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -216,9 +229,22 @@ public class FragmentUserProfile extends Fragment {
         // Find the button and set up a click listener
         generateQrCodeBtn = view.findViewById(R.id.generateQrCodeBtn);
 
-        generateQrCodeBtn.setOnClickListener(v -> generateQrCodeDialog());
+        //generateQrCodeBtn.setOnClickListener(v -> generateQrCodeDialog());
+        generateQrCodeBtn.setOnClickListener(new View.OnClickListener()
+        {
+             public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MembershipActivity.class);
+               // Assuming ScheduleTrainerDetails is now an Activity
+                 startActivity(intent);
+             }
+        }
+);
+
+
         return view;
     }
+    // Show the loading spinner
+
     private void loadUserInfor() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -497,15 +523,24 @@ public class FragmentUserProfile extends Fragment {
                                 // Handle the case where the Base64 string could not be decoded
                             }
                         }
-                        String dob = "";
-                        DataSnapshot dobSnapshot = dataSnapshot.child("dob").child("time");
+                        // Retrieve dob components if they exist
+                        DataSnapshot dobSnapshot = dataSnapshot.child("dob");
                         if (dobSnapshot.exists()) {
-                            long dobTimestamp = dobSnapshot.getValue(Long.class);
-                            if (dobTimestamp != 0) {
-                                com.google.firebase.Timestamp dobTs = new com.google.firebase.Timestamp(dobTimestamp, 0);
-                                dob = new SimpleDateFormat("dd/MM/yyyy").format(dobTs.toDate());
-                            }
+                            int year = dobSnapshot.child("year").getValue(Integer.class) + 1900; // Adjust year as needed
+                            int month = dobSnapshot.child("month").getValue(Integer.class); // Month is 0-based in Date
+                            int day = dobSnapshot.child("date").getValue(Integer.class);
+
+                            // Create the Date object
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(year, month, day);
+                            Date dob = calendar.getTime();
+                            String dobText = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dob);
+                            tvDob.setText(dobText);
+                        } else {
+                            tvDob.setText("");
+                            System.out.println("DOB data is missing or malformed");
                         }
+
 
                         // Retrieve and set other user data
                         String name = dataSnapshot.child("name").getValue(String.class);
@@ -513,26 +548,14 @@ public class FragmentUserProfile extends Fragment {
                         userInforTransfer = userId;
                         publicName = userId;
 
-                        String address = dataSnapshot.child("address").getValue(String.class);
-                        String phone = dataSnapshot.child("phone").getValue(String.class);
-                        String gender = dataSnapshot.child("gender").getValue(String.class);
 
-                        GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator = new GenericTypeIndicator<HashMap<String, Object>>() {};
-                        HashMap<String, Object> cccd = dataSnapshot.child("idCard").getValue(genericTypeIndicator);
-                        String idCardNo = "";
-                        if (cccd != null) {
-                            idCardNo = Objects.requireNonNull(cccd.get("id")).toString();
-                        }
+                        String gender = dataSnapshot.child("gender").getValue(String.class);
 
                         if (name != null) {
                             tvName.setText(name);
                         }
                         if (gender != null) {
                             tvPhone.setText(gender);
-                        }
-
-                        if (dob != null) {
-                            tvDob.setText(dob);
                         }
                     }
                 }
@@ -546,132 +569,6 @@ public class FragmentUserProfile extends Fragment {
     }
 
 
-
-    private void generateQrCodeDialog() {
-        // Fetch the QR codes dynamically using the Retrofit API call
-        ApiService apiService = RetrofitClient.getApiService();
-
-        // Assuming you have the user UID stored
-        String uid = mAuth.getUid(); // Replace this with the actual user UID
-        QrCodeRequest request = new QrCodeRequest(uid);
-
-        // Call the API to generate QR codes
-        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
-            @Override
-            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Get the QR items from the API response
-                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
-
-                    // Check if the list is not empty
-                    if (!qrItems.isEmpty()) {
-                        // Clear any existing data
-                        qrCodes.clear();
-                        qrNames.clear();
-                        priceSubsInfo.clear();
-
-                        for (QrCodeResponse.QrItem qrItem : qrItems) {
-                            qrCodes.add(qrItem.getQrDataUrl()); // Get the QR data URL
-                            qrNames.add(qrItem.getCourseDetails().getCourseName()); // Get the course name
-                            priceSubsInfo.add(qrItem.getCourseDetails().getCoursePrice() + " VND"); // Get the course price
-                        }
-
-                        // Create the AlertDialog and set up its layout
-                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                        LayoutInflater inflater = getLayoutInflater();
-                        View dialogView = inflater.inflate(R.layout.qr_code_dialog, null);
-
-                        ImageView qrCodeImageView = dialogView.findViewById(R.id.qrCodeImageView);
-                        TextView qrCodeInfo = dialogView.findViewById(R.id.tvQrInfo);
-                        TextView priceSubs = dialogView.findViewById(R.id.priceSubs);
-                        TextView tvUserInfor = dialogView.findViewById(R.id.tvUserInfor);
-                        Button btnPrevQr = dialogView.findViewById(R.id.btnPrevQr);
-                        Button btnNextQr = dialogView.findViewById(R.id.btnNextQr);
-
-                        TextView tvUserTransferNote = dialogView.findViewById(R.id.tvUserTransferNote);
-                        tvUserTransferNote.setText(Html.fromHtml("<u>Please Transfer with your Description above for us to check and further confirmation!</u>"));
-
-                        Button btnCopyText = dialogView.findViewById(R.id.btnCopyText);
-                        btnCopyText.setOnClickListener(v -> {
-                            String textToCopy = tvUserInfor.getText().toString(); // Get the text from the TextView
-
-                            // Use ClipboardManager to copy the text
-                            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                            ClipData clip = ClipData.newPlainText("Copied Text", textToCopy);
-                            clipboard.setPrimaryClip(clip);
-
-                            // Show a Toast message to indicate the text was copied
-                            Toast.makeText(getContext(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
-                        });
-
-                        if (userInforTransfer != null) {
-                            tvUserInfor.setText(userInforTransfer);
-                        }
-
-                        // Display the first QR code and its corresponding course info
-                        currentQrIndex = 0; // Initialize the index to 0
-                        updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-
-                        // Handle the "Next" button click to go to the next QR code
-                        btnNextQr.setOnClickListener(v -> {
-                            currentQrIndex = (currentQrIndex + 1) % qrCodes.size(); // Loop to the next QR code
-                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-                        });
-
-                        // Handle the "Previous" button click to go to the previous QR code
-                        btnPrevQr.setOnClickListener(v -> {
-                            currentQrIndex = (currentQrIndex - 1 + qrCodes.size()) % qrCodes.size(); // Loop to the previous QR code
-                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-                        });
-
-                        builder.setView(dialogView)
-                                .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
-                                .create()
-                                .show();
-                    } else {
-                        // Handle the case when no QR codes are returned
-                        Toast.makeText(requireContext(), "No QR codes available", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    // Handle the case when the API call fails
-                    Toast.makeText(requireContext(), "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
-                // Handle the case when the API call fails
-                Log.e("Error", "Failed to fetch QR codes", t);
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updateQrCodeDisplay(ImageView qrCodeImageView, TextView qrCodeInfo, TextView priceSubs, int index) {
-        try {
-            // Check if the qrCodes.get(index) is a Data URI
-            if (qrCodes.get(index).startsWith("data:image/png;base64,")) {
-                String base64 = qrCodes.get(index).substring("data:image/png;base64,".length());
-                byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                qrCodeImageView.setImageBitmap(decodedByte);
-            } else {
-                // Generate the QR code using ZXing if it's not a Data URI
-                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                BitMatrix bitMatrix = new com.google.zxing.qrcode.QRCodeWriter().encode(
-                        qrCodes.get(index), BarcodeFormat.QR_CODE, 400, 400);
-                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-                qrCodeImageView.setImageBitmap(bitmap);
-            }
-
-            // Update the TextViews
-            qrCodeInfo.setText(qrNames.get(index)); // Display the membership name
-            priceSubs.setText(priceSubsInfo.get(index)); // Display the price
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Error displaying QR Code", Toast.LENGTH_SHORT).show();
-        }
-    }
 
 
 }

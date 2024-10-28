@@ -1,27 +1,27 @@
 package com.example.sep490_supergymmanagement.models;
 
-import java.sql.Timestamp;
-import java.util.Map;
+import java.util.Date;
+import java.util.Objects;
 
 public class UpdatedUser {
     private String userId;
     private String name;
     private String email;
-
     private String gender;
-    private Timestamp dob;
+    private Date dob;  // Using Date
     private String address;
     private String phone;
-    private Map<String, Object> idCard;
-    private Map<String, Object> healthCard;
+    private String idCard; // Changed to specific ID Card class
+    private HealthCard healthCard; // Changed to specific Health Card class
     private String role;
-
     private String userAvatar;
 
+    // Default constructor
     public UpdatedUser() {
     }
 
-    public UpdatedUser(String userId, String name, String email,String gender, Timestamp dob, String address, String phone, Map<String, Object> idCard, Map<String, Object> healthCard, String role, String userAvatar) {
+    // Parameterized constructor
+    public UpdatedUser(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String role, String userAvatar) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -30,11 +30,11 @@ public class UpdatedUser {
         this.address = address;
         this.phone = phone;
         this.idCard = idCard;
-        this.healthCard = healthCard;
         this.role = role;
         this.userAvatar = userAvatar;
     }
 
+    // Getters and Setters
     public String getUserId() {
         return userId;
     }
@@ -59,12 +59,17 @@ public class UpdatedUser {
         this.email = email;
     }
 
-    public Timestamp getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(Timestamp dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    // Set DOB using a timestamp
+    public void setDobTimestamp(long timestamp) {
+        this.dob = new Date(timestamp); // Convert timestamp to Date
     }
 
     public String getAddress() {
@@ -83,19 +88,19 @@ public class UpdatedUser {
         this.phone = phone;
     }
 
-    public Map<String, Object> getIdCard() {
+    public String getIdCard() {
         return idCard;
     }
 
-    public void setIdCard(Map<String, Object> idCard) {
+    public void setIdCard(String idCard) {
         this.idCard = idCard;
     }
 
-    public Map<String, Object> getHealthCard() {
+    public HealthCard getHealthCard() {
         return healthCard;
     }
 
-    public void setHealthCard(Map<String, Object> healthCard) {
+    public void setHealthCard(HealthCard healthCard) {
         this.healthCard = healthCard;
     }
 
@@ -107,8 +112,8 @@ public class UpdatedUser {
         this.role = role;
     }
 
-    public boolean isDoctor() {
-        return role.equals("doctor");
+    public boolean isTrainer() {
+        return "trainer".equals(role);
     }
 
     public String getUserAvatar() {
@@ -125,5 +130,89 @@ public class UpdatedUser {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    // Additional methods
+    @Override
+    public String toString() {
+        return "UpdatedUser{" +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", gender='" + gender + '\'' +
+                ", dob=" + dob +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", idCard=" + idCard +
+                ", healthCard=" + healthCard +
+                ", role='" + role + '\'' +
+                ", userAvatar='" + userAvatar + '\'' +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard, healthCard, role, userAvatar);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UpdatedUser)) return false;
+        UpdatedUser that = (UpdatedUser) o;
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(gender, that.gender) &&
+                Objects.equals(dob, that.dob) &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(phone, that.phone) &&
+                Objects.equals(idCard, that.idCard) &&
+                Objects.equals(healthCard, that.healthCard) &&
+                Objects.equals(role, that.role) &&
+                Objects.equals(userAvatar, that.userAvatar);
+    }
+}
+
+// Sample classes for IdCard and HealthCard
+class IdCard {
+    private String id;
+
+    public IdCard(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "IdCard{id='" + id + '\'' + '}';
+    }
+}
+
+class HealthCard {
+    private String healthId;
+
+    public HealthCard(String healthId) {
+        this.healthId = healthId;
+    }
+
+    public String getHealthId() {
+        return healthId;
+    }
+
+    public void setHealthId(String healthId) {
+        this.healthId = healthId;
+    }
+
+    @Override
+    public String toString() {
+        return "HealthCard{healthId='" + healthId + '\'' + '}';
     }
 }

@@ -1,30 +1,27 @@
 package com.example.sep490_supergymmanagement.models;
 
 import org.json.JSONObject;
-
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Objects;
 
 public class User {
     private String userId;
     private String name;
     private String email;
-
     private String gender;
-    private Timestamp dob;
+    private Date dob; // Using Date
     private String address;
     private String phone;
-    private JSONObject idCard;
-    private JSONObject healthCard;
+    private String idCard;
     private String role;
-
     private String userAvatar;
 
-
-
+    // Default constructor
     public User() {
     }
 
-    public User(String userId, String name, String email, String gender, Timestamp dob, String address, String phone, JSONObject idCard, JSONObject healthCard, String role, String userAvatar) {
+    // Parameterized constructor
+    public User(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String role, String userAvatar) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -33,11 +30,11 @@ public class User {
         this.address = address;
         this.phone = phone;
         this.idCard = idCard;
-        this.healthCard = healthCard;
         this.role = role;
         this.userAvatar = userAvatar;
     }
 
+    // Getters and Setters
     public String getUserId() {
         return userId;
     }
@@ -62,12 +59,17 @@ public class User {
         this.email = email;
     }
 
-    public Timestamp getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(Timestamp dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    // Set DOB using a timestamp
+    public void setDobTimestamp(long timestamp) {
+        this.dob = new Date(timestamp); // Convert timestamp to Date
     }
 
     public String getAddress() {
@@ -86,21 +88,15 @@ public class User {
         this.phone = phone;
     }
 
-    public JSONObject getIdCard() {
+    public String getIdCard() {
         return idCard;
     }
 
-    public void setIdCard(JSONObject idCard) {
+    public void setIdCard(String idCard) {
         this.idCard = idCard;
     }
 
-    public JSONObject getHealthCard() {
-        return healthCard;
-    }
 
-    public void setHealthCard(JSONObject healthCard) {
-        this.healthCard = healthCard;
-    }
 
     public String getRole() {
         return role;
@@ -110,11 +106,6 @@ public class User {
         this.role = role;
     }
 
-    public boolean isDoctor() {
-        return role.equals("doctor");
-    }
-
-
     public String getUserAvatar() {
         return userAvatar;
     }
@@ -123,12 +114,50 @@ public class User {
         this.userAvatar = userAvatar;
     }
 
-
     public String getGender() {
         return gender;
     }
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    // Additional methods
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", gender='" + gender + '\'' +
+                ", dob=" + dob +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", idCard=" + idCard +
+                ", role='" + role + '\'' +
+                ", userAvatar='" + userAvatar + '\'' +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard, role, userAvatar);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User that = (User) o;
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(gender, that.gender) &&
+                Objects.equals(dob, that.dob) &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(phone, that.phone) &&
+                Objects.equals(idCard, that.idCard) &&
+                Objects.equals(role, that.role) &&
+                Objects.equals(userAvatar, that.userAvatar);
     }
 }
