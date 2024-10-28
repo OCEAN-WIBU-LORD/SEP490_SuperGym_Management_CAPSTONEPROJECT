@@ -25,7 +25,10 @@
         android:name=".GeminiFragment"
         android:exported="false"
         android:theme="@style/Theme.SEP490SuperGymManagement" />
-
+        <activity
+            android:name=".MembershipActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
             android:name=".HomeActivity"
             android:exported="false"

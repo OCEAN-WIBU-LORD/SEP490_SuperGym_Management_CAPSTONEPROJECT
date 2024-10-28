@@ -160,8 +160,19 @@ public class BMI_Statistic_Fragment extends Fragment {
         clearButton = view.findViewById(R.id.clearButton);
         functionAllButton();
         displayWaterLevel();
+        displayTodayData(currentDate);
         return view;
     }
+
+    private void displayTodayData(String currentDate){
+        String selectedDate = currentDate;
+        // Now fetch the statistics for the selected date
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && selectedDate != null) {
+            getUserStatisticsFromFirebase(userId, selectedDate);
+        }
+    }
+
 
     private void displayWaterLevel(){
         // Assuming txtWaterTextView contains the water in liters (for example "1")
@@ -420,12 +431,14 @@ public class BMI_Statistic_Fragment extends Fragment {
     }
 
     // Method to save BMI and statistics to Firebase
+    // Method to save BMI and statistics to Firebase
     private void saveStatisticsToFirebase(String userId, String date, double bmi, String bmiStatus, int calories, int steps, double waterIntake) {
         // Create an object of UserStatistics
         UserStatistics userStatistics = new UserStatistics(date, bmi, bmiStatus, calories, steps, waterIntake);
 
-        // Save the data under the user's node in Firebase
-        databaseReference.child(userId).child("statistics").child(date).setValue(userStatistics)
+        // Save the data under the "Statistics" node in Firebase
+        DatabaseReference statisticsRef = FirebaseDatabase.getInstance().getReference("Statistics");
+        statisticsRef.child(userId).child(date).setValue(userStatistics)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Data saved successfully
@@ -438,10 +451,12 @@ public class BMI_Statistic_Fragment extends Fragment {
                 });
     }
 
+
+    // Method to retrieve and display user statistics from Firebase based on the selected date
     // Method to retrieve and display user statistics from Firebase based on the selected date
     private void getUserStatisticsFromFirebase(String userId, String selectedDate) {
-        // Create a reference to the user's statistics for the selected date in the database
-        DatabaseReference statisticsRef = databaseReference.child(userId).child("statistics").child(selectedDate);
+        // Create a reference to the "Statistics" node for the selected date
+        DatabaseReference statisticsRef = FirebaseDatabase.getInstance().getReference("Statistics").child(userId).child(selectedDate);
 
         // Add a listener to retrieve data once for the specific date
         statisticsRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -466,6 +481,7 @@ public class BMI_Statistic_Fragment extends Fragment {
                     }
                 } else {
                     // Handle case where no data exists for the selected date
+                    clearAllFields();
                     displayNoData();
                 }
             }
@@ -478,6 +494,7 @@ public class BMI_Statistic_Fragment extends Fragment {
         });
         displayWaterLevel();
     }
+
 
     private void displayNoData() {
         // Display "None" in all TextViews when no data is found for the selected date

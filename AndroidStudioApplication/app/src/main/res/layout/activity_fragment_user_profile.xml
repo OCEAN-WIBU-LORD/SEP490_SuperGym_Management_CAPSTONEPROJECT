@@ -425,6 +425,8 @@
                         app:layout_constraintStart_toEndOf="@+id/cardView10"
                         app:layout_constraintTop_toTopOf="parent" />
 
+
+
                     <Button
                         android:id="@+id/btnFeedBack"
                         android:layout_width="35dp"
@@ -483,7 +485,7 @@
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_margin="4dp"
-                            android:background="@drawable/baseline_qr_code_2_24"
+                            android:background="@drawable/subscripiton_icon"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.cardview.widget.CardView>
@@ -495,7 +497,7 @@
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
                         android:fontFamily="@font/calibri"
-                        android:text="Payment QR code"
+                        android:text="My Gym Packages"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline66"

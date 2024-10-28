@@ -410,14 +410,13 @@ public class Diet_Eating_Fragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
 
-        // Create a reference to the user's meals in Firebase
+        // Create a reference to the "meals" table in Firebase, without nesting it under the "users" node
         DatabaseReference mealsRef = FirebaseDatabase.getInstance()
-                .getReference("users")
-                .child(userId)
-                .child("meals")
+                .getReference("meals")
+                .child(userId)  // You can still store meals by user ID if needed
                 .child(meal.getDate());
 
-        // Push a new meal under the date
+        // Push a new meal under the selected date
         mealsRef.push().setValue(meal)
                 .addOnSuccessListener(aVoid -> {
                     // Meal added successfully
@@ -429,15 +428,15 @@ public class Diet_Eating_Fragment extends Fragment {
                 });
     }
 
+
     private void loadMealsForDate(String selectedDate) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
 
-        // Reference to the user's meals for the selected date
+        // Reference to the "meals" table for the selected date
         DatabaseReference mealsRef = FirebaseDatabase.getInstance()
-                .getReference("users")
+                .getReference("meals")
                 .child(userId)
-                .child("meals")
                 .child(selectedDate);
 
         mealsRef.addValueEventListener(new ValueEventListener() {
@@ -445,23 +444,22 @@ public class Diet_Eating_Fragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Meal> mealList = new ArrayList<>();
                 int totalCalories = 0; // Initialize total calories counter
-                int totalMealCount= 0;
+                int totalMealCount = 0;
                 for (DataSnapshot mealSnapshot : dataSnapshot.getChildren()) {
                     Meal meal = mealSnapshot.getValue(Meal.class);
                     mealList.add(meal);
                     totalCalories += meal.getCalories(); // Sum up the calories
-                    totalMealCount ++;
+                    totalMealCount++;
                 }
 
                 // Update the meals in the adapter
                 mealAdapter.updateMeals(mealList);
 
-                // Display the total calories in a TextView (replace txtcaloriesTextView with your TextView ID)
-                txtTotalMeals.setText("Total \n" + String.valueOf(totalMealCount)+"\n Meals");
-                txtBurnedCalories.setText("Total \n" + String.valueOf(totalMealCount)+" Kcal"+"\n Burned");
+                // Update UI elements with meal data
+                txtTotalMeals.setText("Total \n" + String.valueOf(totalMealCount) + "\n Meals");
+                txtBurnedCalories.setText("Total \n" + String.valueOf(totalMealCount) + " Kcal" + "\n Burned");
 
                 drawProgressBar(totalCalories);
-
                 changeColorProgress(totalCalories);
 
                 // If no meals exist, the adapter will show "No Meal Available"
@@ -476,6 +474,7 @@ public class Diet_Eating_Fragment extends Fragment {
             }
         });
     }
+
 
 
     // Method to get total calories for the day (replace this with actual calculation)

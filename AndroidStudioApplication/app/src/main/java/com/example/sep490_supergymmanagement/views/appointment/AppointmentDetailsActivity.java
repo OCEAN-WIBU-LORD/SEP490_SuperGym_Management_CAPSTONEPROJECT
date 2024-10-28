@@ -86,12 +86,12 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_appointment_details);
                 findViews();
 
-                User user = userList.get(0);
-                if (!user.isDoctor()) {
+                /*User user = userList.get(0);
+                if (!user.isTrainer()) {
                     initViewsUser();
                 } else {
                     initViewsDoctor();
-                }
+                }*/
 
                 ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
                     Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

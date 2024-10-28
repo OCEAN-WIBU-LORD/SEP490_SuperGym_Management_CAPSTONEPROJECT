@@ -1,7 +1,6 @@
 package com.example.sep490_supergymmanagement.repositories;
 
 import androidx.annotation.NonNull;
-
 import com.example.sep490_supergymmanagement.models.UpdatedUser;
 import com.example.sep490_supergymmanagement.models.User;
 import com.example.sep490_supergymmanagement.repositories.callbacks.Callback;
@@ -13,15 +12,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class UserResp {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -37,56 +34,22 @@ public class UserResp {
                 user.setName(snapshot.hasChild("name") ? snapshot.child("name").getValue().toString() : "");
                 user.setEmail(snapshot.hasChild("email") ? snapshot.child("email").getValue().toString() : "");
                 user.setPhone(snapshot.hasChild("phone") ? snapshot.child("phone").getValue().toString() : "");
-                user.setPhone(snapshot.hasChild("gender") ? snapshot.child("gender").getValue().toString() : "");
+                user.setGender(snapshot.hasChild("gender") ? snapshot.child("gender").getValue().toString() : "");
                 user.setAddress(snapshot.hasChild("address") ? snapshot.child("address").getValue().toString() : "");
                 user.setRole(snapshot.hasChild("role") ? snapshot.child("role").getValue().toString() : "");
                 user.setUserAvatar(snapshot.hasChild("userAvatar") ? snapshot.child("userAvatar").getValue().toString() : "");
-                String healthCard = snapshot.hasChild("healthCard") && snapshot.child("healthCard").getValue() != null ? snapshot.child("healthCard").getValue().toString() : "null";
-                if (!"null".equals(healthCard)) {
-                    try {
-                        user.setHealthCard(new JSONObject(healthCard));
-                    } catch (JSONException e) {
-                        user.setHealthCard(new JSONObject()); // Set to empty JSON object if parsing fails
+
+                user.setAddress(snapshot.hasChild("idCard") ? snapshot.child("idCard").getValue().toString() : "");
+
+
+                // Convert dob from timestamp to Date
+                if (snapshot.hasChild("dob") && snapshot.child("dob").child("time").exists()) {
+                    Long timestamp = snapshot.child("dob").child("time").getValue(Long.class);
+                    if (timestamp != null) {
+                        user.setDob(new Date(timestamp));
                     }
-                } else {
-                    user.setHealthCard(new JSONObject());
                 }
 
-                String idCard = snapshot.hasChild("idCard") && snapshot.child("idCard").getValue() != null ? snapshot.child("idCard").getValue().toString() : "null";
-                if (!"null".equals(idCard)) {
-                    try {
-                        user.setIdCard(new JSONObject(idCard));
-                    } catch (JSONException e) {
-                        user.setIdCard(new JSONObject()); // Set to empty JSON object if parsing fails
-                    }
-                } else {
-                    user.setIdCard(new JSONObject());
-                }
-
-                // set dob as timestamp from snapshot.child("dob").child("time")
-                if (snapshot.hasChild("dob")) {
-                    Long timestamp = Objects.requireNonNull(snapshot.child("dob").child("time").getValue(Long.class));
-                    // convert to timestamp
-                    user.setDob(new java.sql.Timestamp(timestamp));
-                }
-
-//                String healthCard = Objects.requireNonNull(snapshot.child("healthCard").getValue()).toString();
-//                if (!healthCard.equals("null")) {
-//                    try {
-//                        user.setHealthCard(new JSONObject(healthCard));
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                String idCard = Objects.requireNonNull(snapshot.child("idCard").getValue()).toString();
-//                if (!idCard.equals("null")) {
-//                    try {
-//                        user.setIdCard(new JSONObject(idCard));
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
                 List<User> users = new ArrayList<>();
                 users.add(user);
                 callback.onCallback(users);
@@ -114,26 +77,14 @@ public class UserResp {
                     user.setAddress(childSnapshot.hasChild("address") && childSnapshot.child("address").getValue() != null ? childSnapshot.child("address").getValue().toString() : "");
                     user.setRole(childSnapshot.hasChild("role") && childSnapshot.child("role").getValue() != null ? childSnapshot.child("role").getValue().toString() : "");
 
-                    String healthCard = childSnapshot.hasChild("healthCard") && childSnapshot.child("healthCard").getValue() != null ? childSnapshot.child("healthCard").getValue().toString() : "null";
-                    if (!healthCard.equals("null")) {
-                        try {
-                            user.setHealthCard(new JSONObject(healthCard));
-                        } catch (JSONException e) {
-                            user.setHealthCard(new JSONObject()); // Set to empty JSON object if parsing fails or "null"
-                        }
-                    } else {
-                        user.setHealthCard(new JSONObject());
-                    }
+                    user.setEmail(childSnapshot.hasChild("idCard") && childSnapshot.child("idCard").getValue() != null ? childSnapshot.child("email").getValue().toString() : "");
 
-                    String idCard = childSnapshot.hasChild("idCard") && childSnapshot.child("idCard").getValue() != null ? childSnapshot.child("idCard").getValue().toString() : "null";
-                    if (!idCard.equals("null")) {
-                        try {
-                            user.setIdCard(new JSONObject(idCard));
-                        } catch (JSONException e) {
-                            user.setIdCard(new JSONObject()); // Set to empty JSON object if parsing fails or "null"
+                    // Convert dob from timestamp to Date
+                    if (childSnapshot.hasChild("dob") && childSnapshot.child("dob").child("time").exists()) {
+                        Long timestamp = childSnapshot.child("dob").child("time").getValue(Long.class);
+                        if (timestamp != null) {
+                            user.setDob(new Date(timestamp));
                         }
-                    } else {
-                        user.setIdCard(new JSONObject());
                     }
 
                     users.add(user);
@@ -164,11 +115,9 @@ public class UserResp {
     }
 
     public void updateUser(User user, Callback<User> callback) {
-        // convert user to the same user with no JSONObjects
-        Map<String, Object> map = new HashMap<>(); // empty map
-        Map<String, Object> idCard = new HashMap<>();
-        // store user.getIdCard().optString("id") in idCard with key id
-        idCard.put("id", user.getIdCard().optString("id"));
+        // Create IdCard and HealthCard instances
+
+        // Create UpdatedUser object
         UpdatedUser updatedUser = new UpdatedUser(
                 user.getUserId(),
                 user.getName(),
@@ -177,10 +126,11 @@ public class UserResp {
                 user.getDob(),
                 user.getAddress(),
                 user.getPhone(),
-                idCard,
-                map,
+                user.getIdCard(),
                 user.getRole(),
-                user.getUserAvatar());
+                user.getUserAvatar()
+        );
+
         databaseReference.child("users").child(user.getUserId()).setValue(updatedUser).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -194,5 +144,4 @@ public class UserResp {
             }
         });
     }
-
 }
