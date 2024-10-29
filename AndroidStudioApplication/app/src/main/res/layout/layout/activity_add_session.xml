@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddSessionActivity">
+    <!-- Tên buổi tập -->
+    <EditText
+        android:id="@+id/session_name_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Session Name"
+        android:textSize="16sp"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Nhóm cơ (Sử dụng Button để chọn nhóm cơ) -->
+    <Button
+        android:id="@+id/select_muscle_groups_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Select Muscle Groups"
+        app:layout_constraintTop_toBottomOf="@id/session_name_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Nút thêm bài tập -->
+    <Button
+        android:id="@+id/add_exercise_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Exercise"
+        app:layout_constraintTop_toBottomOf="@id/select_muscle_groups_button"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- RecyclerView để hiển thị các bài tập đã chọn -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exercise_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/add_exercise_button"
+        app:layout_constraintBottom_toTopOf="@+id/timer_section"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Bộ đếm thời gian -->
+    <LinearLayout
+        android:id="@+id/timer_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/start_timer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/timer_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="24sp"
+            android:layout_marginEnd="16dp" />
+
+        <Button
+            android:id="@+id/stop_timer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop" />
+
+        <Button
+            android:id="@+id/save_session_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save "
+            android:layout_margin="16dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

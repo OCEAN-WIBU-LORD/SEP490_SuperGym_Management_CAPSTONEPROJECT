@@ -211,7 +211,7 @@ public class AddSessionActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Failed to get user ID. Please log in.", Toast.LENGTH_SHORT).show();
         }
-}
+    }
 
     // Show muscle group selection dialog
     private void showMuscleGroupDialog() {

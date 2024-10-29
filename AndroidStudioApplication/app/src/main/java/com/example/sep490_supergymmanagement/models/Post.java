@@ -4,51 +4,33 @@ import java.util.Date;
 
 public class Post {
 
-    private String post_id;
-    private String author;
-    private String category;
-    private String content;
-    private Date date;
+    private String postId;
     private String title;
+    private String thumbnailUrl;
+    private Date date;
+    private String userId;
+    private String content;
+    private String categoryId;
 
-    public String getPost_id() {
-        return post_id;
+    public Post() {
     }
 
-    public void setPost_id(String post_id) {
-        this.post_id = post_id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
+    public Post(String postId, String title, String thumbnailUrl, Date date, String userId, String content, String categoryId) {
+        this.postId = postId;
+        this.title = title;
+        this.thumbnailUrl = thumbnailUrl;
         this.date = date;
+        this.userId = userId;
+        this.content = content;
+        this.categoryId = categoryId;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getTitle() {
@@ -59,15 +41,43 @@ public class Post {
         this.title = title;
     }
 
-    public Post(String post_id, String author, String category, String content, Date date, String title) {
-        this.post_id = post_id;
-        this.author = author;
-        this.category = category;
-        this.content = content;
-        this.date = date;
-        this.title = title;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
-    public Post(){
 
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 }

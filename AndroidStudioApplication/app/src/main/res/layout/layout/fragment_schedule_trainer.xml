@@ -1,0 +1,189 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:layout_marginBottom="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ScheduleTrainer">
+
+    <!-- Back Button Icon -->
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/back_icon"
+        android:contentDescription="Back"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Schedule Title -->
+    <TextView
+        android:id="@+id/scheduleTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Schedule"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"/>
+
+    <!-- Calendar Month -->
+
+    <!-- Grid for Calendar Days -->
+
+
+    <!-- Outfits and Advice Buttons -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gridViewCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="476dp"
+        android:layout_marginTop="30dp"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/newEventButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.074">
+
+        <!-- Back Button and Schedule Title -->
+
+        <!-- Calendar Month TextView -->
+        <TextView
+            android:id="@+id/calendarMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:drawableEnd="@drawable/ic_calender"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="October 2024"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <!-- GridLayout for Calendar -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="386dp"
+            android:layout_marginTop="10dp"
+            android:fillViewport="true"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/calendarMonth">
+
+            <GridLayout
+                android:id="@+id/calendarGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:columnCount="7"
+                android:padding="8dp"
+                android:rowCount="6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/calendarMonth" />
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+   <!-- <LinearLayout
+        android:id="@+id/actionButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/newEventButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/outfitsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_home"
+            android:padding="12dp"
+            android:text="Outfits"
+            android:background="@color/colorBlue" />
+
+
+        <Button
+            android:id="@+id/adviceButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorBlue"
+            android:drawableStart="@drawable/ic_add_meal"
+            android:padding="12dp"
+            android:text="Advice" />
+    </LinearLayout>-->
+
+    <!-- New Event Button -->
+    <Button
+        android:id="@+id/newEventButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="New event"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/light_red"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"/>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Refresh Button -->
+        <ImageButton
+            android:id="@+id/refreshButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_refresh"
+            android:contentDescription="Refresh"/>
+
+        <!-- Add Event Button -->
+        <ImageButton
+            android:id="@+id/addButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_add_new"
+            android:contentDescription="Add"/>
+
+        <!-- Outfits Button -->
+        <ImageButton
+            android:id="@+id/outfitsNavButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_outfit"
+            android:contentDescription="Outfits"/>
+
+        <!-- Schedule Button -->
+        <ImageButton
+            android:id="@+id/scheduleNavButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/schedule_icon"
+            android:contentDescription="Schedule"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

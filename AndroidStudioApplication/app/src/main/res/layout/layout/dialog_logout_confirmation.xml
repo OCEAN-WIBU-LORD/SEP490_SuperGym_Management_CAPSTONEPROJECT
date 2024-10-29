@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@color/light_red"
+    android:gravity="center">
+
+<TextView
+android:id="@+id/dialog_title"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Log Out"
+android:textSize="20sp"
+android:textStyle="bold"
+android:textColor="@color/colorPrimary" /> <!-- Use your color -->
+
+<TextView
+android:id="@+id/dialog_message"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Are you sure you want to log out?"
+android:textSize="16sp"
+android:textColor="@android:color/black"
+android:layout_marginTop="10dp" />
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:gravity="end"
+android:layout_marginTop="20dp">
+
+<Button
+    android:id="@+id/btn_no"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="No"
+    android:textColor="@android:color/holo_blue_dark"
+    android:background="@android:color/transparent"
+    android:padding="10dp"/>
+
+<Button
+    android:id="@+id/btn_yes"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Yes"
+    android:textColor="@android:color/holo_red_dark"
+    android:background="@android:color/transparent"
+    android:layout_marginStart="20dp"
+    android:padding="10dp"/>
+</LinearLayout>
+
+    </LinearLayout>

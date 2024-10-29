@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/popup_background"
+        >
+
+    <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:textSize="22sp"
+            android:text="@string/publish_results"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:textStyle="bold" />
+
+    <EditText
+            android:id="@+id/etDiagnosis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTitle"
+            android:hint="@string/diagnosis"
+            android:layout_marginHorizontal="16dp" />
+
+    <EditText
+            android:id="@+id/etTreatment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etDiagnosis"
+            android:hint="@string/treatment"
+            android:layout_marginHorizontal="16dp" />
+
+    <EditText
+            android:id="@+id/etDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etTreatment"
+            android:hint="Date (MM/dd/yyyy)"
+            android:layout_marginTop="1dp"
+            android:layout_marginHorizontal="16dp" />
+
+    <Button
+            android:id="@+id/btnPublishRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="16dp"
+            android:text="@string/publish" />
+
+</RelativeLayout>
