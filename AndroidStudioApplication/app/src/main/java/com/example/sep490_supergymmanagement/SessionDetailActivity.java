@@ -23,7 +23,7 @@ import java.util.List;
 
 public class SessionDetailActivity extends AppCompatActivity {
 
-    private TextView sessionDate, sessionTime, sessionMuscleGroups;
+    private TextView sessionName, sessionDate, sessionTime, sessionMuscleGroups;
     private RecyclerView exerciseRecyclerView;
     private ExerciseAdapter exerciseAdapter;
     private List<Exercise> exerciseList;
@@ -45,6 +45,7 @@ public class SessionDetailActivity extends AppCompatActivity {
         }
 
         // Khởi tạo các thành phần giao diện
+        sessionName = findViewById(R.id.session_name);
         sessionDate = findViewById(R.id.session_date);
         sessionTime = findViewById(R.id.session_time);
         sessionMuscleGroups = findViewById(R.id.session_muscle_groups);
@@ -62,28 +63,31 @@ public class SessionDetailActivity extends AppCompatActivity {
 
     private void loadSessionDetails() {
         if (userId != null && sessionId != null) {
-            // Truy vấn session từ node "users/{userId}/sessions/{sessionId}"
+            // Truy vấn session từ node "Session" và lọc theo sessionId và userId
             DatabaseReference sessionsRef = FirebaseDatabase.getInstance()
-                    .getReference("users")
-                    .child(userId)
-                    .child("sessions")
-                    .child(sessionId);
+                    .getReference("Session");
 
             sessionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Session session = dataSnapshot.getValue(Session.class);
-                    if (session != null) {
-                        // Hiển thị ngày tháng và thời gian
-                        sessionDate.setText(session.getDay() + " " + session.getMonth() + " " + "2023"); // Thay "2023" bằng năm thực tế nếu cần
-                        sessionTime.setText(session.getStartTime() + " - " + session.getEndTime()); // Hiển thị thời gian bắt đầu và kết thúc
-                        sessionMuscleGroups.setText(session.getMuscleGroups());
+                    for (DataSnapshot sessionSnapshot : dataSnapshot.getChildren()) {
+                        Session session = sessionSnapshot.getValue(Session.class);
 
-                        // Lấy danh sách bài tập và cập nhật vào RecyclerView
-                        if (session.getExercises() != null) {
-                            exerciseList.clear();
-                            exerciseList.addAll(session.getExercises());
-                            exerciseAdapter.notifyDataSetChanged(); // Cập nhật adapter với danh sách bài tập
+                        // Kiểm tra nếu session tồn tại và có userId cùng sessionId khớp
+                        if (session != null && userId.equals(session.getUserId()) && sessionId.equals(sessionSnapshot.getKey())) {
+                            sessionName.setText(session.getName());
+                            // Hiển thị ngày tháng và thời gian
+                            sessionDate.setText(session.getDay() + " " + session.getMonth() + " " + "2023"); // Thay "2023" bằng năm thực tế nếu cần
+                            sessionTime.setText(session.getStartTime() + " - " + session.getEndTime());
+                            sessionMuscleGroups.setText(session.getMuscleGroups());
+
+                            // Lấy danh sách bài tập và cập nhật vào RecyclerView
+                            if (session.getExercises() != null) {
+                                exerciseList.clear();
+                                exerciseList.addAll(session.getExercises());
+                                exerciseAdapter.notifyDataSetChanged();
+                            }
+                            break;  // Thoát vòng lặp sau khi tìm thấy session phù hợp
                         }
                     }
                 }
@@ -98,4 +102,5 @@ public class SessionDetailActivity extends AppCompatActivity {
             // Ví dụ: thông báo lỗi hoặc quay về màn hình trước
         }
     }
+
 }
