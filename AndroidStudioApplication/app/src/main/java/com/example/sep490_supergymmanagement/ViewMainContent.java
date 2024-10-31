@@ -214,14 +214,22 @@ public class ViewMainContent extends AppCompatActivity {
         LinearLayout videoLayout = dialog.findViewById(R.id.layoutVideo);
         LinearLayout shortsLayout = dialog.findViewById(R.id.layoutShorts);
         LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
+        LinearLayout layoutFaceID = dialog.findViewById(R.id.layoutFaceID);
         ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
-
+        layoutFaceID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewMainContent.this, RegisterFaceActivity.class);
+                startActivity(intent);
+                dialog.dismiss();
+            }
+        });
         videoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 replaceFragment(new GeminiFragment());
                 dialog.dismiss();
-                Toast.makeText(ViewMainContent.this,"Upload a Video is clicked",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewMainContent.this,"Gemini AI Opened",Toast.LENGTH_SHORT).show();
 
             }
         });

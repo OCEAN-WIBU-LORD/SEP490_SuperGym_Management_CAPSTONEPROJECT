@@ -6,6 +6,12 @@
     <string name="image_view_description">Image Choosed</string>
     <string name="open_nav">Open Navigation Drawer</string>
     <string name="close_nav">Close Navigation Drawer</string>
+
+    <string name="preview_photo">Preview Photo</string>
+    <string name="register_face">register face</string>
+    <string name="switch_camera">switch camera</string>
+    <string name="face_detected">Face Detected</string>
+    <string name="no_face_detected">No Face Detected!</string>
     <string name="large_text">
 
         "Material is the metaphor.\n\n"
