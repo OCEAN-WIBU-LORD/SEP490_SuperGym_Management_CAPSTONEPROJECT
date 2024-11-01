@@ -1,30 +1,23 @@
 package com.example.sep490_supergymmanagement.models;
 
 public class PostCategory {
-    private int categoryId;
-    private String categoryName;
+    private String categoryId;
+    private String name; // Make sure this matches the JSON response
 
-    public PostCategory() {
-    }
-
-    public PostCategory(int categoryId, String categoryName) {
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-    }
-
-    public int getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getName() {
+        return name;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setName(String name) {
+        this.name = name;
     }
 }
+

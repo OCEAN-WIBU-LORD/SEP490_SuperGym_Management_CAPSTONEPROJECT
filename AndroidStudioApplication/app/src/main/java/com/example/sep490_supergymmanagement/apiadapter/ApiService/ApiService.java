@@ -43,7 +43,7 @@ public interface ApiService {
     Call<List<Post>> getLatestPosts();
 
     // 4. Lấy chi tiết một bài viết
-    @GET("api/posts/{postId}")
+    @GET("api/posts/posts/{postId}")
     Call<Post> getPostById(@Path("postId") String postId);
 
     // 5. Đăng bài viết mới với ảnh
@@ -63,4 +63,9 @@ public interface ApiService {
     // 7. Cập nhật bài viết
     @PUT("api/posts/{postId}")
     Call<Void> updatePost(@Path("postId") String postId, @Body Post updatedPost);
+
+    // 8. Search posts by category
+    @GET("api/posts/posts/category/{categoryId}")
+    Call<List<Post>> getPostsByCategory(@Path("categoryId") String categoryId);
+
 }

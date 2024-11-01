@@ -71,8 +71,15 @@ public class HomeFragment extends Fragment {
         // Initialize the seeMore TextView and set click listener
         seeMore = rootView.findViewById(R.id.see_more);
         seeMore.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), PostListActivity.class);
-            startActivity(intent);
+            userDetails = mAuth.getCurrentUser();
+            if (userDetails != null) {
+                Intent intent = new Intent(getActivity(), PostListActivity.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
         });
 
         // Fetch the latest posts and update the RecyclerView

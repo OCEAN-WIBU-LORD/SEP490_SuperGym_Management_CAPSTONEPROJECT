@@ -1,6 +1,7 @@
 package com.example.sep490_supergymmanagement.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sep490_supergymmanagement.PostDetailActivity; // Import the new activity
 import com.example.sep490_supergymmanagement.R;
 import com.example.sep490_supergymmanagement.models.Post;
 import com.squareup.picasso.Picasso;
@@ -38,6 +40,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     public void onBindViewHolder(@NonNull VH holder, int position) {
         Post p = data.get(position);
         holder.setData(p);
+
+        // Set onClickListener to open PostDetailActivity with post data
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, PostDetailActivity.class);
+            intent.putExtra("title", p.getTitle());
+            intent.putExtra("date", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(p.getDate()));
+            intent.putExtra("content", p.getContent());
+            intent.putExtra("thumbnailUrl", p.getThumbnailUrl());
+            intent.putExtra("author", p.getUserId()); // Assuming author is userId
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -64,16 +77,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         public void setData(Post p) {
             tvTitle.setText(p.getTitle());
 
-            // Định dạng ngày đăng
+            // Format post date
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String dateString = dateFormat.format(p.getDate());
             tvDate.setText("Ngày đăng: " + dateString);
 
-            // Sử dụng Picasso để tải ảnh từ URL
+            // Load image with Picasso
             Picasso.get()
                     .load(p.getThumbnailUrl())
-                    //.placeholder(R.drawable.avatar) // Ảnh mặc định khi tải
-                    .error(R.drawable.avatar)       // Ảnh hiển thị khi lỗi
+                    //.placeholder(R.drawable.avatar) // Default image while loading
+                    .error(R.drawable.avatar)       // Error image
                     .into(ivAvatar);
         }
     }
