@@ -166,37 +166,69 @@ public class HomeFragment extends Fragment {
         database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                data.clear(); // Clear existing data to avoid duplicates
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = new Post();
-                    //String i =Objects.requireNonNull(dataSnapshot.getKey().toString());
-                    post.setPost_id(Objects.requireNonNull(dataSnapshot.getKey()));
-                    post.setTitle(Objects.requireNonNull(dataSnapshot.child("title").getValue().toString()));
-                    post.setContent(Objects.requireNonNull(dataSnapshot.child("content").getValue().toString()));
-                    post.setAuthor(Objects.requireNonNull(dataSnapshot.child("author").getValue().toString()));
-                    //   post.setCategory(Objects.requireNonNull(dataSnapshot.child("category").getValue().toString()));
-                    post.setCategory("abc");
-                    String date = Objects.requireNonNull(dataSnapshot.child("date").getValue().toString());
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dateformat = null;
-                    try {
-                        dateformat = dateFormat.parse(date);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
+                    String postId = dataSnapshot.getKey();
+                    if (postId != null) {
+                        post.setPost_id(postId);
+                    } else {
+                        continue; // Skip if post ID is null
                     }
 
-                    post.setDate(dateformat);
-                    data.add(post);
+                    String title = dataSnapshot.child("title").getValue(String.class);
+                    if (title != null) {
+                        post.setTitle(title);
+                    } else {
+                        post.setTitle("Untitled"); // Set a default title or handle accordingly
+                    }
+
+                    String content = dataSnapshot.child("content").getValue(String.class);
+                    if (content != null) {
+                        post.setContent(content);
+                    } else {
+                        post.setContent("No content available."); // Handle null content
+                    }
+
+                    String author = dataSnapshot.child("author").getValue(String.class);
+                    if (author != null) {
+                        post.setAuthor(author);
+                    } else {
+                        post.setAuthor("Unknown Author"); // Handle null author
+                    }
+
+                    String category = dataSnapshot.child("category").getValue(String.class);
+                    post.setCategory(category != null ? category : "abc"); // Default category if null
+
+                    String date = dataSnapshot.child("date").getValue(String.class);
+                    if (date != null) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date dateformat = dateFormat.parse(date);
+                            post.setDate(dateformat);
+                        } catch (ParseException e) {
+                            e.printStackTrace(); // Handle parsing error
+                            post.setDate(new Date()); // Set to current date as fallback
+                        }
+                    } else {
+                        post.setDate(new Date()); // Set to current date if null
+                    }
+
+                    data.add(post); // Add post to the list
                 }
-                postAdapter.notifyDataSetChanged();
-               // progressBar.setVisibility(View.GONE);
+
+                postAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                // progressBar.setVisibility(View.GONE); // Un-comment if you are using a progress bar
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Failed to read data from Firebase.", Toast.LENGTH_SHORT).show();
-               // progressBar.setVisibility(View.GONE);
+                // progressBar.setVisibility(View.GONE); // Un-comment if you are using a progress bar
             }
         });
+
         return rootView;
     }
 }

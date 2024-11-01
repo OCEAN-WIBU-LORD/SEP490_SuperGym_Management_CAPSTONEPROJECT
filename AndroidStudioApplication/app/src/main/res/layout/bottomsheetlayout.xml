@@ -88,6 +88,29 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layoutFaceID"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/faceid_icon"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FaceID Scanner"
+            android:textColor="@color/lavender"
+            android:layout_marginLeft="30dp"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layoutLive"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -112,5 +135,7 @@
             android:textSize="16sp"/>
 
     </LinearLayout>
+
+
 
 </LinearLayout>
