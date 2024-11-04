@@ -165,7 +165,14 @@ public class FragmentUserProfile extends Fragment {
         returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
         btn_bmi_Statistic.setOnClickListener(V -> replaceFragment(new BMI_Statistic_Fragment()));
         dietBtn.setOnClickListener(V -> replaceFragment(new Diet_Eating_Fragment()));
-
+        Button transactionHistoryBtn = view.findViewById(R.id.text_price4);
+        transactionHistoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), TransactionHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
         btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
 
 
