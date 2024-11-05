@@ -33,7 +33,10 @@
             android:name=".MembershipActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
-
+        <activity
+            android:name=".TransactionHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
             android:name=".FaceCaptureActivity"
             android:exported="false"

@@ -16,10 +16,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -41,7 +43,20 @@ import androidx.core.content.ContextCompat;
 
 import com.example.sep490_supergymmanagement.FaceRecognition.GraphicOverlay;
 import com.example.sep490_supergymmanagement.FaceRecognition.SimilarityClassifier;
+import com.example.sep490_supergymmanagement.ImageToBitmapConverter.YuvToRgbConverter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -57,6 +72,7 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.ReadOnlyBufferException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,9 +105,23 @@ public class FaceCaptureActivity extends AppCompatActivity {
     private static final int INPUT_SIZE = 112;
     private static final int OUTPUT_SIZE=192;
 
+
+    private Bitmap capturedFaceImage = null;  // method to get the captured image (e.g., from the camera)
+    private String userId = "user123"; // Replace this with the actual user ID
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText( FaceCaptureActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        userId = user.getUid();
         setContentView(R.layout.activity_face_capture);
         previewView = findViewById(R.id.previewView);
         previewView.setScaleType(PreviewView.ScaleType.FIT_CENTER);
@@ -245,6 +275,8 @@ public class FaceCaptureActivity extends AppCompatActivity {
                 image.getImageInfo().getRotationDegrees()
         );
 
+
+
         FaceDetector faceDetector = FaceDetection.getClient();
 
         faceDetector.process(inputImage)
@@ -252,6 +284,27 @@ public class FaceCaptureActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "Barcode process failure", e))
                 .addOnCompleteListener(task -> image.close());
     }
+
+    private Bitmap convertInputImageToBitmap(InputImage inputImage) {
+        if (inputImage.getMediaImage() != null) {
+            // Convert to Bitmap using YuvToRgbConverter or similar logic
+            Image mediaImage = inputImage.getMediaImage();
+            Bitmap bitmap = imageToBitmap(mediaImage);
+            mediaImage.close();
+            return bitmap;
+        }
+        return null;
+    }
+
+    private Bitmap imageToBitmap(Image image) {
+        // Create a YUV to RGB converter if needed or use ImageUtils from AndroidX
+        YuvToRgbConverter converter = new YuvToRgbConverter(this);
+        Bitmap bitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+        converter.yuvToRgb(image, bitmap);
+        return bitmap;
+    }
+
+
 
     private void onSuccessListener(List<Face> faces, InputImage inputImage) {
         Rect boundingBox = null;
@@ -284,31 +337,70 @@ public class FaceCaptureActivity extends AppCompatActivity {
     }
 
     /** Recognize Processor */
+    /** Recognize Processor */
+    /** Recognize Processor */
+    /** Recognize Processor */
+
+
     private void addFace() {
-        start=false;
+        start = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Name");
 
         // Set up the input
         final EditText input = new EditText(this);
-
-        input.setInputType(InputType.TYPE_CLASS_TEXT );
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setMaxWidth(200);
         builder.setView(input);
 
         // Set up the buttons
         builder.setPositiveButton("ADD", (dialog, which) -> {
-            //Toast.makeText(context, input.getText().toString(), Toast.LENGTH_SHORT).show();
+            // Hardcoded or retrieved userId for this example
 
-            //Create and Initialize new object with Face embeddings and Name.
+            // Create and Initialize new object with Face embeddings and Name.
             SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
                     "0", "", -1f);
-            result.setExtra(embeddings);
+            result.setExtra(embeddings); // embeddings should be a float[][] representing the face features
 
-            registered.put( input.getText().toString(),result);
+            // Add the result to the registered map
+            registered.put(input.getText().toString(), result);
             start = true;
 
+            // Store the data to Firebase
+            DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+            String faceId = input.getText().toString(); // Using name as the unique ID/key for the face
+
+            // Convert float[][] to List<List<Float>> for Firebase storage
+            if (embeddings instanceof float[][]) {
+                float[][] embeddingArray = (float[][]) embeddings;
+                List<List<Float>> embeddingList = new ArrayList<>();
+                for (float[] row : embeddingArray) {
+                    List<Float> rowList = new ArrayList<>();
+                    for (float value : row) {
+                        rowList.add(value);
+                    }
+                    embeddingList.add(rowList);
+                }
+
+                // Create a map to store in Firebase
+                Map<String, Object> faceData = new HashMap<>();
+                faceData.put("userId", userId); // Include userId in the data
+                faceData.put("name", faceId);
+                faceData.put("embeddings", embeddingList);
+
+                // Push data to Firebase
+                databaseRef.child(faceId).setValue(faceData)
+                        .addOnSuccessListener(aVoid -> {
+                            // Successfully written to Firebase
+                            Toast.makeText(this, "Face data stored in Firebase", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            // Failed to write to Firebase
+                            Toast.makeText(this, "Failed to store face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
         });
+
         builder.setNegativeButton("Cancel", (dialog, which) -> {
             start = true;
             dialog.cancel();
@@ -317,21 +409,19 @@ public class FaceCaptureActivity extends AppCompatActivity {
         builder.show();
     }
 
+
     public String recognizeImage(final Bitmap bitmap) {
-        // set image to preview
+        // Set image to preview
         previewImg.setImageBitmap(bitmap);
 
-        //Create ByteBuffer to store normalized image
-
+        // Create ByteBuffer to store normalized image
         ByteBuffer imgData = ByteBuffer.allocateDirect(INPUT_SIZE * INPUT_SIZE * 3 * 4);
-
         imgData.order(ByteOrder.nativeOrder());
 
         int[] intValues = new int[INPUT_SIZE * INPUT_SIZE];
 
-        //get pixel values from Bitmap to normalize
+        // Get pixel values from Bitmap to normalize
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-
         imgData.rewind();
 
         for (int i = 0; i < INPUT_SIZE; ++i) {
@@ -342,40 +432,77 @@ public class FaceCaptureActivity extends AppCompatActivity {
                 imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
             }
         }
-        //imgData is input to our model
+
+        // imgData is input to our model
         Object[] inputArray = {imgData};
 
         Map<Integer, Object> outputMap = new HashMap<>();
-
-
-        embeddings = new float[1][OUTPUT_SIZE]; //output of model will be stored in this variable
-
+        embeddings = new float[1][OUTPUT_SIZE]; // Output of model will be stored in this variable
         outputMap.put(0, embeddings);
 
-        tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
+        // Run model
+        tfLite.runForMultipleInputsOutputs(inputArray, outputMap); // Run model to get embeddings
 
+        // Retrieve registered faces from Firebase and compare
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                float minDistance = Float.MAX_VALUE;
+                String closestName = "unknown";
 
+                for (DataSnapshot faceSnapshot : dataSnapshot.getChildren()) {
+                    // Get name and embeddings of the registered face
+                    String name = faceSnapshot.child("name").getValue(String.class);
+                    List<List<Double>> storedEmbeddingList = (List<List<Double>>) faceSnapshot.child("embeddings").getValue();
 
-        float distance;
+                    // Convert List<List<Double>> to float[][]
+                    float[][] storedEmbedding = new float[storedEmbeddingList.size()][storedEmbeddingList.get(0).size()];
+                    for (int i = 0; i < storedEmbeddingList.size(); i++) {
+                        for (int j = 0; j < storedEmbeddingList.get(i).size(); j++) {
+                            storedEmbedding[i][j] = storedEmbeddingList.get(i).get(j).floatValue();
+                        }
+                    }
 
-        //Compare new face with saved Faces.
-        if (registered.size() > 0) {
+                    // Calculate distance between current embedding and registered embedding
+                    float distance = calculateDistance(embeddings[0], storedEmbedding[0]);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestName = name;
+                    }
+                }
 
-            final Pair<String, Float> nearest = findNearest(embeddings[0]);//Find closest matching face
-
-            if (nearest != null) {
-
-                final String name = nearest.first;
-                distance = nearest.second;
-                if(distance<1.000f) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-                    return name;
-                else
-                    return "unknown";
+                if (minDistance < 1.000f) {
+                    // Recognized face, display name
+                    Toast.makeText(getApplicationContext(), "Recognized: " + closestName, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Unknown face
+                    Toast.makeText(getApplicationContext(), "Unknown face", Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        return null;
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle potential errors
+                Toast.makeText(getApplicationContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return null; // Since the result is handled asynchronously, we don't return anything directly here
     }
+
+
+
+    // Helper method to calculate distance between two embeddings
+    private float calculateDistance(float[] embedding1, float[] embedding2) {
+        float sum = 0;
+        for (int i = 0; i < embedding1.length; i++) {
+            float diff = embedding1[i] - embedding2[i];
+            sum += diff * diff;
+        }
+        return (float) Math.sqrt(sum);
+    }
+
 
     //Compare Faces by distance between face embeddings
     private Pair<String, Float> findNearest(float[] emb) {
