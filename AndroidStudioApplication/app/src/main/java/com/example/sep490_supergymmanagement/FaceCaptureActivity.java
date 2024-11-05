@@ -38,6 +38,7 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -72,9 +73,13 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.ReadOnlyBufferException;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -105,6 +110,10 @@ public class FaceCaptureActivity extends AppCompatActivity {
     private static final int INPUT_SIZE = 112;
     private static final int OUTPUT_SIZE=192;
 
+    private static String finalName ="NotFound";
+
+    private String  nameFinal = null;
+    private CardView btnReturn;
 
     private Bitmap capturedFaceImage = null;  // method to get the captured image (e.g., from the camera)
     private String userId = "user123"; // Replace this with the actual user ID
@@ -128,9 +137,19 @@ public class FaceCaptureActivity extends AppCompatActivity {
         graphicOverlay = findViewById(R.id.graphic_overlay);
         previewImg = findViewById(R.id.preview_img);
         detectionTextView = findViewById(R.id.detection_text);
-
+        loadUserInfor();
         ImageButton addBtn = findViewById(R.id.add_btn);
         addBtn.setOnClickListener((v -> addFace()));
+
+        btnReturn = findViewById(R.id.returnCardView);
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Simulate the back button press
+                onBackPressed();
+            }
+        });
+
 
         ImageButton switchCamBtn = findViewById(R.id.switch_camera);
         switchCamBtn.setOnClickListener((view -> switchCamera()));
@@ -327,7 +346,8 @@ public class FaceCaptureActivity extends AppCompatActivity {
                     boundingBox);
 
             if(start) name = recognizeImage(bitmap);
-            if(name != null) detectionTextView.setText(name);
+            if(name != null) detectionTextView.setText("Face Detected: "+ name);
+            if(finalName != null) detectionTextView.setText(finalName);
         }
         else {
             detectionTextView.setText(R.string.no_face_detected);
@@ -344,61 +364,77 @@ public class FaceCaptureActivity extends AppCompatActivity {
 
     private void addFace() {
         start = false;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Name");
 
         // Set up the input
         final EditText input = new EditText(this);
+        input.setText(nameFinal);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setMaxWidth(200);
         builder.setView(input);
 
         // Set up the buttons
         builder.setPositiveButton("ADD", (dialog, which) -> {
-            // Hardcoded or retrieved userId for this example
-
-            // Create and Initialize new object with Face embeddings and Name.
-            SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
-                    "0", "", -1f);
-            result.setExtra(embeddings); // embeddings should be a float[][] representing the face features
-
-            // Add the result to the registered map
-            registered.put(input.getText().toString(), result);
-            start = true;
-
-            // Store the data to Firebase
+            String faceName = input.getText().toString(); // Face name entered by the user
             DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
-            String faceId = input.getText().toString(); // Using name as the unique ID/key for the face
 
-            // Convert float[][] to List<List<Float>> for Firebase storage
-            if (embeddings instanceof float[][]) {
-                float[][] embeddingArray = (float[][]) embeddings;
-                List<List<Float>> embeddingList = new ArrayList<>();
-                for (float[] row : embeddingArray) {
-                    List<Float> rowList = new ArrayList<>();
-                    for (float value : row) {
-                        rowList.add(value);
-                    }
-                    embeddingList.add(rowList);
-                }
+            // Query Firebase to check if userId already exists
+            databaseRef.orderByChild("userId").equalTo(userId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // userId already registered
+                                Toast.makeText(getApplicationContext(), "Face already registered for this user. Cannot register again.", Toast.LENGTH_SHORT).show();
+                                start = true; // Reset start flag
+                            } else {
+                                // userId not yet registered; proceed with registration
+                                SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+                                        "0", "", -1f);
+                                result.setExtra(embeddings); // embeddings should be a float[][] representing the face features
 
-                // Create a map to store in Firebase
-                Map<String, Object> faceData = new HashMap<>();
-                faceData.put("userId", userId); // Include userId in the data
-                faceData.put("name", faceId);
-                faceData.put("embeddings", embeddingList);
+                                // Add the result to the registered map
+                                registered.put(faceName, result);
+                                start = true;
 
-                // Push data to Firebase
-                databaseRef.child(faceId).setValue(faceData)
-                        .addOnSuccessListener(aVoid -> {
-                            // Successfully written to Firebase
-                            Toast.makeText(this, "Face data stored in Firebase", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            // Failed to write to Firebase
-                            Toast.makeText(this, "Failed to store face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-            }
+                                // Convert float[][] to List<List<Float>> for Firebase storage
+                                List<List<Float>> embeddingList = new ArrayList<>();
+                                for (float[] row : embeddings) {
+                                    List<Float> rowList = new ArrayList<>();
+                                    for (float value : row) {
+                                        rowList.add(value);
+                                    }
+                                    embeddingList.add(rowList);
+                                }
+
+                                // Prepare data to store in Firebase
+                                Map<String, Object> faceData = new HashMap<>();
+                                faceData.put("userId", userId); // Include userId in the data
+                                faceData.put("name", faceName);
+                                faceData.put("embeddings", embeddingList);
+
+                                // Push data to Firebase
+                                databaseRef.child(faceName).setValue(faceData)
+                                        .addOnSuccessListener(aVoid -> {
+                                            // Successfully written to Firebase
+                                            Toast.makeText(getApplicationContext(), "Face data stored in Firebase", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            // Failed to write to Firebase
+                                            Toast.makeText(getApplicationContext(), "Failed to store face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            // Handle potential errors
+                            Toast.makeText(getApplicationContext(), "Error checking data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            start = true;
+                        }
+                    });
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -408,6 +444,27 @@ public class FaceCaptureActivity extends AppCompatActivity {
 
         builder.show();
     }
+    private void loadUserInfor() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                         nameFinal = dataSnapshot.child("name").getValue(String.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database error
+                }
+            });
+        }
+    }
+
 
 
     public String recognizeImage(final Bitmap bitmap) {
@@ -466,18 +523,21 @@ public class FaceCaptureActivity extends AppCompatActivity {
 
                     // Calculate distance between current embedding and registered embedding
                     float distance = calculateDistance(embeddings[0], storedEmbedding[0]);
+                    final Pair<String, Float> nearest = findNearest(embeddings[0]);//Find closest matching face
+
                     if (distance < minDistance) {
                         minDistance = distance;
                         closestName = name;
+                        finalName = closestName;
                     }
                 }
 
                 if (minDistance < 1.000f) {
                     // Recognized face, display name
-                    Toast.makeText(getApplicationContext(), "Recognized: " + closestName, Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getApplicationContext(), "Recognized: " + closestName, Toast.LENGTH_SHORT).show();
                 } else {
                     // Unknown face
-                    Toast.makeText(getApplicationContext(), "Unknown face", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Unknown face", Toast.LENGTH_SHORT).show();
                 }
             }
 
