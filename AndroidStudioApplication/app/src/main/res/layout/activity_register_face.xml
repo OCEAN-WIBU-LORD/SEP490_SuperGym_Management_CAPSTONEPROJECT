@@ -6,85 +6,116 @@
     android:padding="16dp"
     android:background="?android:attr/colorBackground"
     tools:context=".RegisterFaceActivity">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/returnBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/move_back_icon"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/lowLightBlue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.cardview.widget.CardView>
 
     <!-- Title or Header Text -->
+
+    <!-- Capture Button -->
+
+    <!-- Check Face Button -->
+
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Face ID Registration"
-        android:textSize="24sp"
-        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
         android:fontFamily="sans-serif-medium"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Capture Button -->
-    <Button
-        android:id="@+id/btn_capture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Capture Face ID"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/teal_700"
-        android:fontFamily="sans-serif"
-        android:padding="12dp"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tv_title"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Face ID Registration"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:layout_marginTop="24dp" />
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Check Face Button -->
     <Button
         android:id="@+id/btn_check_face"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Check Face ID"
-        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/teal_700"
         android:fontFamily="sans-serif"
         android:padding="12dp"
+        android:text="Check Face ID"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/btn_capture"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/checkRealTime"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
         android:id="@+id/checkRealTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Real Time Checking"
-        android:textColor="@color/white"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/teal_700"
         android:fontFamily="sans-serif"
         android:padding="12dp"
+        android:text="Real Time Checking"
+        android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/btn_check_face"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tv_result"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent" />
 
-
-    <!-- Result TextView -->
     <TextView
         android:id="@+id/tv_result"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Result: "
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:padding="8dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/result_background"
         android:fontFamily="sans-serif-light"
-        app:layout_constraintTop_toBottomOf="@id/checkRealTime"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="8dp"
+        android:text="Result: "
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/returnCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_check_face"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:src="@drawable/facerecognition_img" />
+
+    </androidx.cardview.widget.CardView>
+    <!-- Result TextView -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

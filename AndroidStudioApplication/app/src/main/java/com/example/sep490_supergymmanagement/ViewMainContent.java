@@ -3,6 +3,7 @@ package com.example.sep490_supergymmanagement;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sep490_supergymmanagement.RoleAdapter.UserRoleRetriever;
 import com.example.sep490_supergymmanagement.adapters.PostAdapter;
 import com.example.sep490_supergymmanagement.databinding.ActivityMainBinding;
 import com.example.sep490_supergymmanagement.databinding.ActivityViewMainContentBinding;
@@ -64,6 +66,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -82,6 +85,24 @@ public class ViewMainContent extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
 
     String fragmentType = "";
+
+    FirebaseAuth mAuth;
+    private String roleIdTxt, roleNameTxt;
+
+
+    private String userId, userRole, roleId = null;
+    @Override
+    public void onStart(){
+        super.onStart();
+        //check if user is signed in (non-null) and Update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null ){
+            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+            Toast.makeText(ViewMainContent.this, "User Un-Authenticated, please login!", Toast.LENGTH_LONG).show();
+            startActivity(intent);
+            finish();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +112,18 @@ public class ViewMainContent extends AppCompatActivity {
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
         }
+        mAuth = FirebaseAuth.getInstance();
 
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(ViewMainContent.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        userId = user.getUid();
+
+        UserRoleRetriever loadRole = new UserRoleRetriever();
+        userRole = loadRole.getUserRole(userId);
         //authentication
         bottomNavigationView= findViewById(R.id.bottomNavigationView);
         fab =findViewById(R.id.fab);
@@ -111,24 +143,7 @@ public class ViewMainContent extends AppCompatActivity {
             navigationView.setCheckedItem(R.id.nav_home);
         }
         replaceFragment(new HomeFragment());
-
-
-
-        bottomNavigationView.setBackground(null);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if(itemId == R.id.home){
-                replaceFragment(new HomeFragment());
-            } else if (itemId == R.id.shorts) {
-                replaceFragment(new SearchFragment());
-            } else if (itemId == R.id.subscriptions) {
-                replaceFragment(new AppointmentFragment());
-            } else if (itemId == R.id.library) {
-                replaceFragment(new FragmentUserProfile());
-            }
-
-            return true;
-        });
+        loadUserDetails();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,56 +153,90 @@ public class ViewMainContent extends AppCompatActivity {
         });
 
 
-        homeFragment = new HomeFragment();
-        userProfileFragment = new FragmentUserProfile();
-        geminiFragment = new GeminiFragment();
-        activeFragment = homeFragment;
-
-        isUserATrainer(isTrainer -> {
-            if (isTrainer) {
-                bottomNavigationView.setBackground(null);
-                bottomNavigationView.setOnItemSelectedListener(item -> {
-                    int itemId = item.getItemId();
-                    if(itemId == R.id.home){
-                        replaceFragment(new HomeFragment());
-                    } else if (itemId == R.id.shorts) {
-                        replaceFragment(new SearchFragment());
-                    } else if (itemId == R.id.subscriptions) {
-                        replaceFragment(new ScheduleTrainer());
-                    } else if (itemId == R.id.library) {
-                        replaceFragment(new FragmentUserProfile());
-                    }
-
-                    return true;
-                });
-            } else {
-                // User-specific setup
-                bottomNavigationView.setBackground(null);
-                bottomNavigationView.setOnItemSelectedListener(item -> {
-                    int itemId = item.getItemId();
-                    if(itemId == R.id.home){
-                        replaceFragment(new HomeFragment());
-                    } else if (itemId == R.id.shorts) {
-                        replaceFragment(new SearchFragment());
-                    } else if (itemId == R.id.subscriptions) {
-                        replaceFragment(new ProgressActivity());
-                    } else if (itemId == R.id.library) {
-                        replaceFragment(new FragmentUserProfile());
-                    }
-
-                    return true;
-                });
-            }
-        });
-
-
-
-
-
-
-
     }
 
+    private void setupBottomNavigation(String roleName) {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fab = findViewById(R.id.fab);
+
+        bottomNavigationView.setBackground(null);
+
+        // Configure bottom navigation based on role
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.home) {
+                replaceFragment(new HomeFragment());
+            } else if (itemId == R.id.shorts) {
+                replaceFragment(new SearchFragment());
+            } else if (itemId == R.id.subscriptions) {
+                if (roleName.equals("pt")) {
+                    replaceFragment(new ScheduleTrainer());
+                } else if (roleName.equals("customer")) {
+                    replaceFragment(new ProgressActivity());
+                } else if ( roleName.equals("admin")){
+                    replaceFragment(new ViewIncomeFragment());
+                }
+            } else if (itemId == R.id.library) {
+                replaceFragment(new FragmentUserProfile());
+            }
+
+            return true;
+        });
+
+        fab.setOnClickListener(view -> showBottomDialog());
+    }
+
+    private void loadUserDetails() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Retrieve basic user info
+                        String avatarBase64 = dataSnapshot.child("userAvatar").getValue(String.class);
+                        String name = dataSnapshot.child("name").getValue(String.class);
+                        String roleId = dataSnapshot.child("roleId").getValue(String.class);
+
+                        // Retrieve the user's role name based on roleId
+                        if (roleId != null) {
+                            getRoleName(roleId);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(ViewMainContent.this, "Failed to load user details.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void getRoleName(String roleId) {
+        DatabaseReference roleRef = FirebaseDatabase.getInstance().getReference("Roles").child(roleId);
+        roleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot roleSnapshot) {
+                if (roleSnapshot.exists()) {
+                    roleNameTxt = roleSnapshot.child("RoleName").getValue(String.class);
+
+                    if (roleNameTxt != null) {
+                        setupBottomNavigation(roleNameTxt);  // Set up UI based on the role
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ViewMainContent.this, "Failed to retrieve role name.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 
     //Outside OnCreate.
@@ -229,7 +278,7 @@ public class ViewMainContent extends AppCompatActivity {
             public void onClick(View v) {
                 replaceFragment(new GeminiFragment());
                 dialog.dismiss();
-                Toast.makeText(ViewMainContent.this,"Gemini AI Opened",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewMainContent.this,"Gemini AI Opened" + roleNameTxt,Toast.LENGTH_SHORT).show();
 
             }
         });

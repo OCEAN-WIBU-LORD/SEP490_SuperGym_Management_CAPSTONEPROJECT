@@ -1,5 +1,7 @@
 package com.example.sep490_supergymmanagement;
-
+import android.os.Handler;
+import android.os.Looper;
+import android.speech.tts.TextToSpeech;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,8 +18,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.YuvImage;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.tts.UtteranceProgressListener;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -85,7 +89,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class FaceCaptureActivity extends AppCompatActivity {
+public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpeech.OnInitListener {
     private static final String TAG = "FaceCaptureActivity";
     private static final int PERMISSION_CODE = 1001;
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
@@ -98,7 +102,7 @@ public class FaceCaptureActivity extends AppCompatActivity {
     private GraphicOverlay graphicOverlay;
     private ImageView previewImg;
     private TextView detectionTextView;
-
+    private TextToSpeech tts;
     private final HashMap<String, SimilarityClassifier.Recognition> registered = new HashMap<>(); //saved Faces
     private Interpreter tfLite;
     private boolean flipX = false;
@@ -118,6 +122,7 @@ public class FaceCaptureActivity extends AppCompatActivity {
     private Bitmap capturedFaceImage = null;  // method to get the captured image (e.g., from the camera)
     private String userId = "user123"; // Replace this with the actual user ID
 
+    private boolean isWelcomeMessagePlaying = false; // Flag to track if welcome message is playing
 
 
 
@@ -129,7 +134,7 @@ public class FaceCaptureActivity extends AppCompatActivity {
             Toast.makeText( FaceCaptureActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        tts = new TextToSpeech(this, this);
         userId = user.getUid();
         setContentView(R.layout.activity_face_capture);
         previewView = findViewById(R.id.previewView);
@@ -162,6 +167,7 @@ public class FaceCaptureActivity extends AppCompatActivity {
         super.onResume();
         startCamera();
     }
+
 
     /** Permissions Handler */
     private void getPermissions() {
@@ -208,6 +214,48 @@ public class FaceCaptureActivity extends AppCompatActivity {
             }
         }, ContextCompat.getMainExecutor(this));
     }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language not supported");
+            } else {
+                tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        Log.d("TTS", "Speech started");
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        Log.d("TTS", "Speech completed");
+                        isWelcomeMessagePlaying = false; // Reset flag when done
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+                        Log.e("TTS", "Speech error");
+                        isWelcomeMessagePlaying = false; // Reset flag on error
+                    }
+                });
+            }
+        } else {
+            Log.e("TTS", "Initialization failed");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+
 
     private void bindAllCameraUseCases() {
         if (cameraProvider != null) {
@@ -366,12 +414,15 @@ public class FaceCaptureActivity extends AppCompatActivity {
         start = false;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Name");
+        builder.setTitle("Register FaceID for User:");
 
         // Set up the input
         final EditText input = new EditText(this);
         input.setText(nameFinal);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
+        // Make the input uneditable
+        input.setFocusable(false);
+        input.setClickable(false);
         input.setMaxWidth(200);
         builder.setView(input);
 
@@ -533,8 +584,7 @@ public class FaceCaptureActivity extends AppCompatActivity {
                 }
 
                 if (minDistance < 1.000f) {
-                    // Recognized face, display name
-                  //  Toast.makeText(getApplicationContext(), "Recognized: " + closestName, Toast.LENGTH_SHORT).show();
+                    delayedWelcomeMessage(closestName);
                 } else {
                     // Unknown face
                     //Toast.makeText(getApplicationContext(), "Unknown face", Toast.LENGTH_SHORT).show();
@@ -551,8 +601,31 @@ public class FaceCaptureActivity extends AppCompatActivity {
         return null; // Since the result is handled asynchronously, we don't return anything directly here
     }
 
+    public void delayedWelcomeMessage(final String closestName) {
+        // Check if the welcome message is already playing
+        if (!isWelcomeMessagePlaying) {
+            isWelcomeMessagePlaying = true; // Set flag to prevent multiple calls
 
+            // Delay the execution of playWelcomeMessage by 5 seconds
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playWelcomeMessage(closestName);
+                }
+            }, 0000); // 5000 ms = 5 seconds
+        }
+    }
 
+    public void playWelcomeMessage(String closestName) {
+        if (tts != null && isWelcomeMessagePlaying) {
+            String welcomeMessage = "Welcome to SuperGym, " + closestName + "!";
+            HashMap<String, String> params = new HashMap<>();
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "welcomeMessage");
+
+            // Queue the message to play to completion
+            tts.speak(welcomeMessage, TextToSpeech.QUEUE_FLUSH, params);
+        }
+    }
     // Helper method to calculate distance between two embeddings
     private float calculateDistance(float[] embedding1, float[] embedding2) {
         float sum = 0;

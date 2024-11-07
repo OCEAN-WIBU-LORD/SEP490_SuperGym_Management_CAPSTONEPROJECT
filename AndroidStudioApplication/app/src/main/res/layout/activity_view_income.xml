@@ -1,0 +1,243 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_red"
+    android:padding="16dp"
+    android:layout_marginBottom="80dp"
+    tools:context=".ViewIncomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Start Date Button -->
+
+            <!-- End Date Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/startDateButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:background="@drawable/button_background"
+                android:drawableLeft="@drawable/schedule_icon"
+                android:text="Select Start Date"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/endDateButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_background"
+                android:drawableLeft="@drawable/schedule_icon"
+                android:text="Select End Date"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Rest of your layout content -->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Total Income Section -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/totalIncomeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:text="Total Income"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/campusFilterSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/light_red"
+                android:entries="@array/campus_filter_options"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnDropDown"
+                app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/btnDropDown"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/dropdown"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="4dp"
+                app:cardBackgroundColor="#F44336"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_income" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Total income earned"
+                        android:paddingStart="8dp" />
+
+                    <TextView
+                        android:id="@+id/totalIncome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="$0,000.00" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Add more cards here similarly for 'No. of gym campuses' and 'Average income per campus' -->
+
+        </LinearLayout>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/incomeLineChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="16dp" />
+
+            <!-- Additional UI elements like Date Pickers for start and end dates can be added here -->
+
+        </LinearLayout>
+
+        <!-- Monthly Income Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monthly Income"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingVertical="8dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="#F44336"
+            android:contentDescription="Monthly Income Chart Placeholder"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Yearly Revenue Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total yearly revenue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingVertical="8dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/red"
+            android:contentDescription="Yearly Revenue Chart Placeholder"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Campus Incomes Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Campus Incomes"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingVertical="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/campusIncomeList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Top Performing Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Top Performing"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingVertical="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:padding="16dp"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Campus Names and"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <!-- Placeholder for top performing campuses list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/topPerformingList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+    <!-- Bottom Navigation Bar -->

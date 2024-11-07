@@ -23,4 +23,13 @@
         <item>Latest</item>
         <item>Oldest</item>
     </string-array>
+
+    <string-array name="campus_filter_options">
+        <item>All campuses</item>
+        <item>Campus 1</item>
+        <item>Campus 2</item>
+        <item>Campus 3</item>
+        <!-- Add more campuses as needed -->
+    </string-array>
+
 </resources>
