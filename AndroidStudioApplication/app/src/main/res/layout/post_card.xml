@@ -19,8 +19,8 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/avatar"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center_vertical"/>
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_vertical" />
 
         <!-- LinearLayout chứa tiêu đề và thông tin -->
         <LinearLayout
@@ -35,18 +35,18 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tiêu đề"
+                android:text="Title"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
-            <!-- TextView cho thông tin -->
+            <!-- TextView cho ngày đăng bài viết -->
             <TextView
-                android:id="@+id/tvInfo"
+                android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thông tin"
+                android:text="Date"
                 android:textSize="14sp"
-                android:textColor="#888888"/> <!-- Màu sắc thông tin -->
+                android:textColor="#888888" /> <!-- Màu sắc thông tin -->
 
         </LinearLayout>
 

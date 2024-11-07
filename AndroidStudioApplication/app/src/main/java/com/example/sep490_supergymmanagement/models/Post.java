@@ -3,52 +3,22 @@ package com.example.sep490_supergymmanagement.models;
 import java.util.Date;
 
 public class Post {
-
-    private String post_id;
-    private String author;
-    private String category;
-    private String content;
-    private Date date;
+    private String postId;
     private String title;
+    private String thumbnailUrl;
+    private Date date;
+    private String userId;
+    private String content;
+    private String categoryId;
+    private String authorName; // Thêm trường authorName
 
-    public String getPost_id() {
-        return post_id;
+    // Getters và Setters cho tất cả các trường
+    public String getPostId() {
+        return postId;
     }
 
-    public void setPost_id(String post_id) {
-        this.post_id = post_id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getTitle() {
@@ -59,15 +29,51 @@ public class Post {
         this.title = title;
     }
 
-    public Post(String post_id, String author, String category, String content, Date date, String title) {
-        this.post_id = post_id;
-        this.author = author;
-        this.category = category;
-        this.content = content;
-        this.date = date;
-        this.title = title;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
-    public Post(){
 
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 }
