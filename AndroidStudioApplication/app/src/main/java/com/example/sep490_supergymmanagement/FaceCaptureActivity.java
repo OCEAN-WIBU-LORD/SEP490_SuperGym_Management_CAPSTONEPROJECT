@@ -125,6 +125,8 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     private boolean isWelcomeMessagePlaying = false; // Flag to track if welcome message is playing
 
 
+    private String lastRecognizedName = ""; // Keeps track of the last recognized name
+    private boolean isNameChanged = false; // Flag to check if the name has changed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -517,7 +519,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     }
 
 
-
     public String recognizeImage(final Bitmap bitmap) {
         // Set image to preview
         previewImg.setImageBitmap(bitmap);
@@ -560,7 +561,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 String closestName = "unknown";
 
                 for (DataSnapshot faceSnapshot : dataSnapshot.getChildren()) {
-                    // Get name and embeddings of the registered face
                     String name = faceSnapshot.child("name").getValue(String.class);
                     List<List<Double>> storedEmbeddingList = (List<List<Double>>) faceSnapshot.child("embeddings").getValue();
 
@@ -574,7 +574,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
                     // Calculate distance between current embedding and registered embedding
                     float distance = calculateDistance(embeddings[0], storedEmbedding[0]);
-                    final Pair<String, Float> nearest = findNearest(embeddings[0]);//Find closest matching face
 
                     if (distance < minDistance) {
                         minDistance = distance;
@@ -583,22 +582,56 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                     }
                 }
 
+                // Check if the closest match is within the acceptable threshold
                 if (minDistance < 1.000f) {
                     delayedWelcomeMessage(closestName);
+                    finalName = closestName;
                 } else {
-                    // Unknown face
-                    //Toast.makeText(getApplicationContext(), "Unknown face", Toast.LENGTH_SHORT).show();
+                    finalName = closestName;
+                    closestName = "unknown";  // Assign 'unknown' if no match found within threshold
+                }
+
+                // Check if the name has changed from the last recognized name
+                if (!closestName.equals(lastRecognizedName)) {
+                    isNameChanged = true;
+                    // Store face image with the correct name
+                    storeRecognizedFaceImage(bitmap, closestName);
+                    lastRecognizedName = closestName; // Update the last recognized name after storing
+                } else {
+                    isNameChanged = false;
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle potential errors
+                // Handle errors
                 Toast.makeText(getApplicationContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        return null; // Since the result is handled asynchronously, we don't return anything directly here
+        return null;
+    }
+
+
+    // Method to upload recognized face image to Firebase Storage
+    private void storeRecognizedFaceImage(Bitmap bitmap, String userId) {
+        // Convert Bitmap to byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        // Create a unique file name based on user ID and timestamp
+        String fileName = "faces/" + (userId.equals("Unknown") ? "Unknown" : userId) + "_" + System.currentTimeMillis() + ".jpg";
+
+        // Upload image to Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(fileName);
+        storageRef.putBytes(data)
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(getApplicationContext(), "Face image saved successfully.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Failed to save face image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     public void delayedWelcomeMessage(final String closestName) {

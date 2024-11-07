@@ -101,7 +101,7 @@ public class FragmentUserProfile extends Fragment {
     private String publicName;
     private ImageView userAvatarImg ;
     private TextView tvName, tvPhone, tvDob;
-    private ConstraintLayout logOutBtn;
+    private Button logOutBtn;
 
     private String dobText;
 

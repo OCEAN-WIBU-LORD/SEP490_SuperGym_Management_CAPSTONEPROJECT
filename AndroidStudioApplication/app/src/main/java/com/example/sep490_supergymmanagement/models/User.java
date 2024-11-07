@@ -13,7 +13,7 @@ public class User {
     private String address;
     private String phone;
     private String idCard;
-    private String role;
+    private String roleId;
     private String userAvatar;
 
     // Default constructor
@@ -21,7 +21,7 @@ public class User {
     }
 
     // Parameterized constructor
-    public User(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String role, String userAvatar) {
+    public User(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String roleId, String userAvatar) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -30,7 +30,7 @@ public class User {
         this.address = address;
         this.phone = phone;
         this.idCard = idCard;
-        this.role = role;
+        this.roleId = roleId;
         this.userAvatar = userAvatar;
     }
 
@@ -98,12 +98,12 @@ public class User {
 
 
 
-    public String getRole() {
-        return role;
+    public String getRoleId() {
+        return roleId;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     public String getUserAvatar() {
@@ -134,14 +134,14 @@ public class User {
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", idCard=" + idCard +
-                ", role='" + role + '\'' +
+                ", role='" + roleId + '\'' +
                 ", userAvatar='" + userAvatar + '\'' +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard, role, userAvatar);
+        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard, roleId, userAvatar);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class User {
                 Objects.equals(address, that.address) &&
                 Objects.equals(phone, that.phone) &&
                 Objects.equals(idCard, that.idCard) &&
-                Objects.equals(role, that.role) &&
+                Objects.equals(roleId, that.roleId) &&
                 Objects.equals(userAvatar, that.userAvatar);
     }
 }

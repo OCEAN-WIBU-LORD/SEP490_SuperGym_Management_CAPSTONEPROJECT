@@ -702,7 +702,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/logOutBtn"
+                    android:id="@+id/logOutBtn1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -743,7 +743,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/text_price45"
+                        android:id="@+id/logOutBtn"
                         android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"

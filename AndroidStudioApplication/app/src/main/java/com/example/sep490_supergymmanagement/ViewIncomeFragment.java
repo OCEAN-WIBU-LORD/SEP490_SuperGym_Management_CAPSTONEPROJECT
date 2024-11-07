@@ -1,14 +1,11 @@
 package com.example.sep490_supergymmanagement;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,20 +15,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import android.app.DatePickerDialog;
+import com.google.firebase.database.*;
+
+import java.text.*;
+import java.util.*;
 
 public class ViewIncomeFragment extends Fragment {
 
@@ -41,12 +28,10 @@ public class ViewIncomeFragment extends Fragment {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private Calendar calendar = Calendar.getInstance();
     private DatabaseReference incomeRef;
-
-    Spinner campusFilterSpinner;
-
-    ImageView btnDropDown;
-
+    private Spinner campusFilterSpinner;
+    private ImageView btnDropDown;
     private Date startDate, endDate;
+    private String selectedCampus = "All";
 
     @Nullable
     @Override
@@ -62,16 +47,31 @@ public class ViewIncomeFragment extends Fragment {
         startDateButton = view.findViewById(R.id.startDateButton);
         endDateButton = view.findViewById(R.id.endDateButton);
         totalIncomeTextView = view.findViewById(R.id.totalIncome);
+        campusFilterSpinner = view.findViewById(R.id.campusFilterSpinner);
+        btnDropDown = view.findViewById(R.id.btnDropDown);
 
         incomeRef = FirebaseDatabase.getInstance().getReference("Income");
 
         startDateButton.setOnClickListener(v -> showDatePickerDialog(true));
         endDateButton.setOnClickListener(v -> showDatePickerDialog(false));
-
-         campusFilterSpinner = view.findViewById(R.id.campusFilterSpinner);
-         btnDropDown = view.findViewById(R.id.btnDropDown);
-
         btnDropDown.setOnClickListener(v -> campusFilterSpinner.performClick());
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.campus_filter_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        campusFilterSpinner.setAdapter(adapter);
+
+        campusFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCampus = campusFilterSpinner.getSelectedItem().toString();
+                if (startDate != null && endDate != null) {
+                    fetchAndDisplayIncomeData();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     private void showDatePickerDialog(boolean isStartDate) {
@@ -104,15 +104,19 @@ public class ViewIncomeFragment extends Fragment {
     }
 
     private void fetchAndDisplayIncomeData() {
-        incomeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Get selected campus from Spinner
+        String selectedCampus = "campus_1";
+
+        // Reference specific campus data in Firebase
+        incomeRef.child(selectedCampus).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<IncomeData> incomeDataList = new ArrayList<>();
                 float totalIncome = 0f;
 
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String dateStr = dataSnapshot.getKey();
-                    Float income = dataSnapshot.child("totalIncome").getValue(Float.class);
+                for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
+                    String dateStr = dateSnapshot.getKey();
+                    Float income = dateSnapshot.child("totalIncome").getValue(Float.class);
 
                     try {
                         Date incomeDate = dateFormat.parse(dateStr);
@@ -125,9 +129,14 @@ public class ViewIncomeFragment extends Fragment {
                     }
                 }
 
-                // Update the total income TextView
-                displayTotalIncome(totalIncome);
-                drawIncomeChart(incomeDataList);
+                // Check if income data list is empty
+                if (incomeDataList.isEmpty()) {
+                    Toast.makeText(getContext(), "No income data available for the selected date range.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Update the total income TextView
+                    displayTotalIncome(totalIncome);
+                    drawIncomeChart(incomeDataList);
+                }
             }
 
             @Override
@@ -136,6 +145,7 @@ public class ViewIncomeFragment extends Fragment {
             }
         });
     }
+
 
     private void drawIncomeChart(List<IncomeData> incomeDataList) {
         List<Entry> entries = new ArrayList<>();
