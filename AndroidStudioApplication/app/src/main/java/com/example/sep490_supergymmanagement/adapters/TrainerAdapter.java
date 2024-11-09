@@ -60,7 +60,7 @@ public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.VH>{
         public VH(@NonNull View itemView) {
             super(itemView);
             tvTitle =itemView.findViewById(R.id.tvTitle);
-            tvInfo=itemView.findViewById(R.id.tvInfo);
+            tvInfo=itemView.findViewById(R.id.tvDate);
         }
 
         public void setData(Trainer p) {

@@ -5,41 +5,48 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
-	android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SEP490SuperGymManagement"
-        android:hardwareAccelerated="true"
-    android:largeHeap="true"
-    tools:targetApi="31">
-
-    <!-- Declare activities with proper exported attributes and themes -->
-    <activity
-        android:name=".EvenCalendar"
-        android:exported="false" />
-
-    <activity
-        android:name=".GeminiFragment"
-        android:exported="false"
-        android:theme="@style/Theme.SEP490SuperGymManagement" />
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".PostDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PostListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EvenCalendar"
+            android:exported="false" />
+        <activity
+            android:name=".GeminiFragment"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
             android:name=".MembershipActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
-
+        <activity
+            android:name=".TransactionHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
             android:name=".FaceCaptureActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
         <activity
-
             android:name=".RegisterFaceActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
@@ -59,7 +66,6 @@
             android:name=".AddExerciseActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
-
         <activity
             android:name=".ExerciseDetailActivity"
             android:exported="false"
@@ -68,52 +74,43 @@
             android:name=".SelectExerciseActivity"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
-
-    <activity
-        android:name=".ForgotPassword"
-        android:exported="false"
-        android:theme="@style/Theme.SEP490SuperGymManagement" />
-
-    <activity
-        android:name=".ResetPassActivity"
-        android:exported="false"
-        android:theme="@style/Theme.SEP490SuperGymManagement" />
-
-    <activity
-        android:name=".FragmentEditProfile"
-        android:exported="false"
-        android:theme="@style/Theme.SEP490SuperGymManagement" />
-
-     <activity
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".ResetPassActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".FragmentEditProfile"
+            android:exported="false"
+            android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
             android:name=".ScheduleTrainerDetails"
             android:exported="false"
             android:theme="@style/Theme.SEP490SuperGymManagement" />
+        <activity
+            android:name=".FragmentUserProfile"
+            android:exported="false" />
+        <activity
+            android:name=".ViewMainContent"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" /> <!-- MainActivity is exported to allow it to launch the app -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-    <activity
-        android:name=".FragmentUserProfile"
-        android:exported="false" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
 
-    <activity
-        android:name=".ViewMainContent"
-        android:exported="false" />
-
-    <activity
-        android:name=".LoginActivity"
-        android:exported="false" />
-
-    <activity
-        android:name=".RegisterActivity"
-        android:exported="false" />
-
-    <!-- MainActivity is exported to allow it to launch the app -->
-    <activity
-        android:name=".MainActivity"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-</application>
-
-    </manifest>
+</manifest>

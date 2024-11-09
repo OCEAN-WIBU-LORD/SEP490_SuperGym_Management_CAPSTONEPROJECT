@@ -36,7 +36,7 @@ public class UserResp {
                 user.setPhone(snapshot.hasChild("phone") ? snapshot.child("phone").getValue().toString() : "");
                 user.setGender(snapshot.hasChild("gender") ? snapshot.child("gender").getValue().toString() : "");
                 user.setAddress(snapshot.hasChild("address") ? snapshot.child("address").getValue().toString() : "");
-                user.setRole(snapshot.hasChild("role") ? snapshot.child("role").getValue().toString() : "");
+                user.setRoleId(snapshot.hasChild("roleId") ? snapshot.child("roleId").getValue().toString() : "");
                 user.setUserAvatar(snapshot.hasChild("userAvatar") ? snapshot.child("userAvatar").getValue().toString() : "");
 
                 user.setAddress(snapshot.hasChild("idCard") ? snapshot.child("idCard").getValue().toString() : "");
@@ -75,7 +75,7 @@ public class UserResp {
                     user.setEmail(childSnapshot.hasChild("email") && childSnapshot.child("email").getValue() != null ? childSnapshot.child("email").getValue().toString() : "");
                     user.setPhone(childSnapshot.hasChild("phone") && childSnapshot.child("phone").getValue() != null ? childSnapshot.child("phone").getValue().toString() : "");
                     user.setAddress(childSnapshot.hasChild("address") && childSnapshot.child("address").getValue() != null ? childSnapshot.child("address").getValue().toString() : "");
-                    user.setRole(childSnapshot.hasChild("role") && childSnapshot.child("role").getValue() != null ? childSnapshot.child("role").getValue().toString() : "");
+                    user.setRoleId(childSnapshot.hasChild("roleId") && childSnapshot.child("roleId").getValue() != null ? childSnapshot.child("role").getValue().toString() : "");
 
                     user.setEmail(childSnapshot.hasChild("idCard") && childSnapshot.child("idCard").getValue() != null ? childSnapshot.child("email").getValue().toString() : "");
 
@@ -127,7 +127,7 @@ public class UserResp {
                 user.getAddress(),
                 user.getPhone(),
                 user.getIdCard(),
-                user.getRole(),
+                user.getRoleId(),
                 user.getUserAvatar()
         );
 

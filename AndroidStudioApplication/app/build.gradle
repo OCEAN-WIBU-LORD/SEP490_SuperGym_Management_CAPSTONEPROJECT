@@ -14,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
 
+        renderscriptSupportModeEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,11 +41,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.google.mlkit:face-detection:16.1.5'
-
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'com.google.android.material:material:1.9.0'
     //Implement for the Circular Progress Bar
     implementation 'com.google.android.material:material:1.6.0'
     implementation 'androidx.gridlayout:gridlayout:1.1.0-beta01'
-
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //implement chart graph
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
@@ -73,6 +75,7 @@ dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation libs.gridlayout
+    implementation libs.recyclerview
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

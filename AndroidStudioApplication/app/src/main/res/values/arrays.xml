@@ -12,5 +12,24 @@
         <item>Dinner</item>
         <item>Snack</item>
     </string-array>
+    <string-array name="filter_options">
+        <item>All</item>
+        <item>Completed</item>
+        <item>Pending</item>
+    </string-array>
+
+    <!-- Mảng cho các tùy chọn sắp xếp (Sort Options) -->
+    <string-array name="sort_options">
+        <item>Latest</item>
+        <item>Oldest</item>
+    </string-array>
+
+    <string-array name="campus_filter_options">
+        <item>All campuses</item>
+        <item>Campus 1</item>
+        <item>Campus 2</item>
+        <item>Campus 3</item>
+        <!-- Add more campuses as needed -->
+    </string-array>
 
 </resources>

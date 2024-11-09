@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/transaction_item_background"
+    android:layout_marginBottom="8dp">
+
+    <!-- Ngày giao dịch -->
+    <TextView
+        android:id="@+id/tvTransactionDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Oct 5, 2019, 14:54"
+        android:textColor="@color/black"
+        android:textSize="14sp"/>
+
+    <!-- Mô tả giao dịch -->
+    <TextView
+        android:id="@+id/tvTransactionDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STARBUCKS COFFEE HAMRA"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+    <!-- Phương thức thanh toán -->
+    <TextView
+        android:id="@+id/tvTransactionPaymentMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QR Code"
+        android:textColor="@color/gray"
+        android:textSize="14sp"/>
+
+    <!-- Số tiền giao dịch -->
+    <TextView
+        android:id="@+id/tvTransactionAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="18,000 VND"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+</LinearLayout>
