@@ -9,6 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -83,12 +85,12 @@ public class ViewMainContent extends AppCompatActivity {
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
-
+    private ProgressBar progressBar;
     String fragmentType = "";
 
     FirebaseAuth mAuth;
     private String roleIdTxt, roleNameTxt;
-
+    private View loadingOverlay;
 
     private String userId, userRole, roleId = null;
     @Override
@@ -109,11 +111,28 @@ public class ViewMainContent extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_main_content);
+        loadingOverlay = findViewById(R.id.loading_overlay);
+        // Check if we should load the AdminDashBoard fragment
+        String fragmentToLoad = getIntent().getStringExtra("load_fragment");
+        if ("AdminDashBoard".equals(fragmentToLoad)) {
+            // Load the AdminDashBoard fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new DashBoardAdmin())
+                    .commit();
+        } else {
+            // Load the default Home fragment or any other fragment you want
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new HomeFragment())
+                    .commit();
+        }
+
+
+        progressBar = findViewById(R.id.progressBar); // Initialize the ProgressBar
         if (savedInstanceState == null) {
+
             loadFragment(new HomeFragment());
         }
         mAuth = FirebaseAuth.getInstance();
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -121,45 +140,136 @@ public class ViewMainContent extends AppCompatActivity {
             return;
         }
         userId = user.getUid();
-
-        UserRoleRetriever loadRole = new UserRoleRetriever();
-        userRole = loadRole.getUserRole(userId);
-        //authentication
-        bottomNavigationView= findViewById(R.id.bottomNavigationView);
-        fab =findViewById(R.id.fab);
+        showLoadingOverlay();
+        // Authentication check and UI setup
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fab = findViewById(R.id.fab);
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
-
-
-        ActionBarDrawerToggle toggle  = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
         }
-        replaceFragment(new HomeFragment());
+        replaceFragment(new HomeFragment());*/
+
         loadUserDetails();
+        if(roleNameTxt != null){
+            checkAdmin(roleNameTxt.toString().trim());
+        }
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomDialog();
-            }
-        });
 
+        fab.setOnClickListener(view -> showBottomDialog());
+    }
+
+    private void showLoadingOverlay() {
+        loadingOverlay.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoadingOverlay() {
+        loadingOverlay.setVisibility(View.GONE);
 
     }
+
+    private void checkAdmin(String roleName){
+        if(roleName.equals("admin")){
+            replaceFragment(new DashBoardAdmin());
+            Toast.makeText(ViewMainContent.this, "You Logged In As Admin!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+    // Updated getRoleName method
+    private void getRoleName(String roleId) {
+        DatabaseReference roleRef = FirebaseDatabase.getInstance().getReference("Roles").child(roleId);
+        roleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot roleSnapshot) {
+                if (roleSnapshot.exists()) {
+                    roleNameTxt = roleSnapshot.child("RoleName").getValue(String.class);
+                    if (roleNameTxt != null) {
+                        setupBottomNavigation(roleNameTxt); // Set up UI based on the retrieved role
+                        invalidateOptionsMenu(); // Refresh the menu once the role is loaded
+                        hideLoadingOverlay();
+                        checkAdmin(roleNameTxt.toString().trim());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                hideLoadingOverlay();
+                Toast.makeText(ViewMainContent.this, "Failed to retrieve role name.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
+
+
+
+    private void updateMenuBasedOnRole(Menu menu) {
+        if ("admin".equals(roleNameTxt)) {
+            menu.findItem(R.id.subscriptions).setVisible(false); // Hide "Appointment Schedule"
+            menu.add(0, R.id.income, Menu.NONE, "Income")
+                    .setIcon(R.drawable.ic_income)
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
+    }
+
+
 
     private void setupBottomNavigation(String roleName) {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fab = findViewById(R.id.fab);
+// Clear existing items and set the menu dynamically
+        bottomNavigationView.getMenu().clear();
 
-        bottomNavigationView.setBackground(null);
+
+        if ("admin".equals(roleName)) {
+            // Add "Income" for admin role
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.admindashboard, Menu.NONE, "Dash Board")
+                    .setIcon(R.drawable.ic_home);
+        } else {
+            // Add "Appointment Schedule" for non-admin roles
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.home, Menu.NONE, "Home")
+                    .setIcon(R.drawable.ic_home);
+        }
+
+
+
+        if ("admin".equals(roleName)) {
+            // Add "Income" for admin role
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.checklog, Menu.NONE, "Check Log")
+                    .setIcon(R.drawable.check_log_ic);
+        } else {
+            // Add "Appointment Schedule" for non-admin roles
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.shorts, Menu.NONE, "Search")
+                    .setIcon(R.drawable.ic_search);
+        }
+
+        bottomNavigationView.getMenu().add(Menu.NONE, R.id.shorts, Menu.NONE, "")
+                .setIcon(null);
+        if ("admin".equals(roleName)) {
+            // Add "Income" for admin role
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.income, Menu.NONE, "Income")
+                    .setIcon(R.drawable.income_ic_2);
+        } else {
+            // Add "Appointment Schedule" for non-admin roles
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.subscriptions, Menu.NONE, "Appointment Schedule")
+                    .setIcon(R.drawable.ic_appointment);
+        }
+        bottomNavigationView.getMenu().add(Menu.NONE, R.id.library, Menu.NONE, "Profile")
+                .setIcon(R.drawable.ic_profile);
 
         // Configure bottom navigation based on role
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -174,11 +284,15 @@ public class ViewMainContent extends AppCompatActivity {
                     replaceFragment(new ScheduleTrainer());
                 } else if (roleName.equals("customer")) {
                     replaceFragment(new ProgressActivity());
-                } else if ( roleName.equals("admin")){
-                    replaceFragment(new ViewIncomeFragment());
                 }
             } else if (itemId == R.id.library) {
                 replaceFragment(new FragmentUserProfile());
+            } else if (itemId == R.id.income) {
+                replaceFragment(new ViewIncomeFragment());
+            }else if (itemId == R.id.checklog) {
+                replaceFragment(new CheckLogFragment());
+            }else if (itemId == R.id.admindashboard) {
+                replaceFragment(new DashBoardAdmin());
             }
 
             return true;
@@ -211,32 +325,17 @@ public class ViewMainContent extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    hideLoadingOverlay();
                     Toast.makeText(ViewMainContent.this, "Failed to load user details.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
 
-    private void getRoleName(String roleId) {
-        DatabaseReference roleRef = FirebaseDatabase.getInstance().getReference("Roles").child(roleId);
-        roleRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot roleSnapshot) {
-                if (roleSnapshot.exists()) {
-                    roleNameTxt = roleSnapshot.child("RoleName").getValue(String.class);
 
-                    if (roleNameTxt != null) {
-                        setupBottomNavigation(roleNameTxt);  // Set up UI based on the role
-                    }
-                }
-            }
+    // Call this in `getRoleName` after setting `roleNameTxt`
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(ViewMainContent.this, "Failed to retrieve role name.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
 
 
     //Outside OnCreate.
