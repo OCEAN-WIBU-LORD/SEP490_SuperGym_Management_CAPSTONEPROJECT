@@ -8,6 +8,7 @@ import com.example.sep490_supergymmanagement.models.QrCodeResponse;
 import com.example.sep490_supergymmanagement.models.RegisterUserDto;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -20,6 +21,7 @@ import retrofit2.http.GET;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("/api/Auth/register")
@@ -58,15 +60,19 @@ public interface ApiService {
             @Part("categoryId") RequestBody categoryId
     );
 
-    // 6. Xóa bài viết
-    @DELETE("api/posts/{postId}")
+    @DELETE("posts/{postId}.json")
     Call<Void> deletePost(@Path("postId") String postId);
 
     // 7. Cập nhật bài viết
-    @PUT("api/posts/{postId}")
+    @PUT("api/posts/posts/{postId}")
     Call<Void> updatePost(@Path("postId") String postId, @Body Post updatedPost);
 
     // 8. Search posts by category
     @GET("api/posts/posts/category/{categoryId}")
     Call<List<Post>> getPostsByCategory(@Path("categoryId") String categoryId);
+
+    @GET("api/Posts/posts/user/{userId}")
+    Call<List<Post>> getPostsByUserId(@Path("userId") String userId);
+
+
 }

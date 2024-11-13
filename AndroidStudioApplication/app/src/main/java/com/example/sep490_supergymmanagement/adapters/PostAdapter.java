@@ -17,6 +17,7 @@ import com.example.sep490_supergymmanagement.models.Post;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,17 +75,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         public void setData(Post p) {
             tvTitle.setText(p.getTitle());
 
-            // Format post date
+            // Format post date using getParsedDate()
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String dateString = dateFormat.format(p.getDate());
-            tvDate.setText("Ngày đăng: " + dateString);
+            Date parsedDate = p.getParsedDate(); // Parse the date from the string
+            if (parsedDate != null) {
+                String dateString = dateFormat.format(parsedDate);
+                tvDate.setText("Ngày đăng: " + dateString);
+            } else {
+                tvDate.setText("Ngày đăng: N/A"); // Handle null date case
+            }
 
             // Load image with Picasso
             Picasso.get()
                     .load(p.getThumbnailUrl())
-                    //.placeholder(R.drawable.avatar) // Default image while loading
                     .error(R.drawable.avatar)       // Error image
                     .into(ivAvatar);
         }
     }
+
 }
