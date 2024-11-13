@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#E0E0E0"
-    tools:context=".CalendarActivity">
+    tools:context=".ViewCalendarActivity">
 
   <CalendarView
       android:id="@+id/calendarView"
@@ -17,82 +17,55 @@
       android:dateTextAppearance="?android:attr/textAppearanceSmall"
       android:firstDayOfWeek="2" />
 
+  <!-- Hiển thị ngày được chọn -->
   <TextView
-      android:id="@+id/selectedDay"
+      android:id="@+id/selectedDateInfo"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="Schedule for selected day"
-      android:textSize="18sp"
+      android:text="No date selected"
+      android:textSize="16sp"
       android:layout_margin="16dp"
-      android:textColor="#000000"/>
+      android:textColor="#000000" />
 
-  <!-- Schedule Table -->
+  <!-- Container cho các ghi chú -->
   <LinearLayout
+      android:id="@+id/notesContainer"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical"
       android:padding="16dp"
       android:background="@color/white">
 
+    <!-- Mẫu một mục ghi chú -->
     <LinearLayout
+        android:id="@+id/sample_note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingVertical="4dp">
+        android:paddingVertical="8dp"
+        android:visibility="gone"> <!-- Ban đầu ẩn -->
 
       <TextView
+          android:id="@+id/time_sample"
           android:layout_width="50dp"
           android:layout_height="wrap_content"
           android:text="06:00"
           android:textColor="#000000"
           android:textSize="14sp"
           android:gravity="center"
-          android:background="@android:color/transparent"
-          android:id="@+id/time_6_7" />
+          android:background="@android:color/transparent" />
 
-      <!-- Appointment Column -->
       <TextView
+          android:id="@+id/appointment_sample"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:text="No appointment"
+          android:text="Sample appointment"
           android:textColor="#757575"
           android:textSize="14sp"
           android:paddingStart="8dp"
-          android:background="@android:color/transparent"
-          android:id="@+id/appointment_6_7" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingVertical="4dp">
-
-      <TextView
-          android:layout_width="50dp"
-          android:layout_height="wrap_content"
-          android:text="07:00"
-          android:textColor="#000000"
-          android:textSize="14sp"
-          android:gravity="center"
-          android:background="@android:color/transparent"
-          android:id="@+id/time_7_8" />
-
-      <TextView
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_weight="1"
-          android:text="No appointment"
-          android:textColor="#757575"
-          android:textSize="14sp"
-          android:paddingStart="8dp"
-          android:background="@android:color/transparent"
-          android:id="@+id/appointment_7_8" />
+          android:background="@android:color/transparent" />
     </LinearLayout>
 
   </LinearLayout>
-
-
-
 </LinearLayout>
