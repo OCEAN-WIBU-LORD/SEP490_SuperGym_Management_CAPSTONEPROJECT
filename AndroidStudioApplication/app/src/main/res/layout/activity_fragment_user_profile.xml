@@ -825,7 +825,7 @@
                         app:layout_constraintStart_toEndOf="@+id/cardView4"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/bmi_Statistic"
                         android:layout_width="101dp"
                         android:layout_height="40dp"
@@ -835,6 +835,8 @@
                         android:fontFamily="@font/calibri"
                         android:paddingRight="15dp"
                         android:text="Read"
+                        android:background="@drawable/rounded_button"
+
                         android:textColor="#FFFF"
                         android:textSize="15sp"
                         android:textStyle="bold"

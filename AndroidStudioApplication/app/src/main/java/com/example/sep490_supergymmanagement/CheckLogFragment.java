@@ -12,15 +12,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.sep490_supergymmanagement.FirebaseImageLoader.FirebaseImageLoader;
 import com.example.sep490_supergymmanagement.adapters.LogAdapter;
 import com.example.sep490_supergymmanagement.adapters.YourImageAdapter;
 import com.example.sep490_supergymmanagement.models.LogEntry;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,10 +37,7 @@ import java.util.List;
 public class CheckLogFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private LogAdapter logAdapter;
-    private List<LogEntry> logEntries = new ArrayList<>();
-    private List<String> imageUrls = new ArrayList<>();
-    private YourImageAdapter imageAdapter;  // Your RecyclerView adapter
+
     public CheckLogFragment() {
         // Required empty public constructor
     }
@@ -64,17 +67,23 @@ public class CheckLogFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewLogs);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize the adapter with an empty list (will be populated later)
-        logAdapter = new LogAdapter(logEntries);
-        recyclerView.setAdapter(logAdapter);
-
-        // Load data from Firebase
-        loadAllImagesFromFacesFolder();
+        FirebaseImageLoader firebaseImageLoader = new FirebaseImageLoader(recyclerView, getContext());
+        firebaseImageLoader.loadNewestImages();
 
         return view;
     }
 
-    private void loadAllImagesFromFacesFolder() {
+
+
+
+
+
+
+
+}
+
+/*
+ private void loadAllImagesFromFacesFolder() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference facesRef = storage.getReference().child("faces");
 
@@ -135,6 +144,4 @@ public class CheckLogFragment extends Fragment {
                     }
                 });
     }
-
-
-}
+ */

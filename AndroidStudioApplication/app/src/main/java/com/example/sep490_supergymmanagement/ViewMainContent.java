@@ -257,7 +257,7 @@ public class ViewMainContent extends AppCompatActivity {
                     .setIcon(R.drawable.ic_search);
         }
 
-        bottomNavigationView.getMenu().add(Menu.NONE, R.id.shorts, Menu.NONE, "")
+        bottomNavigationView.getMenu().add(Menu.NONE, R.id.nothing, Menu.NONE, "")
                 .setIcon(null);
         if ("admin".equals(roleName)) {
             // Add "Income" for admin role
@@ -293,8 +293,9 @@ public class ViewMainContent extends AppCompatActivity {
                 replaceFragment(new CheckLogFragment());
             }else if (itemId == R.id.admindashboard) {
                 replaceFragment(new DashBoardAdmin());
+            }else if (itemId == R.id.nothing) {
+                showBottomDialog();
             }
-
             return true;
         });
 
