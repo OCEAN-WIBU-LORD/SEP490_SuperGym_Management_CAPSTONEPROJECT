@@ -8,11 +8,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import androidx.appcompat.widget.SearchView;
+
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,8 +23,14 @@ import com.example.sep490_supergymmanagement.adapters.PostAdapter;
 import com.example.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.example.sep490_supergymmanagement.models.Post;
 import com.example.sep490_supergymmanagement.models.PostCategory;
+import com.example.sep490_supergymmanagement.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,14 +49,35 @@ public class PostListActivity extends AppCompatActivity {
     private List<Post> filteredPosts = new ArrayList<>();
     private FirebaseAuth mAuth;
     private FirebaseUser userDetails;
-    private List<String> categoryIds = new ArrayList<>();  // Store category IDs for mapping
+    private Button managePostButton; // Button for managing posts
+    private List<String> categoryIds = new ArrayList<>(); // Store category IDs for mapping
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_list);
 
+        // Initialize back button and set up listener
+        CardView btnReturn = findViewById(R.id.returnCardView);
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        // Initialize the "Manage My Posts" button
+        managePostButton = findViewById(R.id.managePostButton);
+        managePostButton.setVisibility(View.GONE); // Initially hide the button
+        managePostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PostListActivity.this, ManagePostsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Firebase authentication
         mAuth = FirebaseAuth.getInstance();
         userDetails = mAuth.getCurrentUser();
 
@@ -57,8 +87,13 @@ public class PostListActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
             return; // Prevent further execution of onCreate
+        } else {
+            // Check user role
+            String userId = userDetails.getUid();
+            checkUserRole(userId);
         }
 
+        // Initialize other views and setup methods
         searchView = findViewById(R.id.search_view);
         categorySpinner = findViewById(R.id.category_spinner);
         postRecyclerView = findViewById(R.id.post_recycler_view);
@@ -69,10 +104,26 @@ public class PostListActivity extends AppCompatActivity {
 
         loadCategories();
         loadPosts();
-
         setupSearchFilter();
     }
 
+    private void checkUserRole(String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if (user != null && user.getRoleId().equals("-O7sA4aJbpHG6gZeX13p")) { // Role "pt"
+                    managePostButton.setVisibility(View.VISIBLE); // Show the "Manage My Posts" button
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("PostListActivity", "Error retrieving user role: " + error.getMessage());
+            }
+        });
+    }
     private void loadCategories() {
         Call<List<PostCategory>> call = RetrofitClient.getApiService().getCategories();
         call.enqueue(new Callback<List<PostCategory>>() {

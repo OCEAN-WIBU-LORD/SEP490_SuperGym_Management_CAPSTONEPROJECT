@@ -1,57 +1,87 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
+    <!-- Outer LinearLayout to contain CardView (Back Button) and content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvTitleDetail"
+        <!-- Back Button CardView -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/returnCardView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp"
+            android:layout_gravity="start">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/move_back_icon"
+                android:backgroundTint="@color/black" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Content Section -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:paddingBottom="12dp"/>
+            android:orientation="vertical"
+            android:paddingTop="16dp">
 
-        <!-- Author -->
-        <TextView
-            android:id="@+id/tvAuthorDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingBottom="4dp"
-            android:gravity="end"/>
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitleDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:paddingBottom="12dp"/>
 
-        <!-- Date -->
-        <TextView
-            android:id="@+id/tvDateDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:paddingBottom="12dp"
-            android:gravity="end"/>
+            <!-- Author -->
+            <TextView
+                android:id="@+id/tvAuthorDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:paddingBottom="4dp"
+                android:gravity="end"/>
 
-        <!-- Content -->
-        <TextView
-            android:id="@+id/tvContentDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:paddingBottom="12dp"/>
+            <!-- Date -->
+            <TextView
+                android:id="@+id/tvDateDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:paddingBottom="12dp"
+                android:gravity="end"/>
 
-        <!-- Thumbnail Image -->
-        <ImageView
-            android:id="@+id/ivThumbnailDetail"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:paddingBottom="8dp"/>
+            <!-- Content -->
+            <TextView
+                android:id="@+id/tvContentDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:paddingBottom="12dp"/>
 
+            <!-- Thumbnail Image -->
+            <ImageView
+                android:id="@+id/ivThumbnailDetail"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:paddingBottom="8dp"/>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

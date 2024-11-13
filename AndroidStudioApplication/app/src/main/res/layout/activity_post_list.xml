@@ -1,28 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/lightGray"> <!-- Background color for a cleaner look -->
 
-    <!-- Thanh tìm kiếm -->
+    <!-- Back Button with CardView for Shadow and Rounded Corners -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/returnCardView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        android:layout_gravity="start">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/move_back_icon"
+            app:tint="@color/black" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Search View with Padding and Margin for Spacing -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Search posts" />
+        android:queryHint="Search posts"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/search_background" /> <!-- Custom background with rounded corners -->
 
-    <!-- Spinner chọn danh mục -->
+    <!-- Category Spinner -->
     <Spinner
         android:id="@+id/category_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/spinner_background" /> <!-- Custom background with rounded corners -->
 
-    <!-- RecyclerView để hiển thị danh sách bài viết -->
+    <!-- Button for Manage My Posts (initially hidden) -->
+    <Button
+        android:id="@+id/managePostButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:text="Manage My Posts"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/primaryColor"
+        android:visibility="gone"
+        android:drawableLeft="@drawable/ic_manage_posts"
+        android:drawablePadding="8dp" /> <!-- Icon for better visual representation -->
+
+    <!-- RecyclerView to display post list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/post_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp" />
+
 </LinearLayout>

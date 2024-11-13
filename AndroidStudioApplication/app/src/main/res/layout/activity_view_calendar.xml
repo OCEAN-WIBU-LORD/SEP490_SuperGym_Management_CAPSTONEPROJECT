@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#E0E0E0"
+    tools:context=".CalendarActivity">
+
+  <CalendarView
+      android:id="@+id/calendarView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="16dp"
+      android:background="@color/white"
+      android:dateTextAppearance="?android:attr/textAppearanceSmall"
+      android:firstDayOfWeek="2" />
+
+  <TextView
+      android:id="@+id/selectedDay"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Schedule for selected day"
+      android:textSize="18sp"
+      android:layout_margin="16dp"
+      android:textColor="#000000"/>
+
+  <!-- Schedule Table -->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="16dp"
+      android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="4dp">
+
+      <TextView
+          android:layout_width="50dp"
+          android:layout_height="wrap_content"
+          android:text="06:00"
+          android:textColor="#000000"
+          android:textSize="14sp"
+          android:gravity="center"
+          android:background="@android:color/transparent"
+          android:id="@+id/time_6_7" />
+
+      <!-- Appointment Column -->
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="No appointment"
+          android:textColor="#757575"
+          android:textSize="14sp"
+          android:paddingStart="8dp"
+          android:background="@android:color/transparent"
+          android:id="@+id/appointment_6_7" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="4dp">
+
+      <TextView
+          android:layout_width="50dp"
+          android:layout_height="wrap_content"
+          android:text="07:00"
+          android:textColor="#000000"
+          android:textSize="14sp"
+          android:gravity="center"
+          android:background="@android:color/transparent"
+          android:id="@+id/time_7_8" />
+
+      <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="No appointment"
+          android:textColor="#757575"
+          android:textSize="14sp"
+          android:paddingStart="8dp"
+          android:background="@android:color/transparent"
+          android:id="@+id/appointment_7_8" />
+    </LinearLayout>
+
+  </LinearLayout>
+
+
+
+</LinearLayout>
