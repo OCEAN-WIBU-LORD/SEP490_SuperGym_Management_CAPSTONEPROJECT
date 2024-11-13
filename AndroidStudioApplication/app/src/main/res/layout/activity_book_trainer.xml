@@ -304,6 +304,18 @@
                 android:gravity="top" />
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/sessionCountEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Enter number of sessions"
+            android:layout_marginTop="8dp"
+            android:background="#EEEEEE"
+            android:padding="10dp" />
+
+
+
 
         <!-- Note Description -->
         <TextView

@@ -22,21 +22,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sep490_supergymmanagement.adapters.UserAdapter;
 import com.example.sep490_supergymmanagement.models.Booking;
 import com.example.sep490_supergymmanagement.models.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class Activity_Book_Trainer extends AppCompatActivity {
     private CardView returnBtn;
     private RadioGroup trainerTypeRadioGroup;
     private Spinner trainerSpinner;
-    private ArrayList<String> trainerNames = new ArrayList<>(); // To hold trainer names for the Spinner
+    private ArrayList<String> trainerNames = new ArrayList<>();
     private ArrayList<String> timeSlots = new ArrayList<>();
+    private List<String> trainerIds = new ArrayList<>(); // Lưu trainer IDs tương ứng
 
     private DatabaseReference usersRef;
     private List<User> userList;
@@ -44,14 +49,13 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private RecyclerView userRecyclerView;
     private EditText extraUserEditText;
     private SearchView userSearchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_trainer);
 
-        // Initialize RadioGroup
-        trainerTypeRadioGroup = findViewById(R.id.trainerTypeRadioGroup); // Ensure the RadioGroup ID is correct
-
+        trainerTypeRadioGroup = findViewById(R.id.trainerTypeRadioGroup);
         returnBtn = findViewById(R.id.returnBtn);
         returnBtn.setOnClickListener(v -> onBackPressed());
 
@@ -60,26 +64,22 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         userRecyclerView = findViewById(R.id.userRecyclerView);
         extraUserEditText = findViewById(R.id.extraUser);
 
-        // Set listener for RadioGroup
         trainerTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.radioGym) {
                 loadTrainers("Gym");
             } else if (checkedId == R.id.radioBoxing) {
                 loadTrainers("Boxing");
-            } else if (checkedId == R.id.radioYoga) { // Fixed condition for Yoga
+            } else if (checkedId == R.id.radioYoga) {
                 loadTrainers("Yoga");
-            } else if (checkedId == R.id.radioPilates) { // Fixed condition for Pilates
+            } else if (checkedId == R.id.radioPilates) {
                 loadTrainers("Pilates");
             }
         });
+
         userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList, user -> {
-            // Set selected user email in EditText
-            extraUserEditText.setText(user.getEmail());
-        });
+        userAdapter = new UserAdapter(userList, user -> extraUserEditText.setText(user.getEmail()));
         userRecyclerView.setAdapter(userAdapter);
-
         usersRef = FirebaseDatabase.getInstance().getReference("users");
 
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -101,7 +101,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
     private void loadTrainers(String trainerType) {
-        trainerNames.clear(); // Clear the existing list to avoid duplicates
+        trainerNames.clear();
+        trainerIds.clear();
         DatabaseReference trainersRef = FirebaseDatabase.getInstance().getReference("Trainers");
 
         trainersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -113,24 +114,26 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Boolean isTrainerYoga = trainerSnapshot.child("isTrainerYoga").getValue(Boolean.class);
                     Boolean isTrainerPilates = trainerSnapshot.child("isTrainerPilates").getValue(Boolean.class);
                     String trainerName = trainerSnapshot.child("name").getValue(String.class);
+                    String trainerId = trainerSnapshot.getKey(); // Lấy PT ID
 
-                    // Filter based on selected trainer type
                     if ("Gym".equals(trainerType) && Boolean.TRUE.equals(isTrainerGym)) {
                         trainerNames.add(trainerName);
+                        trainerIds.add(trainerId);
                     } else if ("Boxing".equals(trainerType) && Boolean.TRUE.equals(isTrainerBoxing)) {
                         trainerNames.add(trainerName);
+                        trainerIds.add(trainerId);
                     } else if ("Yoga".equals(trainerType) && Boolean.TRUE.equals(isTrainerYoga)) {
                         trainerNames.add(trainerName);
+                        trainerIds.add(trainerId);
                     } else if ("Pilates".equals(trainerType) && Boolean.TRUE.equals(isTrainerPilates)) {
                         trainerNames.add(trainerName);
+                        trainerIds.add(trainerId);
                     }
                 }
 
                 if (trainerNames.isEmpty()) {
-                    // Show a Toast message if no trainers are available
                     Toast.makeText(Activity_Book_Trainer.this, "No classes available for " + trainerType, Toast.LENGTH_SHORT).show();
                 } else {
-                    // Update Spinner with the filtered list if trainers are available
                     updateSpinner();
                 }
             }
@@ -141,6 +144,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
         });
     }
+
     private void searchUsers(String emailQuery) {
         usersRef.orderByChild("email").startAt(emailQuery).endAt(emailQuery + "\uf8ff")
                 .addValueEventListener(new ValueEventListener() {
@@ -184,9 +188,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
     private void setupSeekBar() {
         SeekBar sessionTimeSeekBar = findViewById(R.id.sessionTimeSeekBar);
-        sessionTimeSeekBar.setMax(timeSlots.size() - 1); // Set max to number of time slots - 1
+        sessionTimeSeekBar.setMax(timeSlots.size() - 1);
 
-        // Display the selected time slot in a TextView when SeekBar is adjusted
         TextView selectedTimeSlotText = findViewById(R.id.selectedTimeSlotText);
         sessionTimeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -202,8 +205,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         });
     }
 
-
-
     private void updateSpinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, trainerNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -211,7 +212,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
     private void setupSubmitButton() {
-        View submitButton = findViewById(R.id.submit_button); // Ensure you have this ID set in XML layout
+        View submitButton = findViewById(R.id.submit_button);
         if (submitButton != null) {
             submitButton.setOnClickListener(v -> {
                 Toast.makeText(Activity_Book_Trainer.this, "Request Submitted", Toast.LENGTH_SHORT).show();
@@ -221,48 +222,56 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
     private void saveBookingDetails() {
-        // Get the selected trainer from the spinner
-        String selectedTrainer = trainerSpinner.getSelectedItem().toString();
+        // Lấy `customerId` từ thông tin đăng nhập hiện tại
+        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Get the selected trainer type from the RadioGroup
+        // Lấy `ptId` từ trainer đã chọn
+        int selectedTrainerIndex = trainerSpinner.getSelectedItemPosition();
+        String ptId = trainerIds.get(selectedTrainerIndex); // Lấy `ptId` từ vị trí của trainer
+
+        // Tên PT từ trainer đã chọn
+        String trainerName = trainerSpinner.getSelectedItem().toString();
+
+        // Lấy loại hình huấn luyện từ RadioGroup
         String trainerType = trainerTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioGym ? "Gym" :
                 (trainerTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioBoxing ? "Boxing" :
                         (trainerTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioYoga ? "Yoga" : "Pilates"));
 
-        // Get the selected days from the checkboxes (Monday to Friday)
-        StringBuilder selectedDays = new StringBuilder();
-        GridLayout dayGridLayout = findViewById(R.id.dayGridLayout); // Ensure the GridLayout ID is correct
-        for (int i = 0; i < dayGridLayout.getChildCount(); i++) {
-            View dayView = dayGridLayout.getChildAt(i);
-            if (dayView instanceof CheckBox) {
-                CheckBox checkBox = (CheckBox) dayView;
-                if (checkBox.isChecked()) {
-                    selectedDays.append(checkBox.getText().toString()).append(", ");
-                }
-            }
-        }
-        // Remove the trailing comma and space
-        if (selectedDays.length() > 0) {
-            selectedDays.setLength(selectedDays.length() - 2);
+        // Lấy time slot từ SeekBar
+        SeekBar sessionTimeSeekBar = findViewById(R.id.sessionTimeSeekBar);
+        String selectedTimeSlot = timeSlots.get(sessionTimeSeekBar.getProgress());
+        String timeSlotId = sessionTimeSeekBar.getProgress() + ""; // ID khung giờ dựa trên vị trí của SeekBar
+
+        // Lấy ngày bắt đầu từ ngày hiện tại + 1
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        String startDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+
+        // Lấy số buổi tập từ EditText
+        EditText sessionCountEditText = findViewById(R.id.sessionCountEditText);
+        int sessionCount;
+        try {
+            sessionCount = Integer.parseInt(sessionCountEditText.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Please enter a valid number of sessions", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Get the selected time slot from the SeekBar
-        SeekBar sessionTimeSeekBar = findViewById(R.id.sessionTimeSeekBar); // Ensure SeekBar ID is correct
-        String selectedTimeSlot = timeSlots.get(sessionTimeSeekBar.getProgress()); // Map SeekBar progress to time slot
-
-        // Get the notes entered by the user
-        EditText notesEditText = findViewById(R.id.notesEditText); // Ensure EditText ID is correct
+        // Lấy ghi chú
+        EditText notesEditText = findViewById(R.id.notesEditText);
         String notes = notesEditText.getText().toString();
 
-        // Create a new booking object with all the collected details
-        Booking booking = new Booking(selectedTrainer, trainerType, selectedDays.toString(), selectedTimeSlot, notes);
+        // Tạo đối tượng Booking với các thông tin đã thu thập
+        Booking booking = new Booking(customerId, ptId, startDate, sessionCount, timeSlotId, trainerName, trainerType,
+                selectedTimeSlot, notes);
 
-        // Save the booking details to Firebase
+        // Lưu vào Firebase
         DatabaseReference bookingsRef = FirebaseDatabase.getInstance().getReference("Bookings");
         String bookingId = bookingsRef.push().getKey();
         bookingsRef.child(bookingId).setValue(booking)
                 .addOnSuccessListener(aVoid -> Toast.makeText(this, "Booking details saved successfully", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to save booking", Toast.LENGTH_SHORT).show());
     }
+
 
 }
