@@ -6,7 +6,7 @@
     android:padding="10dp"
     android:background="@color/light_red"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.UserProfileFragment">
+    tools:context=".Activity_Book_Trainer">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
