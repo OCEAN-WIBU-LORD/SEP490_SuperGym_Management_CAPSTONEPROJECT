@@ -427,7 +427,7 @@
             >
 
 
-            <com.example.sep490_supergymmanagement.animations.CupOfWaterView
+            <com.supergym.sep490_supergymmanagement.animations.CupOfWaterView
 
                 android:id="@+id/cupOfWater"
                 android:layout_width="110dp"

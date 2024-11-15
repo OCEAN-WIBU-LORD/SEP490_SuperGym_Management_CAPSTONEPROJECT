@@ -10,9 +10,10 @@
 
     <TextView
         android:id="@+id/textViewImageName"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="20dp"
         android:layout_marginRight="10dp"
         android:paddingBottom="4dp"
         android:textSize="16sp"
@@ -44,6 +45,7 @@
     <TextView
         android:id="@+id/textViewCreationTime"
         android:layout_width="100dp"
+        android:layout_marginStart="20dp"
         android:layout_height="wrap_content"
         android:paddingTop="2dp"
         android:text="Creation Time"
