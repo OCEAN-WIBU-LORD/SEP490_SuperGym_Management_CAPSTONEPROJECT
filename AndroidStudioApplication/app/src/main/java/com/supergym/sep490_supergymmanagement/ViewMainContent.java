@@ -111,6 +111,7 @@ public class    ViewMainContent extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_main_content);
+        loadUserDetails();
         loadingOverlay = findViewById(R.id.loading_overlay);
         // Check if we should load the AdminDashBoard fragment
         String fragmentToLoad = getIntent().getStringExtra("load_fragment");
@@ -159,12 +160,12 @@ public class    ViewMainContent extends AppCompatActivity {
         }
         replaceFragment(new HomeFragment());*/
 
-        loadUserDetails();
+
         if(roleNameTxt != null){
             checkAdmin(roleNameTxt.toString().trim());
         }
 
-        if(roleNameTxt == null) {
+        /*if(roleNameTxt == null) {
             bottomNavigationView.setBackground(null);
             bottomNavigationView.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
@@ -180,7 +181,7 @@ public class    ViewMainContent extends AppCompatActivity {
 
                 return true;
             });
-        }
+        }*/
 
 
         fab.setOnClickListener(view -> showBottomDialog());
@@ -337,7 +338,7 @@ public class    ViewMainContent extends AppCompatActivity {
 
                         // Retrieve the user's role name based on roleId
                         if (roleId != null) {
-                            getRoleName(roleId);
+                            getRoleName(roleId.toString().trim());
                         }
                     }
                 }
