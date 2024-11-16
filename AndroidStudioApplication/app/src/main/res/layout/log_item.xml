@@ -1,0 +1,49 @@
+<!-- res/layout/log_item.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- ImageView for the user's face -->
+    <ImageView
+        android:id="@+id/ivUserImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_placeholder"
+    android:layout_gravity="center" />
+
+    <!-- TextView for the user's name -->
+    <TextView
+        android:id="@+id/tvUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <!-- TextView for the user's role -->
+    <TextView
+        android:id="@+id/tvRole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Role: Customer"
+        android:textSize="14sp" />
+
+    <!-- TextView for the check-in time -->
+    <TextView
+        android:id="@+id/tvCheckInTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check-in Time: --"
+        android:textSize="14sp" />
+
+    <!-- TextView for the check-out time -->
+    <TextView
+        android:id="@+id/tvCheckOutTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check-out Time: --"
+        android:textSize="14sp" />
+
+</LinearLayout>

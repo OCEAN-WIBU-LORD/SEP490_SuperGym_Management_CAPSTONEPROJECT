@@ -6,10 +6,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.HomeFragment">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -241,7 +242,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/postlist"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="300dp"
                     android:layout_marginTop="8dp"/>
 
                 <!-- Existing components continue here -->
@@ -250,91 +251,98 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/black">
+                android:layout_height="wrap_content">
 
                 <!-- Title -->
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Monthly subscriptions"
-                    android:textSize="18sp"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    app:cardCornerRadius="25dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:gravity="center" />
-
-                <!-- Monthly Bars -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/chartContainer"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/title"
+                    app:layout_constraintHorizontal_bias="0.4"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp">
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <!-- Months and Bars - Example for January -->
-                    <LinearLayout
-                        android:id="@+id/month1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        app:layout_constraintWidth_percent="0.1"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                        <!-- Bar -->
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="60dp"
-                            android:background="@color/red"
-                            android:layout_marginBottom="4dp"/>
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView4"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginRight="20dp"
+                            app:cardBackgroundColor="@color/lowLightBlue"
+                            app:cardCornerRadius="15dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                        <!-- Percentage Text -->
+                            <ImageView
+                                android:id="@+id/image_user1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/advertise_trainer"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.cardview.widget.CardView>
+
+
                         <TextView
+                            android:id="@+id/text_user_name"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="1%"
-                            android:textSize="12sp"
-                            android:textColor="@color/white" />
+                            android:layout_height="32dp"
+                            android:layout_marginTop="244dp"
+                            android:fontFamily="@font/calibri"
+                            android:text="Training With Our Professional Trainer"
+                            android:textFontWeight="900"
+                            android:textSize="20sp"
 
-                        <!-- Month Text -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Jan"
-                            android:textSize="14sp"
-                            android:textColor="@color/white" />
-                    </LinearLayout>
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.689"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- Copy the above LinearLayout block for each month (February to December),
-                         adjusting the layout properties like percentage, and height for each bar
-                         to match the data in your image -->
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnBookTrainer"
+                            android:layout_width="250dp"
+                            android:layout_height="40dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/rounded_button"
+                            android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+                            android:fontFamily="@font/calibri"
+                            android:paddingRight="10dp"
+                            android:text="Book Now!"
+                            android:textColor="#FFFF"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.497"
+                            app:layout_constraintStart_toStartOf="parent" />
 
-                    <!-- Repeat similar blocks for months -->
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.cardview.widget.CardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 
 </FrameLayout>

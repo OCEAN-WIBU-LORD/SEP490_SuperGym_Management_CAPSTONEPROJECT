@@ -11,10 +11,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sep490_supergymmanagement.Activity_Book_Trainer;
 import com.example.sep490_supergymmanagement.LoginActivity;
 import com.example.sep490_supergymmanagement.PostListActivity; // Import your PostListActivity
 import com.example.sep490_supergymmanagement.R;
@@ -45,12 +47,14 @@ public class HomeFragment extends Fragment {
     RelativeLayout relativeLayout;
     TextView seeMore; // Declare the seeMore TextView
 
+    AppCompatButton btnBookTrainer;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home2, container, false);
         mAuth = FirebaseAuth.getInstance();
-
+        btnBookTrainer = rootView.findViewById(R.id.btnBookTrainer);
         // If the user is not logged in, redirect to LoginActivity
         userDetails = mAuth.getCurrentUser();
         if (userDetails == null) {
@@ -81,7 +85,13 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
             }
         });
-
+        btnBookTrainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Activity_Book_Trainer.class);
+                startActivity(intent);
+            }
+        });
         // Fetch the latest posts and update the RecyclerView
         fetchLatestPosts();
 

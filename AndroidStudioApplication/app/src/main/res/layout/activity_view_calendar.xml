@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#E0E0E0"
+    tools:context=".ViewCalendarActivity">
+
+  <CalendarView
+      android:id="@+id/calendarView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="16dp"
+      android:background="@color/white"
+      android:dateTextAppearance="?android:attr/textAppearanceSmall"
+      android:firstDayOfWeek="2" />
+
+  <!-- Hiển thị ngày được chọn -->
+  <TextView
+      android:id="@+id/selectedDateInfo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="No date selected"
+      android:textSize="16sp"
+      android:layout_margin="16dp"
+      android:textColor="#000000" />
+
+  <!-- Container cho các ghi chú -->
+  <LinearLayout
+      android:id="@+id/notesContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="16dp"
+      android:background="@color/white">
+
+    <!-- Mẫu một mục ghi chú -->
+    <LinearLayout
+        android:id="@+id/sample_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:visibility="gone"> <!-- Ban đầu ẩn -->
+
+      <TextView
+          android:id="@+id/time_sample"
+          android:layout_width="50dp"
+          android:layout_height="wrap_content"
+          android:text="06:00"
+          android:textColor="#000000"
+          android:textSize="14sp"
+          android:gravity="center"
+          android:background="@android:color/transparent" />
+
+      <TextView
+          android:id="@+id/appointment_sample"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="Sample appointment"
+          android:textColor="#757575"
+          android:textSize="14sp"
+          android:paddingStart="8dp"
+          android:background="@android:color/transparent" />
+    </LinearLayout>
+
+  </LinearLayout>
+</LinearLayout>

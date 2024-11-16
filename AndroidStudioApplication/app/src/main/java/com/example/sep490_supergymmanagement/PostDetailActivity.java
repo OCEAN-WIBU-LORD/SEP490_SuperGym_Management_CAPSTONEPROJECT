@@ -2,19 +2,23 @@ package com.example.sep490_supergymmanagement;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.example.sep490_supergymmanagement.apiadapter.ApiService.ApiService; // Import ApiService
 import com.example.sep490_supergymmanagement.apiadapter.RetrofitClient; // Import RetrofitClient
 import com.example.sep490_supergymmanagement.models.Post;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -31,6 +35,15 @@ public class PostDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detail);
+
+        // Initialize back button and set up listener
+        CardView btnReturn = findViewById(R.id.returnCardView);
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         // Bind views
         tvTitleDetail = findViewById(R.id.tvTitleDetail);
@@ -51,6 +64,8 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void fetchPostDetails(String postId) {
         apiService.getPostById(postId).enqueue(new Callback<Post>() {
             @Override
@@ -58,18 +73,26 @@ public class PostDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     Post post = response.body();
 
-                    // Bind data to views
+                    // Gán dữ liệu cho các view
                     tvTitleDetail.setText(post.getTitle());
 
-                    // Format the date to show only day, month, and year
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    String formattedDate = dateFormat.format(post.getDate());
+                    // Chuyển đổi trường date
+                    String formattedDate;
+                    Date parsedDate = post.getParsedDate(); // Sử dụng phương thức getParsedDate() từ model Post
+
+                    if (parsedDate != null) {
+                        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                        formattedDate = outputDateFormat.format(parsedDate); // Định dạng lại ngày
+                    } else {
+                        formattedDate = "N/A"; // Giá trị mặc định nếu chuyển đổi thất bại
+                    }
+
                     tvDateDetail.setText("Date: " + formattedDate);
 
                     tvContentDetail.setText(post.getContent());
-                    tvAuthorDetail.setText(post.getAuthorName()); // Hiển thị tên tác giả
+                    tvAuthorDetail.setText(post.getAuthorName());
 
-                    // Load hình ảnh với Picasso
+                    // Tải hình ảnh với Picasso
                     Picasso.get().load(post.getThumbnailUrl()).error(R.drawable.avatar).into(ivThumbnailDetail);
                 } else {
                     Toast.makeText(PostDetailActivity.this, "Failed to fetch post details.", Toast.LENGTH_SHORT).show();
@@ -83,5 +106,7 @@ public class PostDetailActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

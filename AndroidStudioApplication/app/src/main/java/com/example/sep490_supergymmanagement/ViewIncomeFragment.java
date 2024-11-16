@@ -2,6 +2,7 @@ package com.example.sep490_supergymmanagement;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +30,10 @@ public class ViewIncomeFragment extends Fragment {
     private Calendar calendar = Calendar.getInstance();
     private DatabaseReference incomeRef;
     private Spinner campusFilterSpinner;
-    private ImageView btnDropDown;
+    private ImageView btnDropDown, btnDropDown2;
     private Date startDate, endDate;
-    private String selectedCampus = "All";
+    private String selectedCampus = "All campuses";
+    private String selectedType = "All types";
 
     @Nullable
     @Override
@@ -56,9 +58,37 @@ public class ViewIncomeFragment extends Fragment {
         endDateButton.setOnClickListener(v -> showDatePickerDialog(false));
         btnDropDown.setOnClickListener(v -> campusFilterSpinner.performClick());
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.campus_filter_options, android.R.layout.simple_spinner_item);
+        // In your Activity or Fragment
+        Spinner filterTypeSpinner = view.findViewById(R.id.FilterTypeSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.type_filter_options, R.layout.spinner_item_multiline);
+        adapter.setDropDownViewResource(R.layout.spinner_item_multiline);
+        filterTypeSpinner.setAdapter(adapter);
+
+
+
+        btnDropDown2 = view.findViewById(R.id.btnDropDown2);
+        btnDropDown2.setOnClickListener(v -> filterTypeSpinner.performClick());
+
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(getContext(), R.array.campus_filter_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        campusFilterSpinner.setAdapter(adapter);
+        campusFilterSpinner.setAdapter(adapter1);
+
+
+        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedType = filterTypeSpinner.getSelectedItem().toString();
+                if (startDate != null && endDate != null) {
+                    fetchAndDisplayIncomeData();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+
 
         campusFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -104,47 +134,114 @@ public class ViewIncomeFragment extends Fragment {
     }
 
     private void fetchAndDisplayIncomeData() {
-        // Get selected campus from Spinner
-        String selectedCampus = "campus_1";
+        String selectedCampus = campusFilterSpinner.getSelectedItem().toString().trim();
 
-        // Reference specific campus data in Firebase
-        incomeRef.child(selectedCampus).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<IncomeData> incomeDataList = new ArrayList<>();
-                float totalIncome = 0f;
+        if (selectedCampus.equals("All campuses")) {
+            // Retrieve income data for all campuses
+            incomeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) {
+                        Toast.makeText(getContext(), "No income data available.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
-                    String dateStr = dateSnapshot.getKey();
-                    Float income = dateSnapshot.child("totalIncome").getValue(Float.class);
+                    List<IncomeData> incomeDataList = new ArrayList<>();
+                    float totalIncome = 0f;
 
-                    try {
-                        Date incomeDate = dateFormat.parse(dateStr);
-                        if (incomeDate != null && !incomeDate.before(startDate) && !incomeDate.after(endDate)) {
-                            incomeDataList.add(new IncomeData(incomeDate, income != null ? income : 0f));
-                            totalIncome += income != null ? income : 0f;
+                    for (DataSnapshot campusSnapshot : snapshot.getChildren()) {
+                        for (DataSnapshot dateSnapshot : campusSnapshot.getChildren()) {
+                            String dateStr = dateSnapshot.getKey();
+                            Float income = dateSnapshot.child("totalIncome").getValue(Float.class);
+                            String type = dateSnapshot.child("typeIncome").getValue(String.class);
+
+                            if (income == null) income = 0f;
+                            if (type == null) type = "";
+
+                            try {
+                                Date incomeDate = dateFormat.parse(dateStr);
+                                if (incomeDate != null) {
+                                    // Apply date and type filtering
+                                    if (!incomeDate.before(startDate) && !incomeDate.after(endDate) &&
+                                            (selectedType.equals("All types") || selectedType.equals(type))) {
+                                        incomeDataList.add(new IncomeData(incomeDate, income));
+                                        totalIncome += income;
+                                    }
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    }
+
+                    if (incomeDataList.isEmpty()) {
+                        Toast.makeText(getContext(), "No income data available for the selected date range and type.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        displayTotalIncome(totalIncome);
+                        drawIncomeChart(incomeDataList);
                     }
                 }
 
-                // Check if income data list is empty
-                if (incomeDataList.isEmpty()) {
-                    Toast.makeText(getContext(), "No income data available for the selected date range.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Update the total income TextView
-                    displayTotalIncome(totalIncome);
-                    drawIncomeChart(incomeDataList);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getContext(), "Failed to retrieve income data.", Toast.LENGTH_SHORT).show();
                 }
-            }
+            });
+        } else {
+            // Retrieve income data for a specific campus
+            incomeRef.child(selectedCampus).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!snapshot.exists()) {
+                        Toast.makeText(getContext(), "No income data available for the selected campus.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "Failed to retrieve income data.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    List<IncomeData> incomeDataList = new ArrayList<>();
+                    float totalIncome = 0f;
+
+                    for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
+                        String dateStr = dateSnapshot.getKey();
+                        Float income = dateSnapshot.child("totalIncome").getValue(Float.class);
+                        String type = dateSnapshot.child("typeIncome").getValue(String.class);
+
+                        if (income == null) income = 0f;
+                        if (type == null) type = "";
+
+                        try {
+                            Date incomeDate = dateFormat.parse(dateStr);
+                            if (incomeDate != null) {
+                                // Apply date and type filtering
+                                if (!incomeDate.before(startDate) && !incomeDate.after(endDate) &&
+                                        (selectedType.equals("All types") || selectedType.equals(type))) {
+                                    incomeDataList.add(new IncomeData(incomeDate, income));
+                                    totalIncome += income;
+                                }
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (incomeDataList.isEmpty()) {
+                        Toast.makeText(getContext(), "No income data available for the selected date range and type.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        displayTotalIncome(totalIncome);
+                        drawIncomeChart(incomeDataList);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getContext(), "Failed to retrieve income data.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
+
+
+
 
 
     private void drawIncomeChart(List<IncomeData> incomeDataList) {

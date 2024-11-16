@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@color/light_red"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Activity_Book_Trainer">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:paddingBottom="20dp"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- App Logo and Title -->
+
+        <!-- Booking Title -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/returnBtn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/move_back_icon"
+                    android:backgroundTint="@color/black"
+                    android:textColor="@color/lowLightBlue"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/imageView12"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/logovip2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView13"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:text="SuperGYM"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book Your Trainer"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textColor="#000000" />
+
+        <!-- Description Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a trainer to start your fitness journey with personalized sessions."
+            android:layout_marginTop="8dp"
+            android:textColor="#666666" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Exercise Type"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <RadioGroup
+            android:id="@+id/trainerTypeRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#EEEEEE"
+            android:padding="8dp">
+
+            <RadioButton android:text="Gym" android:id="@+id/radioGym"  android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+            <RadioButton android:text="Boxing" android:id="@+id/radioBoxing"  android:layout_height="wrap_content"  android:layout_width="wrap_content"/>
+            <RadioButton android:text="Yoga" android:id="@+id/radioYoga" android:layout_height="wrap_content"  android:layout_width="wrap_content" />
+            <RadioButton android:text="Pilates" android:id="@+id/radioPilates" android:layout_height="wrap_content"  android:layout_width="wrap_content"/>
+        </RadioGroup>
+
+        <!-- Trainer Selection Dropdown -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose a Trainer:"
+            android:layout_marginTop="16dp"
+            android:textColor="#000000" />
+
+        <Spinner
+            android:id="@+id/trainerSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#DDDDDD"
+            android:entries="@array/trainers" />
+
+        <!-- Trainer Profile -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="#D0E8FF"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/trainer_1"
+                android:layout_gravity="center" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingLeft="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Trainer Name: Alex Johnson"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Specialization: Strength Training"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rating:"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Session Details -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Session"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textColor="#000000" />
+
+        <!-- Preferred Days -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Preferred Days"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <GridLayout
+            android:id="@+id/dayGridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="5"
+            android:padding="8dp"
+            android:background="#EEEEEE">
+
+            <CheckBox android:text="Monday" />
+            <CheckBox android:text="Tuesday" />
+            <CheckBox android:text="Wednesday" />
+            <CheckBox android:text="Thursday" />
+            <CheckBox android:text="Friday" />
+        </GridLayout>
+
+        <!-- Preferred Times -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Preferred Times"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <SeekBar
+            android:id="@+id/sessionTimeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:id="@+id/selectedTimeSlotText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Time Slot"
+                android:textColor="#666666" />
+
+           <!-- <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6:00 AM"
+                android:textColor="#666666" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" - "
+                android:textColor="#666666" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10:00 PM"
+                android:textColor="#666666" />-->
+        </LinearLayout>
+
+        <!-- Exercise Type -->
+        <!-- Note Description -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Extra Users"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search User by Email"
+                android:textColor="#000000"
+                android:layout_marginBottom="8dp" />
+
+            <SearchView
+                android:id="@+id/userSearchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:queryHint="Enter user email" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Extra Users"
+                android:layout_marginTop="16dp"
+                android:textColor="#000000" />
+
+            <EditText
+                android:id="@+id/extraUser"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="#EEEEEE"
+                android:hint="Enter additional users"
+                android:gravity="top" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/sessionCountEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Enter number of sessions"
+            android:layout_marginTop="8dp"
+            android:background="#EEEEEE"
+            android:padding="10dp" />
+
+
+
+
+        <!-- Note Description -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note Description"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000" />
+
+        <EditText
+            android:id="@+id/notesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="#EEEEEE"
+            android:hint="Enter additional notes"
+            android:gravity="top" />
+
+        <!-- Submit Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit Request"
+            android:layout_marginBottom="40dp"
+            android:background="#000000"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>
+</FrameLayout>
