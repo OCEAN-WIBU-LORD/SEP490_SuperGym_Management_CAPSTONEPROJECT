@@ -385,7 +385,8 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                     updatedUser.setPhone(editPhone.getText().toString().trim());
                     updatedUser.setAddress(addressText.getText().toString().trim());
                     updatedUser.setGender(genderText.getText().toString().trim());
-                    updatedUser.setRoleId(roleIdFinal);
+
+
                     try {
                         updatedUser.setIdCard( cccdText.getText().toString().trim());
                     } catch (Exception e) {
@@ -395,9 +396,26 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                         return;
                     }
 
-                    Bitmap bitmap = ((BitmapDrawable) userAvatarImg.getDrawable()).getBitmap();
-                    String avatarBase64 = bitmapToBase64(bitmap);
-                    updatedUser.setUserAvatar(avatarBase64);
+                    // Check if the image has been assigned before converting it
+                    Bitmap bitmap = null;
+                    if (userAvatarImg.getDrawable() != null) {
+                        bitmap = ((BitmapDrawable) userAvatarImg.getDrawable()).getBitmap();
+                    }
+
+                    if (bitmap != null) {
+                        String avatarBase64 = bitmapToBase64(bitmap);
+                        try {
+                            updatedUser.setUserAvatar(avatarBase64);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(getActivity(), "No avatar found!", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            return;
+                        }
+                    } else {
+                        // If no image is assigned, you can either skip the avatar field or set a default value
+                        updatedUser.setUserAvatar(null); // or set to some default value
+                    }
 
                     new UserResp().updateUser(updatedUser, new Callback<User>() {
                         @Override
@@ -446,7 +464,8 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                             int year = dobSnapshot.child("year").getValue(Integer.class) + 1900; // Adjust year as needed
                             int month = dobSnapshot.child("month").getValue(Integer.class); // Month is 0-based in Date
                             int day = dobSnapshot.child("date").getValue(Integer.class);
-                             roleIdFinal = dataSnapshot.child("roleId").getValue(String.class);
+
+
                             // Create the Date object
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(year, month, day);
@@ -463,6 +482,14 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                         String gender = dataSnapshot.child("gender").getValue(String.class);
                         String idCardNo = dataSnapshot.child("idCard").getValue(String.class);
 
+
+                        String  roleIdFinalTxt = dataSnapshot.child("roleId").getValue(String.class);
+                        roleIdFinal = String.valueOf(roleIdFinalTxt).trim();
+                        if (roleIdFinal!= null){
+                            Toast.makeText(getActivity(), roleIdFinal, Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getActivity(), "no role", Toast.LENGTH_SHORT).show();
+                        }
                         if (name != null) editName.setText(name);
                         if (address != null) addressText.setText(address);
                         if (phone != null) editPhone.setText(phone);

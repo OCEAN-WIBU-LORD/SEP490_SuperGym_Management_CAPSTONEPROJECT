@@ -16,7 +16,8 @@
         android:orientation="vertical"
 
         >
-
+        <!-- Loading overlay -->
+        <include layout="@layout/loading_overlay" />
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -42,8 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <!-- Loading overlay -->
-                <include layout="@layout/loading_overlay" />
+
 
             </RelativeLayout>
 

@@ -103,6 +103,7 @@ public class User {
     }
 
     public void setRoleId(String roleId) {
+
         this.roleId = roleId;
     }
 

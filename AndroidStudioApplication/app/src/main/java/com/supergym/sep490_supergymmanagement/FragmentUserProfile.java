@@ -162,7 +162,7 @@ public class FragmentUserProfile extends Fragment {
         editProfile = view.findViewById(R.id.editCardView);
         //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
         editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
-        returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
+        returnBtn.setOnClickListener(v -> getActivity().onBackPressed());
         btn_bmi_Statistic.setOnClickListener(V -> replaceFragment(new BMI_Statistic_Fragment()));
         dietBtn.setOnClickListener(V -> replaceFragment(new Diet_Eating_Fragment()));
         Button transactionHistoryBtn = view.findViewById(R.id.text_price4);

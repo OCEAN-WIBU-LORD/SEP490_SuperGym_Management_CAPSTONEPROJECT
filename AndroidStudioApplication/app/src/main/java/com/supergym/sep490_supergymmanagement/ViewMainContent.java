@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -165,26 +167,35 @@ public class    ViewMainContent extends AppCompatActivity {
             checkAdmin(roleNameTxt.toString().trim());
         }
 
-        /*if(roleNameTxt == null) {
-            bottomNavigationView.setBackground(null);
-            bottomNavigationView.setOnItemSelectedListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.home) {
-                    replaceFragment(new HomeFragment());
-                } else if (itemId == R.id.shorts) {
-                    replaceFragment(new SearchFragment());
-                } else if (itemId == R.id.subscriptions) {
-                    replaceFragment(new AppointmentFragment());
-                } else if (itemId == R.id.library) {
-                    replaceFragment(new FragmentUserProfile());
-                }
-
-                return true;
-            });
-        }*/
+       checkNullRoll();
 
 
         fab.setOnClickListener(view -> showBottomDialog());
+    }
+
+
+    private void checkNullRoll() {
+        // Delay the execution of the following code by 5 seconds
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (roleNameTxt == null) {
+                hideLoadingOverlay();
+                Toast.makeText(ViewMainContent.this, "Role is Null!", Toast.LENGTH_SHORT).show();
+                bottomNavigationView.setBackground(null);
+                bottomNavigationView.setOnItemSelectedListener(item -> {
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.home) {
+                        replaceFragment(new HomeFragment());
+                    } else if (itemId == R.id.shorts) {
+                        replaceFragment(new SearchFragment());
+                    } else if (itemId == R.id.subscriptions) {
+                        replaceFragment(new AppointmentFragment());
+                    } else if (itemId == R.id.library) {
+                        replaceFragment(new FragmentUserProfile());
+                    }
+                    return true;
+                });
+            }
+        }, 3000); // 5 seconds delay (5000 milliseconds)
     }
 
     private void showLoadingOverlay() {

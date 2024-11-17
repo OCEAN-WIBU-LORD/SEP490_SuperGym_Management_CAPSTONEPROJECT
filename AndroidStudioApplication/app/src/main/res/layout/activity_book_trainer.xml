@@ -95,24 +95,59 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:text="Select Exercise Type"
             android:layout_marginTop="8dp"
             android:textColor="#000000" />
-
-        <RadioGroup
-            android:id="@+id/trainerTypeRadioGroup"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#EEEEEE"
-            android:padding="8dp">
+            android:layout_height="wrap_content">
 
-            <RadioButton android:text="Gym" android:id="@+id/radioGym"  android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
-            <RadioButton android:text="Boxing" android:id="@+id/radioBoxing"  android:layout_height="wrap_content"  android:layout_width="wrap_content"/>
-            <RadioButton android:text="Yoga" android:id="@+id/radioYoga" android:layout_height="wrap_content"  android:layout_width="wrap_content" />
-            <RadioButton android:text="Pilates" android:id="@+id/radioPilates" android:layout_height="wrap_content"  android:layout_width="wrap_content"/>
-        </RadioGroup>
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RadioGroup
+                    android:id="@+id/trainerTypeRadioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#EEEEEE"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <RadioButton
+                        android:id="@+id/radioGym"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gym" />
+
+                    <RadioButton
+                        android:id="@+id/radioBoxing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Boxing" />
+
+                    <RadioButton
+                        android:id="@+id/radioYoga"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yoga" />
+
+                    <RadioButton
+                        android:id="@+id/radioPilates"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilates" />
+                </RadioGroup>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <!-- Trainer Selection Dropdown -->
         <TextView
@@ -121,60 +156,86 @@
             android:text="Choose a Trainer:"
             android:layout_marginTop="16dp"
             android:textColor="#000000" />
-
-        <Spinner
-            android:id="@+id/trainerSpinner"
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#DDDDDD"
-            android:entries="@array/trainers" />
+            app:cardCornerRadius="25dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Spinner
+                    android:id="@+id/trainerSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#DDDDDD"
+                    android:entries="@array/trainers" />
+                <ImageView
+                    android:id="@+id/dropdownBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#DDDDDD"
+                    android:src="@drawable/dropdown">
+                </ImageView>
+            </LinearLayout>
+
+
+
+        </androidx.cardview.widget.CardView>
+
 
         <!-- Trainer Profile -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="#D0E8FF"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/trainer_1"
-                android:layout_gravity="center" />
-
+            app:cardCornerRadius="25dp">
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingLeft="16dp">
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:background="#D0E8FF">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Trainer Name: Alex Johnson"
-                    android:textSize="16sp"
-                    android:textColor="#000000" />
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/trainer_1"
+                    android:layout_gravity="center" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Specialization: Strength Training"
-                    android:textSize="14sp"
-                    android:textColor="#666666"
-                    android:layout_marginTop="4dp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rating:"
-                    android:textSize="14sp"
-                    android:textColor="#666666"
-                    android:layout_marginTop="4dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trainer Name: Alex Johnson"
+                        android:textSize="16sp"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Specialization: Strength Training"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rating:"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
 
         <!-- Session Details -->
         <TextView

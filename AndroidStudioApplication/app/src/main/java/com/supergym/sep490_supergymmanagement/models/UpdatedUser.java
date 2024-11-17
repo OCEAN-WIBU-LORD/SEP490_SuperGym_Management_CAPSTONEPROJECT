@@ -12,7 +12,6 @@ public class UpdatedUser {
     private String address;
     private String phone;
     private String idCard;
-    private String roleId;
     private String userAvatar;
 
     // Default constructor
@@ -20,7 +19,7 @@ public class UpdatedUser {
     }
 
     // Parameterized constructor
-    public UpdatedUser(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String roleId, String userAvatar) {
+    public UpdatedUser(String userId, String name, String email, String gender, Date dob, String address, String phone, String idCard, String userAvatar) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -29,7 +28,6 @@ public class UpdatedUser {
         this.address = address;
         this.phone = phone;
         this.idCard = idCard;
-        this.roleId = roleId;
         this.userAvatar = userAvatar;
     }
 
@@ -123,14 +121,13 @@ public class UpdatedUser {
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", idCard=" + idCard +
-                ", roleId='" + roleId + '\'' +
                 ", userAvatar='" + userAvatar + '\'' +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard,  roleId, userAvatar);
+        return Objects.hash(userId, name, email, gender, dob, address, phone, idCard, userAvatar);
     }
 
     @Override
@@ -146,29 +143,6 @@ public class UpdatedUser {
                 Objects.equals(address, that.address) &&
                 Objects.equals(phone, that.phone) &&
                 Objects.equals(idCard, that.idCard) &&
-                Objects.equals(roleId, that.roleId) &&
                 Objects.equals(userAvatar, that.userAvatar);
-    }
-}
-
-// Sample classes for IdCard and HealthCard
-class IdCard {
-    private String id;
-
-    public IdCard(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "IdCard{id='" + id + '\'' + '}';
     }
 }

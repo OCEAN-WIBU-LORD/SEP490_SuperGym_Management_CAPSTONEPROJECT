@@ -75,7 +75,7 @@ public class UserResp {
                     user.setEmail(childSnapshot.hasChild("email") && childSnapshot.child("email").getValue() != null ? childSnapshot.child("email").getValue().toString() : "");
                     user.setPhone(childSnapshot.hasChild("phone") && childSnapshot.child("phone").getValue() != null ? childSnapshot.child("phone").getValue().toString() : "");
                     user.setAddress(childSnapshot.hasChild("address") && childSnapshot.child("address").getValue() != null ? childSnapshot.child("address").getValue().toString() : "");
-                    user.setRoleId(childSnapshot.hasChild("roleId") && childSnapshot.child("roleId").getValue() != null ? childSnapshot.child("role").getValue().toString() : "");
+                    user.setRoleId(childSnapshot.hasChild("roleId") && childSnapshot.child("roleId").getValue() != null ? childSnapshot.child("roleId").getValue().toString() : "");
 
                     user.setEmail(childSnapshot.hasChild("idCard") && childSnapshot.child("idCard").getValue() != null ? childSnapshot.child("email").getValue().toString() : "");
 
@@ -115,33 +115,26 @@ public class UserResp {
     }
 
     public void updateUser(User user, Callback<User> callback) {
-        // Create IdCard and HealthCard instances
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("name", user.getName());
+        userUpdates.put("email", user.getEmail());
+        userUpdates.put("gender", user.getGender());
+        userUpdates.put("dob", user.getDob()); // Ensure it's stored as a timestamp
+        userUpdates.put("address", user.getAddress());
+        userUpdates.put("phone", user.getPhone());
+        userUpdates.put("idCard", user.getIdCard());
+        userUpdates.put("userAvatar", user.getUserAvatar());
 
-        // Create UpdatedUser object
-        UpdatedUser updatedUser = new UpdatedUser(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail(),
-                user.getGender(),
-                user.getDob(),
-                user.getAddress(),
-                user.getPhone(),
-                user.getIdCard(),
-                user.getRoleId(),
-                user.getUserAvatar()
-        );
-
-        databaseReference.child("users").child(user.getUserId()).setValue(updatedUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    List<User> users = new ArrayList<>();
-                    users.add(user);
-                    callback.onCallback(users);
-                } else {
-                    System.out.println("Error: " + task.getException());
-                }
+        databaseReference.child("users").child(user.getUserId()).updateChildren(userUpdates).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<User> users = new ArrayList<>();
+                users.add(user);
+                callback.onCallback(users);
+            } else {
+                System.out.println("Error: " + task.getException());
             }
         });
     }
+
+
 }
