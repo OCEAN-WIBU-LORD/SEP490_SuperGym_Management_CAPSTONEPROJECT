@@ -34,8 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-public class AppointmentFragment extends Fragment implements DayAdapter.OnDayClickListener{
-
+public class AppointmentFragment {
+/*
     private Spinner spinnerMonths;
     private RecyclerView rcv;
     private RecyclerView rcvAppointmentToday;
@@ -213,5 +213,5 @@ public class AppointmentFragment extends Fragment implements DayAdapter.OnDayCli
             rcvAppointmentToday.setAdapter(atAdapter);
             atAdapter.notifyDataSetChanged();
         }
-    }
+    }*/
 }

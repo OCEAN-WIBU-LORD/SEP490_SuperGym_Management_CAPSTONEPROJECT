@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/trainer_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trainer Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/trainer_boxing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Boxing"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        android:paddingBottom="2dp"/>
+
+    <TextView
+        android:id="@+id/trainer_gym"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gym"
+        android:textColor="@android:color/holo_green_dark"
+        android:visibility="gone"/>
+</LinearLayout>

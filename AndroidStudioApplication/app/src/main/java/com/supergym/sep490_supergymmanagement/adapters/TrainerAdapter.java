@@ -14,58 +14,63 @@ import com.supergym.sep490_supergymmanagement.models.Trainer;
 
 import java.util.List;
 
-public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.VH>{
-    private List<Trainer> data;
+public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.TrainerViewHolder> {
+
+    private List<Trainer> trainerList;
     private Context context;
-    private OnDoctorClickListener listener;
+    private OnTrainerClickListener listener;
 
-
-    public interface OnDoctorClickListener {
-        void onDoctorClick(Trainer doctor);
+    // Interface for handling click events
+    public interface OnTrainerClickListener {
+        void onTrainerClick(Trainer trainer);
     }
-    public TrainerAdapter(List<Trainer> data, Context context, OnDoctorClickListener listener){
-        this.data =data;
-        this.context=context;
+
+    // Constructor
+    public TrainerAdapter(List<Trainer> trainerList, Context context, OnTrainerClickListener listener) {
+        this.trainerList = trainerList;
+        this.context = context;
         this.listener = listener;
-
     }
+
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.post_card,parent,false);
-        return new VH(v);
+    public TrainerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_trainer, parent, false);
+        return new TrainerViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        Trainer p = data.get(position);
-        holder.setData(p);
+    public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
+        Trainer trainer = trainerList.get(position);
 
+        holder.nameTextView.setText(trainer.getName());
+        holder.boxingTextView.setVisibility(trainer.isTrainerBoxing() ? View.VISIBLE : View.GONE);
+        holder.gymTextView.setVisibility(trainer.isTrainerGym() ? View.VISIBLE : View.GONE);
+
+        // Set click listener
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onDoctorClick(p);
+                listener.onTrainerClick(trainer);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return trainerList.size();
     }
 
-    public class VH extends RecyclerView.ViewHolder {
-        private TextView tvTitle;
-        private TextView tvInfo;
+    // ViewHolder class
+    static class TrainerViewHolder extends RecyclerView.ViewHolder {
+        TextView nameTextView;
+        TextView boxingTextView;
+        TextView gymTextView;
 
-        public VH(@NonNull View itemView) {
+        public TrainerViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle =itemView.findViewById(R.id.tvTitle);
-            tvInfo=itemView.findViewById(R.id.tvDate);
-        }
-
-        public void setData(Trainer p) {
-            tvTitle.setText(p.getName());
-            tvInfo.setText(p.getBio());
+            nameTextView = itemView.findViewById(R.id.trainer_name);
+            boxingTextView = itemView.findViewById(R.id.trainer_boxing);
+            gymTextView = itemView.findViewById(R.id.trainer_gym);
         }
     }
 }

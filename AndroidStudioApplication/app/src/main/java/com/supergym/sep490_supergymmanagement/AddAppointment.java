@@ -39,9 +39,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAddDayClickListener {
+public class AddAppointment {
 
-    private Spinner spinnerMonths;
+   /* private Spinner spinnerMonths;
     private RecyclerView rcv;
     private RecyclerView rcvTime;
     private ArrayList<Day> days;
@@ -61,8 +61,8 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_appointment);
+        EdgeToEdge.enable(this);*/
+      /*  setContentView(R.layout.activity_add_appointment);
 
         spinnerMonths = findViewById(R.id.monthSpinner);
         rcv = findViewById(R.id.rcvDay);
@@ -301,5 +301,5 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                 timeAdapter.setDisabledTimes(disabledTimes);
             }
         });
-    }
+    }*/
 }

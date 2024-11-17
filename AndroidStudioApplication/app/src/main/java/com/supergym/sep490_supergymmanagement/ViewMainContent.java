@@ -46,7 +46,7 @@ import com.supergym.sep490_supergymmanagement.fragments.AppointmentFragment;
 import com.supergym.sep490_supergymmanagement.fragments.AppointmentListDoctorFragment;
 import com.supergym.sep490_supergymmanagement.fragments.HomeFragment;
 import  com.supergym.sep490_supergymmanagement.R;
-import com.supergym.sep490_supergymmanagement.fragments.SearchFragment;
+import com.supergym.sep490_supergymmanagement.fragments.SearchTrainerFragment;
 import com.supergym.sep490_supergymmanagement.fragments.UserProfileFragment;
 import com.supergym.sep490_supergymmanagement.models.Appointment;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -186,9 +186,9 @@ public class    ViewMainContent extends AppCompatActivity {
                     if (itemId == R.id.home) {
                         replaceFragment(new HomeFragment());
                     } else if (itemId == R.id.shorts) {
-                        replaceFragment(new SearchFragment());
+                        replaceFragment(new SearchTrainerFragment());
                     } else if (itemId == R.id.subscriptions) {
-                        replaceFragment(new AppointmentFragment());
+                        replaceFragment(new ProgressActivity());
                     } else if (itemId == R.id.library) {
                         replaceFragment(new FragmentUserProfile());
                     }
@@ -308,7 +308,7 @@ public class    ViewMainContent extends AppCompatActivity {
             if (itemId == R.id.home) {
                 replaceFragment(new HomeFragment());
             } else if (itemId == R.id.shorts) {
-                replaceFragment(new SearchFragment());
+                replaceFragment(new SearchTrainerFragment());
             } else if (itemId == R.id.subscriptions) {
                 if (roleName.equals("pt")) {
                     replaceFragment(new ScheduleTrainer());

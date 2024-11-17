@@ -115,7 +115,7 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
         Trainer selectedDoctor = (Trainer) getIntent().getSerializableExtra("selectedDoctor");
         if (selectedDoctor != null) {
             TrainingLessionResp diseaseResp = new TrainingLessionResp();
-            for (String diseaseId : selectedDoctor.getTrainingLessionIds()) {
+        /*    for (String diseaseId : selectedDoctor.getTrainingLessionIds()) {
                 diseaseResp.getDiseaseById(diseaseId, new Callback<TrainingLession>() {
                     @Override
                     public void onCallback(List<TrainingLession> diseases) {
@@ -125,7 +125,7 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
                         }
                     }
                 });
-            }
+            }*/
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {

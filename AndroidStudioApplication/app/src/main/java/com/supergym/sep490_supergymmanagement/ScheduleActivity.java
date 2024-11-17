@@ -162,7 +162,7 @@ public  class ScheduleActivity extends AppCompatActivity implements DayAdapter.O
         TrainerResp doctorResp = new TrainerResp();
 
         // Load doctors first
-        doctorResp.getDoctors(new Callback<Trainer>() {
+        /*doctorResp.getDoctors(new Callback<Trainer>() {
             @Override
             public void onCallback(List<Trainer> doctorList) {
                 doctors = new ArrayList<>(doctorList);
@@ -179,14 +179,13 @@ public  class ScheduleActivity extends AppCompatActivity implements DayAdapter.O
                         GridLayoutManager layoutManagerToday = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
                         rcvAppointmentToday.setLayoutManager(layoutManagerToday);
 
-                        allAppointmentAdapter = new AllAppointmentAdapter(ScheduleActivity.this, appointments, doctors);
-                        rcvAllAppointment.setAdapter(allAppointmentAdapter);
+
                         GridLayoutManager layoutManagerAll = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
                         rcvAllAppointment.setLayoutManager(layoutManagerAll);
                     }
                 });
             }
-        });
+        });*/
     }
 
     @Override

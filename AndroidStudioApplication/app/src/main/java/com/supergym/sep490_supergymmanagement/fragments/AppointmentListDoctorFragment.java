@@ -69,7 +69,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
     public void onResume() {
         super.onResume();
         if (doctorAppointmentAdapter != null) {
-            loadAppointmentsForDoctor(userDetails.getUid(),doctorAppointmentAdapter);
+           /* loadAppointmentsForDoctor(userDetails.getUid(),doctorAppointmentAdapter);*/
         }
     }
 
@@ -113,7 +113,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
         rcAppointment.setAdapter(appointmentAdapter);
 
         loadUserList(appointmentAdapter);
-        loadAppointmentsForDoctor(userDetails.getUid(),appointmentAdapter);
+      /*  loadAppointmentsForDoctor(userDetails.getUid(),appointmentAdapter);*/
 
     }
 
@@ -128,7 +128,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
         });
     }
 
-    private void loadAppointmentsForDoctor(String userId,DoctorAppointmentAdapter appointmentAdapter) {
+    /*private void loadAppointmentsForDoctor(String userId,DoctorAppointmentAdapter appointmentAdapter) {
 
         doctorResp.getDoctorByUserId(userId, new Callback<Trainer>() {
             @Override
@@ -155,7 +155,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
 
         });
     }
-
+*/
 
     private void initStatusButton() {
         // Set the FlexboxLayoutManager for the RecyclerView

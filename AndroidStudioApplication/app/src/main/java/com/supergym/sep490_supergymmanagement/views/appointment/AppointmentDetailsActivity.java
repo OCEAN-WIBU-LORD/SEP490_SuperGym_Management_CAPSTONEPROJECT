@@ -202,20 +202,20 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
 
                 // Get doctor data
                 String doctorId = appointment.getDoctorId();
-                new TrainerResp().getDoctorById(doctorId, new Callback<com.supergym.sep490_supergymmanagement.models.Trainer>() {
+              /*  new TrainerResp().getDoctorById(doctorId, new Callback<com.supergym.sep490_supergymmanagement.models.Trainer>() {
                     @Override
                     public void onCallback(List<com.supergym.sep490_supergymmanagement.models.Trainer> doctorList) {
                         // Fill data for appointment all layout
-                        dateBooking.setText(Utils.formatTimestampToDate(appointment.getStartTime()));
+                    *//*    dateBooking.setText(Utils.formatTimestampToDate(appointment.getStartTime()));
                         appointmentStartTime.setText(Utils.formatTimestampToTime(appointment.getStartTime()));
                         appointmentEndTime.setText(Utils.formatTimestampToTime(appointment.getEndTime()));
                         doctorNameAppointment.setText(doctorList.get(0).getName());
                         doctorInforAppointment.setText(doctorList.get(0).getBio());
                         imgAvatar.setImageResource(R.drawable.avatar_default);
-
+*//*
                         setSpinnerStatus(appointment, "users");
                     }
-                });
+                });*/
 
                 getDiseaseData(appointment);
             }
