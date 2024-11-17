@@ -49,6 +49,8 @@ import androidx.core.content.ContextCompat;
 import com.example.sep490_supergymmanagement.FaceRecognition.GraphicOverlay;
 import com.example.sep490_supergymmanagement.FaceRecognition.SimilarityClassifier;
 import com.example.sep490_supergymmanagement.ImageToBitmapConverter.YuvToRgbConverter;
+import com.example.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.example.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -88,6 +90,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpeech.OnInitListener {
     private static final String TAG = "FaceCaptureActivity";
@@ -349,8 +356,17 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         FaceDetector faceDetector = FaceDetection.getClient();
 
         faceDetector.process(inputImage)
-                .addOnSuccessListener(faces -> onSuccessListener(faces, inputImage))
-                .addOnFailureListener(e -> Log.e(TAG, "Barcode process failure", e))
+                .addOnSuccessListener(faces -> {
+                    onSuccessListener(faces, inputImage);
+                    ImageButton addBtn = findViewById(R.id.add_btn);
+                    // Enable or disable the button based on face detection
+                    if (faces.isEmpty()) {
+                        addBtn.setEnabled(false); // Disable button if no face detected
+                    } else {
+                        addBtn.setEnabled(true); // Enable button if at least one face is detected
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Face detection failure", e))
                 .addOnCompleteListener(task -> image.close());
     }
 
@@ -430,64 +446,32 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         // Set up the buttons
         builder.setPositiveButton("ADD", (dialog, which) -> {
-            String faceName = input.getText().toString(); // Face name entered by the user
-            DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+            String faceName = input.getText().toString(); // Face name entered by the use
 
-            // Query Firebase to check if userId already exists
-            databaseRef.orderByChild("userId").equalTo(userId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                // userId already registered
-                                Toast.makeText(getApplicationContext(), "Face already registered for this user. Cannot register again.", Toast.LENGTH_SHORT).show();
-                                start = true; // Reset start flag
-                            } else {
-                                // userId not yet registered; proceed with registration
-                                SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
-                                        "0", "", -1f);
-                                result.setExtra(embeddings); // embeddings should be a float[][] representing the face features
+            if (faceName.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "Email is required.", Toast.LENGTH_SHORT).show();
+                start = true;
+                return;
+            }
 
-                                // Add the result to the registered map
-                                registered.put(faceName, result);
-                                start = true;
+            // Prepare data for the API
+            Map<String, Object> faceData = new HashMap<>();
+            faceData.put("email", faceName);
 
-                                // Convert float[][] to List<List<Float>> for Firebase storage
-                                List<List<Float>> embeddingList = new ArrayList<>();
-                                for (float[] row : embeddings) {
-                                    List<Float> rowList = new ArrayList<>();
-                                    for (float value : row) {
-                                        rowList.add(value);
-                                    }
-                                    embeddingList.add(rowList);
-                                }
+            // Convert embeddings to a List of List<Float>
+            List<List<Float>> embeddingList = new ArrayList<>();
+            for (float[] row : embeddings) {
+                List<Float> rowList = new ArrayList<>();
+                for (float value : row) {
+                    rowList.add(value);
+                }
+                embeddingList.add(rowList);
+            }
+            faceData.put("embeddings", embeddingList);
 
-                                // Prepare data to store in Firebase
-                                Map<String, Object> faceData = new HashMap<>();
-                                faceData.put("userId", userId); // Include userId in the data
-                                faceData.put("name", faceName);
-                                faceData.put("embeddings", embeddingList);
+            // Send data to API
+            sendFaceDataToApi(faceData);
 
-                                // Push data to Firebase
-                                databaseRef.child(faceName).setValue(faceData)
-                                        .addOnSuccessListener(aVoid -> {
-                                            // Successfully written to Firebase
-                                            Toast.makeText(getApplicationContext(), "Face data stored in Firebase", Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            // Failed to write to Firebase
-                                            Toast.makeText(getApplicationContext(), "Failed to store face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        });
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            // Handle potential errors
-                            Toast.makeText(getApplicationContext(), "Error checking data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                            start = true;
-                        }
-                    });
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -497,6 +481,29 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         builder.show();
     }
+
+    private void sendFaceDataToApi(Map<String, Object> faceData) {
+        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        Call<Void> call = apiService.registerFace(faceData);
+
+        call.enqueue(new retrofit2.Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), "Face data successfully sent to API", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "API call failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void loadUserInfor() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {

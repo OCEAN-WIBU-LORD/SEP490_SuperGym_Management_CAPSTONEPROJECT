@@ -146,6 +146,7 @@ public class MembershipActivity extends AppCompatActivity {
         // Assuming you have the user UID stored
         String uid = mAuth.getUid(); // Replace this with the actual user UID
         QrCodeRequest request = new QrCodeRequest(uid);
+       // request.setGymMembershipId();
 
         // Call the API to generate QR codes
         apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
@@ -165,8 +166,8 @@ public class MembershipActivity extends AppCompatActivity {
 
                         for (QrCodeResponse.QrItem qrItem : qrItems) {
                             qrCodes.add(qrItem.getQrDataUrl()); // Get the QR data URL
-                            qrNames.add(qrItem.getCourseDetails().getCourseName()); // Get the course name
-                            priceSubsInfo.add(qrItem.getCourseDetails().getCoursePrice() + " VND"); // Get the course price
+                            qrNames.add(qrItem.getDetails().getGymMembership().getName()); // Get the course name
+                            priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND"); // Get the course price
                         }
 
                         // Create the AlertDialog and set up its layout
