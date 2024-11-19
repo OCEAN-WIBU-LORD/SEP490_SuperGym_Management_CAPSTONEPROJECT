@@ -105,7 +105,7 @@
             android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="25dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -124,7 +124,8 @@
                         android:id="@+id/radioGym"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gym" />
+                        android:text="Gym"
+                        android:checked="true"/>
 
                     <RadioButton
                         android:id="@+id/radioBoxing"
@@ -157,37 +158,45 @@
             android:layout_marginTop="16dp"
             android:textColor="#000000" />
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="25dp">
+            app:cardCornerRadius="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:gravity="center_vertical">
+
                 <Spinner
                     android:id="@+id/trainerSpinner"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="#DDDDDD"
-                    android:entries="@array/trainers" />
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:entries="@array/trainers"
+                    android:padding="8dp" />
+
                 <ImageView
                     android:id="@+id/dropdownBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#DDDDDD"
-                    android:src="@drawable/dropdown">
-                </ImageView>
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/dropdown"
+                    android:contentDescription="Dropdown Icon" />
             </LinearLayout>
 
-
-
         </androidx.cardview.widget.CardView>
+
 
 
         <!-- Trainer Profile -->
         <androidx.cardview.widget.CardView
             android:layout_marginTop="15dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="25dp">
             <LinearLayout
@@ -255,20 +264,81 @@
             android:layout_marginTop="8dp"
             android:textColor="#000000" />
 
-        <GridLayout
-            android:id="@+id/dayGridLayout"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="5"
-            android:padding="8dp"
-            android:background="#EEEEEE">
+            app:cardCornerRadius="25dp">
+            <GridLayout
+                android:id="@+id/dayGridLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:padding="8dp"
+                android:background="#EEEEEE">
 
-            <CheckBox android:text="Monday" />
-            <CheckBox android:text="Tuesday" />
-            <CheckBox android:text="Wednesday" />
-            <CheckBox android:text="Thursday" />
-            <CheckBox android:text="Friday" />
-        </GridLayout>
+                <CheckBox
+                    android:id="@+id/checkboxMonday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Monday"
+                    android:layout_margin="8dp" />
+
+                <CheckBox
+                    android:id="@+id/checkboxTuesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tuesday"
+                    android:layout_margin="8dp" />
+
+                <CheckBox
+                    android:id="@+id/checkboxWednesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wednesday"
+                    android:layout_margin="8dp" />
+
+                <CheckBox
+                    android:id="@+id/checkboxThursday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thursday"
+                    android:layout_margin="8dp" />
+
+                <CheckBox
+                    android:id="@+id/checkboxFriday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Friday"
+                    android:layout_margin="8dp" />
+
+                <CheckBox
+                    android:id="@+id/checkboxSaturday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Saturday"
+                    android:layout_margin="8dp" />
+
+            </GridLayout>
+        </androidx.cardview.widget.CardView>
+
+
+
+        <RadioGroup
+            android:id="@+id/optionRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+            <RadioButton
+                android:id="@+id/option1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Option 1: Monday, Wednesday, Friday" />
+            <RadioButton
+                android:id="@+id/option2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Option 2: Tuesday, Thursday, Saturday" />
+        </RadioGroup>
 
         <!-- Preferred Times -->
         <TextView
@@ -355,25 +425,40 @@
                 android:text="Add Extra Users"
                 android:layout_marginTop="16dp"
                 android:textColor="#000000" />
-
-            <EditText
-                android:id="@+id/extraUser"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="#EEEEEE"
-                android:hint="Enter additional users"
-                android:gravity="top" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="15dp">
+                <EditText
+                    android:id="@+id/extraUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="#EEEEEE"
+                    android:padding="20dp"
+
+                    android:hint="Enter additional users"
+                    android:gravity="top" />
+            </androidx.cardview.widget.CardView>
+
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/sessionCountEditText"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="Enter number of sessions"
-            android:layout_marginTop="8dp"
-            android:background="#EEEEEE"
-            android:padding="10dp" />
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="10dp">
+            <EditText
+                android:id="@+id/sessionCountEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Enter number of sessions"
+
+                android:background="#EEEEEE"
+                android:padding="10dp" />
+        </androidx.cardview.widget.CardView>
+
 
 
 
@@ -382,17 +467,25 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="Note Description"
-            android:layout_marginTop="8dp"
             android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/notesEditText"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="#EEEEEE"
-            android:hint="Enter additional notes"
-            android:gravity="top" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="25dp">
+            <EditText
+                android:id="@+id/notesEditText"
+                android:layout_width="match_parent"
+                android:padding="15dp"
+                android:layout_height="100dp"
+                android:background="#EEEEEE"
+                android:hint="Enter additional notes"
+                android:gravity="top" />
+        </androidx.cardview.widget.CardView>
+
+
 
         <!-- Submit Button -->
         <androidx.appcompat.widget.AppCompatButton

@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.SeekBar;
@@ -37,7 +39,7 @@ import java.util.Locale;
 
 public class Activity_Book_Trainer extends AppCompatActivity {
     private CardView returnBtn;
-    private RadioGroup trainerTypeRadioGroup;
+    private RadioGroup trainerTypeRadioGroup, optionRadioGroup;
     private Spinner trainerSpinner;
     private ArrayList<String> trainerNames = new ArrayList<>();
     private ArrayList<String> timeSlots = new ArrayList<>();
@@ -50,12 +52,14 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private EditText extraUserEditText;
     private SearchView userSearchView;
 
+    CheckBox monday  , tuesday, saturday, wednesday, friday, thursday;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_trainer);
 
         trainerTypeRadioGroup = findViewById(R.id.trainerTypeRadioGroup);
+        optionRadioGroup = findViewById(R.id.optionRadioGroup);
         returnBtn = findViewById(R.id.returnBtn);
         returnBtn.setOnClickListener(v -> onBackPressed());
 
@@ -64,17 +68,12 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         userRecyclerView = findViewById(R.id.userRecyclerView);
         extraUserEditText = findViewById(R.id.extraUser);
 
-        trainerTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioGym) {
-                loadTrainers("Gym");
-            } else if (checkedId == R.id.radioBoxing) {
-                loadTrainers("Boxing");
-            } else if (checkedId == R.id.radioYoga) {
-                loadTrainers("Yoga");
-            } else if (checkedId == R.id.radioPilates) {
-                loadTrainers("Pilates");
-            }
-        });
+
+
+        functionedRadioBtn();
+// Listener for RadioGroup
+        loadTrainers("Gym");
+        selectAndDisableAll(monday, tuesday, wednesday, thursday, friday, saturday);
 
         userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userList = new ArrayList<>();
@@ -107,6 +106,106 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         setupSubmitButton();
     }
 
+
+    private void functionedRadioBtn(){
+         monday = findViewById(R.id.checkboxMonday);
+         tuesday = findViewById(R.id.checkboxTuesday);
+         wednesday = findViewById(R.id.checkboxWednesday);
+         thursday = findViewById(R.id.checkboxThursday);
+         friday = findViewById(R.id.checkboxFriday);
+         saturday = findViewById(R.id.checkboxSaturday);
+
+// Hide the Option RadioGroup initially
+        optionRadioGroup.setVisibility(View.GONE);
+
+// Listener for the main RadioGroup
+        trainerTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radioBoxing) {
+                    // Show options and reset checkboxes
+                    loadTrainers("Boxing");
+                    optionRadioGroup.setVisibility(View.VISIBLE);
+                    resetCheckboxes();
+
+                }else if (checkedId == R.id.radioGym) {
+                    // Show options and reset checkboxes
+                    loadTrainers("Gym");
+                    optionRadioGroup.setVisibility(View.GONE);
+
+                    resetCheckboxes();
+                    selectAndDisableAll(monday, tuesday, wednesday, thursday, friday, saturday);
+
+                } else if(checkedId == R.id.radioYoga){
+                    loadTrainers("Yoga");
+                }else if(checkedId == R.id.radioPilates){
+                    loadTrainers("Pilates");
+                }
+
+                else {
+                    // Hide options and reset checkboxes for other trainer types
+                    optionRadioGroup.setVisibility(View.GONE);
+                    resetCheckboxes();
+                }
+            }
+        });
+
+// Listener for the Option RadioGroup
+        optionRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                resetCheckboxes(); // Reset all checkboxes before applying the new selection
+
+                if (checkedId == R.id.option1) {
+                    // Automatically check Monday, Wednesday, Friday
+                    monday.setChecked(true);
+                    wednesday.setChecked(true);
+                    friday.setChecked(true);
+                } else if (checkedId == R.id.option2) {
+                    // Automatically check Tuesday, Thursday, Saturday
+                    tuesday.setChecked(true);
+                    thursday.setChecked(true);
+                    saturday.setChecked(true);
+                }
+            }
+        });
+
+// Helper function to reset all checkboxes
+        Spinner trainerSpinner = findViewById(R.id.trainerSpinner);
+        ImageView dropdownBtn = findViewById(R.id.dropdownBtn);
+
+        dropdownBtn.setOnClickListener(v -> trainerSpinner.performClick());
+
+
+    }
+
+
+
+    // Function to reset all CheckBoxes
+    private void resetCheckboxes() {
+        monday.setChecked(false);
+        tuesday.setChecked(false);
+        wednesday.setChecked(false);
+        thursday.setChecked(false);
+        friday.setChecked(false);
+        saturday.setChecked(false);
+    }
+
+    // Function to select and disable all CheckBoxes
+    private void selectAndDisableAll(CheckBox... checkBoxes) {
+        for (CheckBox checkBox : checkBoxes) {
+            checkBox.setChecked(true);
+            checkBox.setEnabled(false);
+        }
+    }
+
+    // Function to enable specific combinations
+    private void enableCombination(CheckBox... combination) {
+        for (CheckBox checkBox : combination) {
+            checkBox.setEnabled(true);
+        }
+    }
+
     private void loadTrainers(String trainerType) {
         trainerNames.clear();
         trainerIds.clear();
@@ -125,9 +224,11 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
                     if ("Gym".equals(trainerType) && Boolean.TRUE.equals(isTrainerGym)) {
                         trainerNames.add(trainerName);
+
                         trainerIds.add(trainerId);
                     } else if ("Boxing".equals(trainerType) && Boolean.TRUE.equals(isTrainerBoxing)) {
                         trainerNames.add(trainerName);
+
                         trainerIds.add(trainerId);
                     } else if ("Yoga".equals(trainerType) && Boolean.TRUE.equals(isTrainerYoga)) {
                         trainerNames.add(trainerName);

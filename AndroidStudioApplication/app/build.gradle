@@ -51,6 +51,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.fragment:fragment-ktx:1.6.1'
 
     //Implement for the Circular Progress Bar
     implementation 'androidx.gridlayout:gridlayout:1.1.0-beta01'
