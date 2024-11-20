@@ -252,7 +252,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp">
 
                 <!-- Title -->
 
@@ -263,6 +264,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     app:cardCornerRadius="25dp"
+                    android:layout_marginBottom="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.4"
@@ -300,8 +302,8 @@
 
                         <TextView
                             android:id="@+id/text_user_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
+                            android:layout_width="270dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="244dp"
                             android:fontFamily="@font/calibri"
                             android:text="Training With Our Professional Trainer"
@@ -309,7 +311,7 @@
                             android:textSize="20sp"
 
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.689"
+                            app:layout_constraintHorizontal_bias="0.5"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 

@@ -1,7 +1,11 @@
 package com.supergym.sep490_supergymmanagement;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -21,8 +25,11 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.supergym.sep490_supergymmanagement.adapters.UserAdapter;
 import com.supergym.sep490_supergymmanagement.models.Booking;
+import com.supergym.sep490_supergymmanagement.models.Trainer;
+import com.supergym.sep490_supergymmanagement.models.TrainerDTO;
 import com.supergym.sep490_supergymmanagement.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +59,9 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private RecyclerView userRecyclerView;
     private EditText extraUserEditText;
     private SearchView userSearchView;
+    private TextView bioTextView, trainerNameTextView;
+
+    private ImageView userAvatarImg;
 
     CheckBox monday  , tuesday, saturday, wednesday, friday, thursday;
     @Override
@@ -68,8 +79,9 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         userRecyclerView = findViewById(R.id.userRecyclerView);
         extraUserEditText = findViewById(R.id.extraUser);
 
-
-
+        userAvatarImg = findViewById(R.id.trainerAvartar);
+        bioTextView = findViewById(R.id.bioTextView);
+        trainerNameTextView = findViewById(R.id.trainerNameTextView);
         functionedRadioBtn();
 // Listener for RadioGroup
         loadTrainers("Gym");
@@ -80,6 +92,10 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         userAdapter = new UserAdapter(userList, user -> extraUserEditText.setText(user.getEmail()));
         userRecyclerView.setAdapter(userAdapter);
         usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+
+
+
 
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -175,11 +191,29 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         ImageView dropdownBtn = findViewById(R.id.dropdownBtn);
 
         dropdownBtn.setOnClickListener(v -> trainerSpinner.performClick());
+        trainerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (trainerIds.isEmpty()) {
+                    Toast.makeText(Activity_Book_Trainer.this, "No trainers available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Get the selected trainer's ID
+                String selectedTrainerId = trainerIds.get(position);
+
+                // Load trainer details based on the selected ID
+                loadTrainerDetails(selectedTrainerId);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Optional: Handle case where no selection is made
+            }
+        });
 
 
     }
-
-
 
     // Function to reset all CheckBoxes
     private void resetCheckboxes() {
@@ -252,6 +286,139 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
         });
     }
+
+    private void loadTrainerDetails(String trainerId) {
+        // Getting references for Trainers and Users
+        DatabaseReference trainersRef = FirebaseDatabase.getInstance().getReference("Trainers").child(trainerId);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        // Fetching trainer details from the "Trainers" node
+        trainersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot trainerSnapshot) {
+                // Converting the snapshot into a Trainer object
+                Trainer trainer = trainerSnapshot.getValue(Trainer.class);
+
+                if (trainer != null) {
+                    // Getting the userId from the trainer object
+                    String userId = trainer.getUserId();
+
+                    // Fetching the user details using the userId
+                    usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            // Converting the user snapshot into a User object
+                            User user = userSnapshot.getValue(User.class);
+
+                            if (user != null) {
+                                // Extracting user name and trainer bio
+                                String userName = trainer.getName();
+                                if(userName != null){
+                                    trainerNameTextView.setText("Trainer Name: " + userName);
+                                }else{
+                                    trainerNameTextView.setText("null");
+                                }
+                                String trainerBio = trainer.getSpecialization(); // Assuming specialization is the
+                                if (trainerBio != null){
+                                    bioTextView.setText(trainerBio.trim());
+                                }else{
+                                    bioTextView.setText("null");
+                                }
+
+                                loadTrainerDetail(userId);
+
+                                /*// Now create a TrainerDTO object with the fetched data
+                                TrainerDTO trainerDTO = new TrainerDTO(userName,  avatarBitmap, trainerBio);
+
+                                // Populate the trainer details in the UI
+                                populateTrainerDetails(trainerDTO);*/
+                            } else {
+                                Toast.makeText(Activity_Book_Trainer.this, "User details not found.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle error when fetching user details
+                            Toast.makeText(Activity_Book_Trainer.this, "Failed to load user details.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(Activity_Book_Trainer.this, "Trainer details not found.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error when fetching trainer details
+                Toast.makeText(Activity_Book_Trainer.this, "Failed to load trainer details.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void loadTrainerDetail(String userId){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String avatarBase64 = dataSnapshot.child("userAvatar").getValue(String.class);
+                    if (avatarBase64 != null) {
+                        try {
+                            Bitmap avatarBitmap = base64ToBitmap(avatarBase64);
+                            userAvatarImg.setImageBitmap(avatarBitmap);
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
+            }
+        });
+    }
+
+
+    public Bitmap base64ToBitmap(String base64String) {
+        try {
+            byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return null; // Return null if decoding fails
+        }
+    }
+
+
+
+    /*private void populateTrainerDetails(TrainerDTO trainerDTO) {
+        TextView trainerNameTextView = findViewById(R.id.trainerNameTextView);
+        TextView bioTextView = findViewById(R.id.bioTextView);
+        ImageView avatarImageView = findViewById(R.id.trainerAvartar);
+
+        // Set trainer name and specialization (bio)
+        trainerNameTextView.setText("Trainer Name: " + trainerDTO.getName());
+        bioTextView.setText("Specialization: " + trainerDTO.getBio());
+
+        // Load avatar image (if avatar is a Bitmap, set it directly to ImageView)
+        String avatarBitmap = trainerDTO.getAvatar();
+        if (avatarBitmap != null) {
+            avatarImageView.setImageBitmap(avatarBitmap); // Directly set the Bitmap to ImageView
+        } else {
+            // If avatar is not available, set a placeholder image
+            avatarImageView.setImageResource(R.drawable.ic_placeholder);
+        }
+    }*/
+
+
 
     private void searchUsers(String emailQuery) {
         usersRef.orderByChild("email").startAt(emailQuery).endAt(emailQuery + "\uf8ff")

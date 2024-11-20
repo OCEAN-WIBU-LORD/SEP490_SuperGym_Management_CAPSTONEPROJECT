@@ -6,6 +6,7 @@ public class Trainer implements Serializable {
     private String trainerId;
     private String name;
     private String userId;
+    private String specialization;
     private boolean isTrainerBoxing;
     private boolean isTrainerGym;
 
@@ -19,10 +20,11 @@ public class Trainer implements Serializable {
     }
 
     // Full constructor
-    public Trainer(String trainerId, String name, String userId, boolean isTrainerBoxing, boolean isTrainerGym, String email, String phone, String gender) {
+    public Trainer(String trainerId, String name, String userId, String specialization, boolean isTrainerBoxing, boolean isTrainerGym, String email, String phone, String gender) {
         this.trainerId = trainerId;
         this.name = name;
         this.userId = userId;
+        this.specialization = specialization;
         this.isTrainerBoxing = isTrainerBoxing;
         this.isTrainerGym = isTrainerGym;
         this.email = email;
@@ -46,7 +48,13 @@ public class Trainer implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    public String getSpecialization() {
+        return specialization;
+    }
 
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
     public String getUserId() {
         return userId;
     }
