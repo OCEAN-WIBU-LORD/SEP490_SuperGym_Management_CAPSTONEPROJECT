@@ -6,6 +6,7 @@ import com.supergym.sep490_supergymmanagement.models.PostCategory;
 import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.RegisterUserDto;
+import com.supergym.sep490_supergymmanagement.models.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -77,5 +78,7 @@ public interface ApiService {
     @GET("api/Posts/posts/user/{userId}")
     Call<List<Post>> getPostsByUserId(@Path("userId") String userId);
 
+    @GET("/api/PaymentHistory/{userId}")
+    Call<List<Transaction>> getPaymentHistory(@Path("userId") String userId);
 
 }

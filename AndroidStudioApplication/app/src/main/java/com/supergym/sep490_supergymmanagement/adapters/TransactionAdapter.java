@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.supergym.sep490_supergymmanagement.R;
 import com.supergym.sep490_supergymmanagement.models.Transaction;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,7 +18,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         this.transactionList = transactionList;
     }
 
-    // Cập nhật danh sách giao dịch khi có thay đổi từ hoạt động lọc hoặc sắp xếp
+    // Phương thức cập nhật danh sách giao dịch
     public void setTransactions(List<Transaction> newTransactionList) {
         this.transactionList = newTransactionList;
         notifyDataSetChanged();
@@ -37,18 +35,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
 
-        // Định dạng ngày từ chuỗi
-        Date date = transaction.getFormattedTransactionDate();
-        if (date != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy, HH:mm", Locale.getDefault());
-            holder.tvTransactionDate.setText(dateFormat.format(date));
-        } else {
-            holder.tvTransactionDate.setText("N/A"); // Nếu ngày không hợp lệ
-        }
-
-        holder.tvTransactionDescription.setText(transaction.getDescription());
-        holder.tvTransactionPaymentMethod.setText(transaction.getPaymentMethod());
-        holder.tvTransactionAmount.setText(String.format(Locale.getDefault(), "%,.0f VND", transaction.getAmount()));
+        // Gán giá trị vào giao diện
+        holder.tvPackageName.setText(transaction.getPackageName());
+        holder.tvAmount.setText(String.format(Locale.getDefault(), "%,.0f VND", transaction.getAmount()));
+        holder.tvPaymentStatus.setText(transaction.getPaymentStatus());
     }
 
     @Override
@@ -57,14 +47,13 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     }
 
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTransactionDate, tvTransactionDescription, tvTransactionPaymentMethod, tvTransactionAmount;
+        TextView tvPackageName, tvAmount, tvPaymentStatus;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTransactionDate = itemView.findViewById(R.id.tvTransactionDate);
-            tvTransactionDescription = itemView.findViewById(R.id.tvTransactionDescription);
-            tvTransactionPaymentMethod = itemView.findViewById(R.id.tvTransactionPaymentMethod);
-            tvTransactionAmount = itemView.findViewById(R.id.tvTransactionAmount);
+            tvPackageName = itemView.findViewById(R.id.tvPackageName);
+            tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvPaymentStatus = itemView.findViewById(R.id.tvPaymentStatus);
         }
     }
 }

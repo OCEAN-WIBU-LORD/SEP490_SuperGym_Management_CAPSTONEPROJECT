@@ -8,41 +8,31 @@
     android:background="@drawable/transaction_item_background"
     android:layout_marginBottom="8dp">
 
-    <!-- Ngày giao dịch -->
+    <!-- Tên gói -->
     <TextView
-        android:id="@+id/tvTransactionDate"
+        android:id="@+id/tvPackageName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Oct 5, 2019, 14:54"
-        android:textColor="@color/black"
-        android:textSize="14sp"/>
-
-    <!-- Mô tả giao dịch -->
-    <TextView
-        android:id="@+id/tvTransactionDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="STARBUCKS COFFEE HAMRA"
+        android:text="Package Name"
         android:textColor="@color/black"
         android:textSize="16sp"
         android:textStyle="bold"/>
 
-    <!-- Phương thức thanh toán -->
+    <!-- Số tiền -->
     <TextView
-        android:id="@+id/tvTransactionPaymentMethod"
+        android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="QR Code"
+        android:text="10,000 VND"
+        android:textColor="@color/black"
+        android:textSize="14sp"/>
+
+    <!-- Trạng thái thanh toán -->
+    <TextView
+        android:id="@+id/tvPaymentStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Completed"
         android:textColor="@color/gray"
         android:textSize="14sp"/>
-
-    <!-- Số tiền giao dịch -->
-    <TextView
-        android:id="@+id/tvTransactionAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="18,000 VND"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
 </LinearLayout>
