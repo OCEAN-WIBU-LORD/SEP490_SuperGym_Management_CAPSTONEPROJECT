@@ -491,6 +491,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         View submitButton = findViewById(R.id.submit_button);
         if (submitButton != null) {
             submitButton.setOnClickListener(v -> {
+
                 Toast.makeText(Activity_Book_Trainer.this, "Request Submitted", Toast.LENGTH_SHORT).show();
                 saveBookingDetails();
             });

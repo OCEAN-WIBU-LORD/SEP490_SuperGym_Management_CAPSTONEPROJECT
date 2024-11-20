@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.supergym.sep490_supergymmanagement.FaceRecognition.GraphicOverlay;
 import com.supergym.sep490_supergymmanagement.FaceRecognition.SimilarityClassifier;
 import com.supergym.sep490_supergymmanagement.ImageToBitmapConverter.YuvToRgbConverter;
@@ -134,6 +137,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
     private String lastRecognizedName = ""; // Keeps track of the last recognized name
     private boolean isNameChanged = false; // Flag to check if the name has changed
+    private String roleCheck = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +167,12 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 onBackPressed();
             }
         });
+        MyApp app = (MyApp) getApplicationContext();
+        String userRole = app.getUserRole();
+        if ("admin".equals(userRole)) {
+            Toast.makeText(this, "LMAO1234", Toast.LENGTH_SHORT).show();
+            roleCheck = "admin";
+        }
 
 
         ImageButton switchCamBtn = findViewById(R.id.switch_camera);
@@ -434,44 +444,49 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Register FaceID for User:");
 
-        // Set up the input
-        final EditText input = new EditText(this);
-        input.setText(nameFinal);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        // Make the input uneditable
-        input.setFocusable(false);
-        input.setClickable(false);
-        input.setMaxWidth(200);
-        builder.setView(input);
+        // Set up the input for the user's name
+        final EditText nameInput = new EditText(this);
+        nameInput.setText(nameFinal);
+        nameInput.setInputType(InputType.TYPE_CLASS_TEXT);
+        nameInput.setMaxWidth(200);
+
+        // Layout to contain multiple inputs
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(nameInput);
+
+        // Conditionally add an email input for admin role
+        final EditText emailInput = new EditText(this);
+        if (roleCheck.equals("admin")) {
+            emailInput.setHint("Enter Email Address");
+            emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            emailInput.setMaxWidth(200);
+            layout.addView(emailInput);
+        } else {
+            // Make the name field non-editable for non-admin users
+            nameInput.setFocusable(false);
+            nameInput.setClickable(false);
+        }
+
+        builder.setView(layout);
 
         // Set up the buttons
         builder.setPositiveButton("ADD", (dialog, which) -> {
-            String faceName = input.getText().toString(); // Face name entered by the use
+            String faceName = nameInput.getText().toString().trim(); // Name (editable for admin)
+            String email = emailInput.getText().toString().trim(); // Email (only for admin)
 
-            if (faceName.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Email is required.", Toast.LENGTH_SHORT).show();
-                start = true;
-                return;
+            if (roleCheck.equals("admin") && !email.isEmpty()) {
+                // Admin logic: fetch userId by email
+                getUserIdByEmail(email).addOnSuccessListener(userId -> {
+                    registerFace(faceName, userId);
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Failed to find user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    start = true;
+                });
+            } else {
+                // Non-admin logic: use the logged-in userId
+                registerFace(faceName, userId);
             }
-
-            // Prepare data for the API
-            Map<String, Object> faceData = new HashMap<>();
-            faceData.put("email", faceName);
-
-            // Convert embeddings to a List of List<Float>
-            List<List<Float>> embeddingList = new ArrayList<>();
-            for (float[] row : embeddings) {
-                List<Float> rowList = new ArrayList<>();
-                for (float value : row) {
-                    rowList.add(value);
-                }
-                embeddingList.add(rowList);
-            }
-            faceData.put("embeddings", embeddingList);
-
-            // Send data to API
-            sendFaceDataToApi(faceData);
-
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -481,6 +496,101 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         builder.show();
     }
+
+    private void registerFace(String faceName, String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+
+        databaseRef.orderByChild("userId").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // UserId already registered
+                            Toast.makeText(getApplicationContext(), "Face already registered for this user. Cannot register again.", Toast.LENGTH_SHORT).show();
+                            start = true;
+                        } else {
+                            // Proceed with face registration
+                            SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+                                    "0", "", -1f);
+                            result.setExtra(embeddings);
+
+                            // Add to the registered map
+                            registered.put(faceName, result);
+
+                            // Convert float[][] to List<List<Float>> for Firebase storage
+                            List<List<Float>> embeddingList = new ArrayList<>();
+                            for (float[] row : embeddings) {
+                                List<Float> rowList = new ArrayList<>();
+                                for (float value : row) {
+                                    rowList.add(value);
+                                }
+                                embeddingList.add(rowList);
+                            }
+
+                            // Prepare data to store in Firebase
+                            Map<String, Object> faceData = new HashMap<>();
+                            faceData.put("userId", userId);
+                            faceData.put("name", faceName);
+                            faceData.put("embeddings", embeddingList);
+
+                            // Push data to Firebase
+                            databaseRef.child(faceName).setValue(faceData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(getApplicationContext(), "Face data stored in Firebase", Toast.LENGTH_SHORT).show();
+                                        start = true;
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(getApplicationContext(), "Failed to store face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        start = true;
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(getApplicationContext(), "Error checking data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        start = true;
+                    }
+                });
+    }
+
+    private Task<String> getUserIdByEmail(String email) {
+        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+
+        databaseRef.orderByChild("email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                String userId = childSnapshot.child("userId").getValue(String.class);
+                                taskCompletionSource.setResult(userId); // Complete the task with the userId
+                                return;
+                            }
+                        } else {
+                            taskCompletionSource.setException(new Exception("No user found with the given email."));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        taskCompletionSource.setException(new Exception("Database error: " + databaseError.getMessage()));
+                    }
+                });
+
+        return taskCompletionSource.getTask();
+    }
+
+
+
+
+    // Callback interface for asynchronous operations
+    public interface FirebaseCallback {
+        void onSuccess(String userId);
+        void onFailure(String errorMessage);
+    }
+
 
     private void sendFaceDataToApi(Map<String, Object> faceData) {
         ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
@@ -594,8 +704,9 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                     delayedWelcomeMessage(closestName);
                     finalName = closestName;
                 } else {
-                    finalName = closestName;
+
                     closestName = "unknown";  // Assign 'unknown' if no match found within threshold
+                    finalName = closestName;
                 }
 
                 // Check if the name has changed from the last recognized name
