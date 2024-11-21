@@ -2,7 +2,9 @@ package com.supergym.sep490_supergymmanagement;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -113,6 +115,9 @@ public class    ViewMainContent extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_main_content);
+        MyApp app = (MyApp) getApplicationContext();
+        app.setUserRole(null); // Assuming setUserRole() is a setter in your MyApp class
+
         loadUserDetails();
         loadingOverlay = findViewById(R.id.loading_overlay);
         // Check if we should load the AdminDashBoard fragment
@@ -195,7 +200,7 @@ public class    ViewMainContent extends AppCompatActivity {
                     return true;
                 });
             }
-        }, 3000); // 5 seconds delay (5000 milliseconds)
+        }, 5000); // 5 seconds delay (5000 milliseconds)
     }
 
     private void showLoadingOverlay() {
@@ -210,6 +215,8 @@ public class    ViewMainContent extends AppCompatActivity {
     private void checkAdmin(String roleName){
         if(roleName.equals("admin")){
             replaceFragment(new DashBoardAdmin());
+            MyApp app = (MyApp) getApplicationContext();
+            app.setUserRole("admin"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As Admin!", Toast.LENGTH_SHORT).show();
         }
 

@@ -1,5 +1,7 @@
 package com.supergym.sep490_supergymmanagement;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -7,6 +9,7 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -54,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private long lastUserInteractionTime; // Store the last interaction timestamp
     private static final long INACTIVITY_TIMEOUT = 600000000; // 10 minutes in milliseconds
     private Handler handler; // Handler object for periodic checks
-
+    private CheckBox rememberCheckBox ;
     @Override
     public void onStart(){
         super.onStart();
@@ -85,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         handler = new Handler();
         startInactivityCheck(); // Start periodic checks
         forgotPassTv = findViewById(R.id.forgotPassTv);
-
+        rememberCheckBox = findViewById(R.id.rememberCheckBox);
         forgotPassTv.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +129,15 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Check if "Remember me" is checked
+                boolean isRememberChecked = rememberCheckBox.isChecked();
+
+                // Save the state in SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("rememberMe", isRememberChecked);
+                editor.apply();
+
                 progressBar.setVisibility(View.VISIBLE);
                 String email, password;
                 email = String.valueOf(editTextEmail.getText());
@@ -281,22 +293,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkInactivity() {
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastUserInteractionTime;
+        // Check the state of the "Remember me" checkbox
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        boolean isRememberMeChecked = sharedPreferences.getBoolean("rememberMe", false);
 
-        if (elapsedTime > INACTIVITY_TIMEOUT) {
-            mAuth.signOut();
-            // Inform user about logout (e.g., Toast message, navigate to login)
-            Toast.makeText(LoginActivity.this, "Logged out due to inactivity.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-            startActivity(intent);
-            finish();
-            // Optional: navigate to login screen
-        } else {
-            // User is still active, reset the timer
-            lastUserInteractionTime = currentTime;
+        if (!isRememberMeChecked) { // Proceed only if "Remember me" is not checked
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = currentTime - lastUserInteractionTime;
+
+            if (elapsedTime > INACTIVITY_TIMEOUT) {
+                FirebaseAuth.getInstance().signOut();
+                // Inform user about logout
+                Toast.makeText(LoginActivity.this, "Logged out due to inactivity.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                // User is still active, reset the timer
+                lastUserInteractionTime = currentTime;
+            }
         }
     }
+
 
     // ... other activity methods ...
 

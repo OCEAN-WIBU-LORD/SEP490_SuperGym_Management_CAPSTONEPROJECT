@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -207,10 +208,23 @@ public class FragmentUserProfile extends Fragment {
                 btnYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // Clear user role from shared preferences or global variable
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove("userRole"); // Remove the role
+                        editor.apply();
+                        MyApp app = (MyApp) getActivity().getApplication();
+                        app.setUserRole(null); // Assuming setUserRole() is a setter in your MyApp class
+
+
+
+                        editor.remove("rememberMe"); // Remove the rememberMe key
+                        editor.apply();
                         // Perform logout operation
                         FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(intent);
+
                         Toast.makeText(getActivity(), "Log Out successfully", Toast.LENGTH_SHORT).show();
                         getActivity().finish();
                         dialog.dismiss(); // Dismiss the dialog
@@ -229,6 +243,7 @@ public class FragmentUserProfile extends Fragment {
                 dialog.show();
             }
         });
+
 
 
 
