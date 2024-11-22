@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,17 +92,17 @@ public class SearchTrainerFragment extends Fragment {
         trainerRecyclerView.setLayoutManager(layoutManager);
 
         trainerAdapter = new TrainerAdapter(trainerData, getActivity(), trainer -> {
-            // Open LoginActivity instead of handling trainer click
             Intent intent = new Intent(getActivity(), ViewTrainerDetails.class);
+            Toast.makeText(getContext(), trainer.getTrainerId(), Toast.LENGTH_SHORT).show();
+            intent.putExtra("trainerId", trainer.getTrainerId()); // Assuming `getId()` returns the trainer's ID
             startActivity(intent);
-            // Optional: Add a finish() call if you want to close the current activity
-            getActivity().finish();
         });
 
         trainerRecyclerView.setAdapter(trainerAdapter);
 
         loadAllTrainers();
     }
+
 
 
     private void loadAllTrainers() {
