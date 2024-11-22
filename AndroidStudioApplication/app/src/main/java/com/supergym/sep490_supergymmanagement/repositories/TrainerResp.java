@@ -13,6 +13,7 @@ import com.supergym.sep490_supergymmanagement.models.Trainer;
 import com.supergym.sep490_supergymmanagement.repositories.callbacks.Callback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TrainerResp {
@@ -82,6 +83,7 @@ public class TrainerResp {
                 for (DataSnapshot snapshot : task.getResult().getChildren()) {
                     Trainer trainer = snapshot.getValue(Trainer.class);
                     if (trainer != null) {
+                        trainer.setTrainerId(snapshot.getKey()); // Set the ID from the key
                         trainers.add(trainer);
                     }
                 }
@@ -91,6 +93,7 @@ public class TrainerResp {
             }
         });
     }
+
 
     // Fetch trainers by name
     public void getTrainersByName(String searchQuery, Callback<Trainer> callback) {
@@ -110,13 +113,84 @@ public class TrainerResp {
         });
     }
 
+   /* public void getAllDataByTrainerId(String trainerId, Callback<Trainer> callback) {
+        trainerTable.child(trainerId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                Trainer trainer = task.getResult().getValue(Trainer.class);
+                if (trainer != null) {
+                    Log.d("TrainerData", "Trainer Data Retrieved: " + trainer.toString());
+                    callback.onCallback(List.of(trainer)); // Pass the trainer object
+                } else {
+                    Log.e("TrainerData", "Trainer not found with ID: " + trainerId);
+                    callback.onCallback(new ArrayList<>()); // Return an empty list
+                }
+            } else {
+                Log.e("TrainerData", "Failed to retrieve data: ", task.getException());
+                callback.onCallback(new ArrayList<>()); // Return an empty list on failure
+            }
+        });
+    }*/
+
+
+    public void loadAllTrainers(Callback<Trainer> callback) {
+        trainerTable.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Trainer> trainers = new ArrayList<>();
+                for (DataSnapshot trainerSnapshot : snapshot.getChildren()) {
+                    Trainer trainer = trainerSnapshot.getValue(Trainer.class);
+                    if (trainer != null) {
+                        // Set the TrainerId from the key
+                        trainer.setTrainerId(trainerSnapshot.getKey());
+                        trainers.add(trainer);
+                    }
+                }
+                callback.onCallback(trainers); // Pass the loaded trainers to the callback
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TrainerResp", "Failed to fetch trainers: ", error.toException());
+            }
+        });
+    }
+   /* public void getUserAvatarByUserId(String userId, Callback<String> callback) {
+        trainerTable.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String userAvatar = snapshot.child("userAvatar").getValue(String.class);
+                        if (userAvatar != null) {
+                            callback.onCallback(userAvatar); // Return the userAvatar
+                            return;
+                        }
+                    }
+                    callback.onCallback(null); // No userAvatar found
+                } else {
+                    callback.onCallback(null); // User ID not found
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseError", "Error fetching userAvatar: " + databaseError.getMessage());
+                callback.onCallback(null);
+            }
+        });
+    }*/
+
+
+
+
     // Fetch a trainer by ID
     public void getTrainerById(String trainerId, Callback<Trainer> callback) {
         trainerTable.child(trainerId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Trainer trainer = task.getResult().getValue(Trainer.class);
                 if (trainer != null) {
-                    callback.onCallback(List.of(trainer));
+                    // Use Collections.singletonList for backward compatibility
+                    callback.onCallback(Collections.singletonList(trainer));
                 } else {
                     callback.onCallback(new ArrayList<>());
                 }
@@ -125,4 +199,5 @@ public class TrainerResp {
             }
         });
     }
+
 }

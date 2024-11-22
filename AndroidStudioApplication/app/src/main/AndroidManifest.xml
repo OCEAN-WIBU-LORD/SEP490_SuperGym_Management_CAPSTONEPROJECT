@@ -30,6 +30,9 @@
             android:name=".QrCodeDisplayActivity"
             android:exported="false" />
         <activity
+            android:name=".ViewTrainerDetails"
+            android:exported="false" />
+        <activity
             android:name=".TrainerDetailActivity"
             android:exported="false" />
         <activity

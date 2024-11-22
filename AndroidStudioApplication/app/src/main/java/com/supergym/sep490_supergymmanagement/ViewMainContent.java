@@ -160,7 +160,12 @@ public class    ViewMainContent extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Check for the fragment to open
+        String fragmentToOpen = getIntent().getStringExtra("openFragment");
 
+        if ("SearchTrainerFragment".equals(fragmentToOpen)) {
+            openSearchTrainerFragment();
+        }
         /*if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
@@ -177,7 +182,12 @@ public class    ViewMainContent extends AppCompatActivity {
 
         fab.setOnClickListener(view -> showBottomDialog());
     }
-
+    private void openSearchTrainerFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_layout, new SearchTrainerFragment())
+                .commit();
+    }
 
     private void checkNullRoll() {
         // Delay the execution of the following code by 5 seconds
@@ -200,7 +210,7 @@ public class    ViewMainContent extends AppCompatActivity {
                     return true;
                 });
             }
-        }, 5000); // 5 seconds delay (5000 milliseconds)
+        }, 3000); // 5 seconds delay (5000 milliseconds)
     }
 
     private void showLoadingOverlay() {
