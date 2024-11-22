@@ -318,9 +318,9 @@ public class    ViewMainContent extends AppCompatActivity {
                 replaceFragment(new SearchTrainerFragment());
             } else if (itemId == R.id.subscriptions) {
                 if (roleName.equals("pt")) {
-                    replaceFragment(new ScheduleTrainer());
+                    replaceFragment(new ViewCalendarActivity());
                 } else if (roleName.equals("customer")) {
-                    replaceFragment(new ProgressActivity());
+                    replaceFragment(new ViewCalendarActivity());
                 }
             } else if (itemId == R.id.library) {
                 replaceFragment(new FragmentUserProfile());

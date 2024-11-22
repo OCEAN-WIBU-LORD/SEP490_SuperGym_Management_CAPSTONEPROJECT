@@ -6,6 +6,9 @@ import com.supergym.sep490_supergymmanagement.models.PostCategory;
 import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.RegisterUserDto;
+import com.supergym.sep490_supergymmanagement.models.Schedule2;
+import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
+import com.supergym.sep490_supergymmanagement.models.TimeSlot;
 import com.supergym.sep490_supergymmanagement.models.Transaction;
 
 import java.util.List;
@@ -81,4 +84,12 @@ public interface ApiService {
     @GET("/api/PaymentHistory/{userId}")
     Call<List<Transaction>> getPaymentHistory(@Path("userId") String userId);
 
+    @GET("api/Schedule/Slot/Customer/{userId}")
+    Call<List<Schedule2>> getCustomerSchedules(@Path("userId") String userId);
+
+    @GET("api/Schedule/Slot/Trainer/{userId}")
+    Call<List<ScheduleForTrainer>> getTrainerSchedules(@Path("userId") String userId);
+
+    @GET("/api/Schedule/TimeSlots")
+    Call<List<TimeSlot>> getTimeSlots();
 }
