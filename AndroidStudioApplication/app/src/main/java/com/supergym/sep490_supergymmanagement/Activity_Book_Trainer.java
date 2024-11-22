@@ -31,7 +31,6 @@ import com.supergym.sep490_supergymmanagement.adapters.UserAdapter;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
-import com.supergym.sep490_supergymmanagement.models.PaymentQrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.QrCodeRentalResponse;
 import com.supergym.sep490_supergymmanagement.models.QrCodeBoxingResponse;
 import com.supergym.sep490_supergymmanagement.models.RegisterPackageRequest;
