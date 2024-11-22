@@ -32,8 +32,8 @@ public interface ApiService {
     Call<Void> registerUser(@Body RegisterUserDto registerUserDto);
 
     // New API call for generating QR codes
-    @POST("/api/GymRegistration/CreateRegistration")
-    Call<QrCodeResponse> generateQrCodes(@Body QrCodeRequest request);
+    @POST("/api/GymRegistration")
+    Call<List<QrCodeResponse.QrItem>> generateQrCodes(@Body QrCodeRequest request);
 
     @POST("api/facedata/registerFace")
     Call<Void> registerFace(@Body Map<String, Object> faceData);
