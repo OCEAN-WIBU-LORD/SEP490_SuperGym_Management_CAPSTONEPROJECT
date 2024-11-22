@@ -17,7 +17,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.supergym.sep490_supergymmanagement.adapters.MembershipAdapter;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
@@ -68,12 +71,8 @@ public class MembershipActivity extends AppCompatActivity {
         setContentView(R.layout.subscription_packages);
 
         // Initialize the text views for displaying the membership data
-        basicPackageTextView = findViewById(R.id.basicPackageTextView);
-        premiumPackageTextView = findViewById(R.id.premiumPackageTextView);
-        elitePackageTextView = findViewById(R.id.elitePackageTextView);
         btnReturnBtn = findViewById(R.id.btnReturnBtn);
         loadingSpinner = findViewById(R.id.loadingSpinner);
-        basicPackageButton4 = findViewById(R.id.basicPackageButton4);
         mAuth = FirebaseAuth.getInstance();
 
         basicPackageButton4.setOnClickListener(v -> generateQrCodeDialog());
@@ -120,20 +119,10 @@ public class MembershipActivity extends AppCompatActivity {
 
     // Method to update the UI with the fetched data
     private void updateUI(List<MembershipPackage> packages) {
-        for (MembershipPackage membershipPackage : packages) {
-            basicPackageTextView.setText(membershipPackage.getPrice() + " - " + membershipPackage.getName());
-//            switch (membershipPackage.getName()) {
-//                case "Basic":
-//                    basicPackageTextView.setText(membershipPackage.getPrice() + " - " + membershipPackage.getName());
-//                    break;
-//                case "Premium":
-//                    premiumPackageTextView.setText(membershipPackage.getPrice() + " - " + membershipPackage.getName());
-//                    break;
-//                case "Elite":
-//                    elitePackageTextView.setText(membershipPackage.getPrice() + " - " + membershipPackage.getName());
-//                    break;
-//            }
-        }
+        RecyclerView recyclerView = findViewById(R.id.membershipRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        MembershipAdapter adapter = new MembershipAdapter(this, packages);
+        recyclerView.setAdapter(adapter);
     }
     private void showLoading() {
         loadingSpinner.setVisibility(View.VISIBLE);
