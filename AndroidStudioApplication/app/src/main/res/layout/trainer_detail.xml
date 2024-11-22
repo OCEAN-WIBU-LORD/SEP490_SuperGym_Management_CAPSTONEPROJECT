@@ -1,0 +1,320 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    tools:context=".ViewTrainerDetails">
+
+    <!-- Wrapping content in a ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/light_red"
+        android:padding="16dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/returnBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/move_back_icon"
+                android:backgroundTint="@color/black"
+                android:textColor="@color/lowLightBlue"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.cardview.widget.CardView>
+        <!-- Centering the ImageView -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/headerTitle"
+            android:contentDescription="Super Gym"
+            android:src="@drawable/logovip2" />
+
+        <!-- Centering the TextView -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Super Gym"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+
+    <!-- Profile Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="65dp">
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/gym_trainer_png"
+                android:contentDescription="Profile Image"
+                android:scaleType="centerCrop"
+                android:background="@color/light_red" />
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/trainerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alex Johnson"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/trainerSpecialty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Specialist in Strength &amp; Conditioning"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+
+        <TextView
+            android:id="@+id/trainerDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Nam is a certified personal trainer with over 10 years of experience in helping clients achieve their fitness goals. His approach combines personalized workouts with dietary guidance."
+            android:textColor="#555555"
+            android:textSize="14sp"
+            android:textStyle="bold|italic"
+            android:gravity="left"
+            android:padding="8dp"
+            android:lineSpacingExtra="4dp" />
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="16dp">
+
+        <Button
+            android:id="@+id/viewReviewSesions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Review Session"
+            android:backgroundTint="#000000"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/viewTrainingImage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="View Training Images"
+            android:backgroundTint="#E0E0E0"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+    <!-- Testimonials -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/testimonialsHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Review of Attenders"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Testimonial 1 -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="25dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:background="#F5F5F5">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/userAvatar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="25dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/circle_background"
+                        android:contentDescription="Emily R Profile"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo_trainer" />
+                </androidx.cardview.widget.CardView>
+
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="Emily "
+                    android:layout_marginTop="10dp"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/userAvatar"></TextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="&quot;Alex helped me lose 15 pounds in 3 months with his amazing training sessions. His motivational style and expert knowledge make every session enjoyable and productive, leaving me feeling stronger and more energetic each day.&quot;"
+                        android:textColor="#555555"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:lineSpacingExtra="4dp" />
+                </ScrollView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="25dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:background="#F5F5F5">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/userAvatar1"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        app:cardCornerRadius="25dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/circle_background"
+                            android:contentDescription="Emily R Profile"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/logo_odg_circle" />
+                    </androidx.cardview.widget.CardView>
+
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="Mike T. "
+                        android:layout_marginTop="10dp"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/userAvatar1"></TextView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="&quot;I’ve tried countless fitness programs before, but Alex’s approach stands out. Over six months, I’ve seen incredible improvements in my overall health and stamina. His combination of personalized workouts and nutritional guidance has helped me transform my body and mind. I’ve never felt more supported and understood by a trainer—Alex truly cares about his clients' success.&quot;"
+                        android:textColor="#555555"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:lineSpacingExtra="4dp" />
+                </ScrollView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Testimonial 2 -->
+
+    </LinearLayout>
+    <!-- Bottom Navigation Bar -->
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

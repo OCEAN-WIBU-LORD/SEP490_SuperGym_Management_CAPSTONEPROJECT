@@ -130,7 +130,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     private CardView btnReturn;
 
     private Bitmap capturedFaceImage = null;  // method to get the captured image (e.g., from the camera)
-    private String userId = "user123"; // Replace this with the actual user ID
+    private String userId = "user123", faceNameTxt; // Replace this with the actual user ID
 
     private boolean isWelcomeMessagePlaying = false; // Flag to track if welcome message is playing
 
@@ -149,6 +149,15 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         }
         tts = new TextToSpeech(this, this);
         userId = user.getUid();
+
+        getUserNameByUserId(userId).addOnSuccessListener(userName -> {
+            // Successfully retrieved the user's name
+            faceNameTxt = userName;
+        }).addOnFailureListener(e -> {
+            // Handle errors
+            Toast.makeText(getApplicationContext(), "Error get User Name " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+
         setContentView(R.layout.activity_face_capture);
         previewView = findViewById(R.id.previewView);
         previewView.setScaleType(PreviewView.ScaleType.FIT_CENTER);
@@ -216,6 +225,30 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         } else {
             getPermissions();
         }
+    }
+    private Task<String> getUserNameByUserId(String userId) {
+        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+
+        // Query Firebase to get the user's name by userId
+        databaseRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userName = dataSnapshot.child("dob").child("name").getValue(String.class);
+                    taskCompletionSource.setResult(userName); // Complete the task with the user's name
+                } else {
+                    taskCompletionSource.setException(new Exception("No user found with the given userId."));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                taskCompletionSource.setException(new Exception("Database error: " + databaseError.getMessage()));
+            }
+        });
+
+        return taskCompletionSource.getTask();
     }
 
     private void setupCamera() {
@@ -457,11 +490,17 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         // Conditionally add an email input for admin role
         final EditText emailInput = new EditText(this);
-        if (roleCheck.equals("admin")) {
+
+        // Use null-safe comparison
+        if ("admin".equals(roleCheck)) {
             emailInput.setHint("Enter Email Address");
             emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
             emailInput.setMaxWidth(200);
             layout.addView(emailInput);
+
+            // Allow admins to edit the name
+            nameInput.setFocusable(true);
+            nameInput.setClickable(true);
         } else {
             // Make the name field non-editable for non-admin users
             nameInput.setFocusable(false);
@@ -475,7 +514,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
             String faceName = nameInput.getText().toString().trim(); // Name (editable for admin)
             String email = emailInput.getText().toString().trim(); // Email (only for admin)
 
-            if (roleCheck.equals("admin") && !email.isEmpty()) {
+            if ("admin".equals(roleCheck) && !email.isEmpty()) {
                 // Admin logic: fetch userId by email
                 getUserIdByEmail(email).addOnSuccessListener(userId -> {
                     registerFace(faceName, userId);
@@ -496,6 +535,8 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         builder.show();
     }
+
+
 
     private void registerFace(String faceName, String userId) {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");

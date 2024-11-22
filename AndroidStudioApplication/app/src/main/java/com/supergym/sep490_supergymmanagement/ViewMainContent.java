@@ -200,7 +200,7 @@ public class    ViewMainContent extends AppCompatActivity {
                     return true;
                 });
             }
-        }, 5000); // 5 seconds delay (5000 milliseconds)
+        }, 3000); // 5 seconds delay (5000 milliseconds)
     }
 
     private void showLoadingOverlay() {

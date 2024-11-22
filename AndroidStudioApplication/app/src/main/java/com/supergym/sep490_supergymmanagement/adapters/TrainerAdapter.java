@@ -17,9 +17,9 @@ import com.supergym.sep490_supergymmanagement.models.Trainer;
 import java.util.List;
 
 public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.TrainerViewHolder> {
-    private List<Trainer> trainers;
-    private Context context;
-    private OnTrainerClickListener listener;
+    private final List<Trainer> trainers;
+    private final Context context;
+    private final OnTrainerClickListener listener;
 
     public TrainerAdapter(List<Trainer> trainers, Context context, OnTrainerClickListener listener) {
         this.trainers = trainers;
@@ -34,21 +34,18 @@ public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.TrainerV
         return new TrainerViewHolder(view);
     }
 
-    public interface OnTrainerClickListener {
-        void onTrainerClick(Trainer trainer); // Handle trainer item clicks
-    }
-
     @Override
     public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
         Trainer trainer = trainers.get(position);
 
+        // Set trainer name
         holder.trainerName.setText(trainer.getName());
 
-        // Set click listener
+        // Handle item click
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, TrainerDetailActivity.class);
-            intent.putExtra("selectedTrainer", trainer);
-            context.startActivity(intent);
+            if (listener != null) {
+                listener.onTrainerClick(trainer);
+            }
         });
     }
 
@@ -57,6 +54,7 @@ public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.TrainerV
         return trainers.size();
     }
 
+    // ViewHolder class for Trainer
     public static class TrainerViewHolder extends RecyclerView.ViewHolder {
         TextView trainerName;
 
@@ -64,5 +62,10 @@ public class TrainerAdapter extends RecyclerView.Adapter<TrainerAdapter.TrainerV
             super(itemView);
             trainerName = itemView.findViewById(R.id.trainer_name);
         }
+    }
+
+    // Interface for handling trainer clicks
+    public interface OnTrainerClickListener {
+        void onTrainerClick(Trainer trainer);
     }
 }
