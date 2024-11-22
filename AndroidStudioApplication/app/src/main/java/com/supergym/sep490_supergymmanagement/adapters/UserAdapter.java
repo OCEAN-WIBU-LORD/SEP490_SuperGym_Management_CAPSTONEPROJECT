@@ -8,19 +8,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.supergym.sep490_supergymmanagement.R;
+import com.supergym.sep490_supergymmanagement.models.SearchUser;
 import com.supergym.sep490_supergymmanagement.models.User;
 
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
-    private List<User> userList;
+    private List<SearchUser> userList;
     private OnUserClickListener onUserClickListener;
 
     public interface OnUserClickListener {
-        void onUserClick(User user);
+        void onUserClick(SearchUser user);
     }
 
-    public UserAdapter(List<User> userList, OnUserClickListener onUserClickListener) {
+    public UserAdapter(List<SearchUser> userList, OnUserClickListener onUserClickListener) {
         this.userList = userList;
         this.onUserClickListener = onUserClickListener;
     }
@@ -34,7 +35,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        User user = userList.get(position);
+        SearchUser user = userList.get(position);
         holder.emailTextView.setText(user.getEmail());
         holder.nameTextView.setText(user.getName());
         holder.itemView.setOnClickListener(v -> onUserClickListener.onUserClick(user));
@@ -50,8 +51,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            emailTextView = itemView.findViewById(R.id.email);
-            nameTextView = itemView.findViewById(R.id.name);
+            emailTextView = itemView.findViewById(R.id.userEmail);
+            nameTextView = itemView.findViewById(R.id.userName);
         }
     }
 }
+

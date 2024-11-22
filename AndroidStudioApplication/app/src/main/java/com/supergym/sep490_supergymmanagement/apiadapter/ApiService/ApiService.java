@@ -1,15 +1,22 @@
 package com.supergym.sep490_supergymmanagement.apiadapter.ApiService;
 
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
+import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
+import com.supergym.sep490_supergymmanagement.models.PaymentQrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
 import com.supergym.sep490_supergymmanagement.models.PostCategory;
+import com.supergym.sep490_supergymmanagement.models.QrCodeBoxingResponse;
+import com.supergym.sep490_supergymmanagement.models.QrCodeRentalResponse;
 import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
+import com.supergym.sep490_supergymmanagement.models.RegisterPackageRequest;
 import com.supergym.sep490_supergymmanagement.models.RegisterUserDto;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
+import com.supergym.sep490_supergymmanagement.models.SearchUser;
 import com.supergym.sep490_supergymmanagement.models.TimeSlot;
 import com.supergym.sep490_supergymmanagement.models.Transaction;
+import com.supergym.sep490_supergymmanagement.models.UserResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -92,4 +99,27 @@ public interface ApiService {
 
     @GET("/api/Schedule/TimeSlots")
     Call<List<TimeSlot>> getTimeSlots();
+
+    @GET("/api/PackagesAndTrainers")
+    Call<PackagesAndTrainersResponse> getPackagesAndTrainers(
+            @Query("type") String type // "Boxing" hoặc "TrainerRental"
+    );
+
+    @GET("/api/PackagesAndTrainers/trainers-by-option")
+    Call<List<UserResponse>> getTrainersByOption(
+            @Query("boxingOptionId") String boxingOptionId, // Nullable
+            @Query("rentalOptionId") String rentalOptionId // Nullable
+    );
+
+    @GET("/api/Users/GetUserByEmail/{email}")
+    Call<SearchUser> getUserByEmail(
+            @Path("email") String email
+    );
+
+    @POST("/api/BoxingRegistration")
+    Call<List<QrCodeBoxingResponse.QrItem>> createBoxingRegistration(@Body RegisterPackageRequest request);
+
+    @POST("/api/TrainerRentalRegistration")
+    Call<List<QrCodeRentalResponse.QrItem>> createTrainerRentalRegistration(@Body RegisterPackageRequest request);
+
 }
