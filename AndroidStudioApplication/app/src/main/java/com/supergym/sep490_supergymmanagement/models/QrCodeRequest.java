@@ -3,28 +3,19 @@ package com.supergym.sep490_supergymmanagement.models;
 import java.util.List;
 
 public class QrCodeRequest {
-    private String uid;
-    private List<String> emails;
-    private String boxingMembershipPlanId;
-    private String gymMembershipId;
-    private String trainerRentalPlanId;
-    private Integer durationMonths;
-    private Integer sessions;
-    private String scheduleId;
-    private boolean qrPayment;
+    private List<String> emails; // Emails to notify
+    private String boxingMembershipPlanId; // ID of the boxing membership plan
+    private String gymMembershipId; // ID of the gym membership
+    private String trainerRentalPlanId; // ID of the trainer rental plan
+    private boolean qrPayment; // Whether payment is via QR code
+    private Integer duration; // Duration in months or days
+    private String selectedTimeSlot; // Chosen time slot
+    private boolean isMonWedFri; // True for Mon/Wed/Fri schedule, false for Tue/Thu/Sat
 
-    public QrCodeRequest(String uid) {
-        this.uid = uid;
-    }
+    // Default Constructor
+    public QrCodeRequest() {}
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
+    // Getters and Setters
     public List<String> getEmails() {
         return emails;
     }
@@ -57,35 +48,35 @@ public class QrCodeRequest {
         this.trainerRentalPlanId = trainerRentalPlanId;
     }
 
-    public Integer getDurationMonths() {
-        return durationMonths;
-    }
-
-    public void setDurationMonths(Integer durationMonths) {
-        this.durationMonths = durationMonths;
-    }
-
-    public Integer getSessions() {
-        return sessions;
-    }
-
-    public void setSessions(Integer sessions) {
-        this.sessions = sessions;
-    }
-
-    public String getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(String scheduleId) {
-        this.scheduleId = scheduleId;
-    }
-
     public boolean isQrPayment() {
         return qrPayment;
     }
 
     public void setQrPayment(boolean qrPayment) {
         this.qrPayment = qrPayment;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public String getSelectedTimeSlot() {
+        return selectedTimeSlot;
+    }
+
+    public void setSelectedTimeSlot(String selectedTimeSlot) {
+        this.selectedTimeSlot = selectedTimeSlot;
+    }
+
+    public boolean isMonWedFri() {
+        return isMonWedFri;
+    }
+
+    public void setMonWedFri(boolean isMonWedFri) {
+        this.isMonWedFri = isMonWedFri;
     }
 }

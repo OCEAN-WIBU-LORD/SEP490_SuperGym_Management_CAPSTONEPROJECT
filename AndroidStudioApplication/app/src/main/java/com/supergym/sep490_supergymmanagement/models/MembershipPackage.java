@@ -1,17 +1,53 @@
 package com.supergym.sep490_supergymmanagement.models;
 
 public class MembershipPackage {
-    private String name;
-    private String price;
-    private String description;
+    private String gymMembershipId; // Primary Key
+    private String name; // Membership name
+    private Integer durationMonths; // Duration in months
+    private Integer sessionCount; // Number of sessions
+    private Double price; // Price in decimal format
+
+    // Default Constructor
+    public MembershipPackage() {}
 
     // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getGymMembershipId() {
+        return gymMembershipId;
+    }
 
-    public String getPrice() { return price; }
-    public void setPrice(String price) { this.price = price; }
+    public void setGymMembershipId(String gymMembershipId) {
+        this.gymMembershipId = gymMembershipId;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getDurationMonths() {
+        return durationMonths;
+    }
+
+    public void setDurationMonths(Integer durationMonths) {
+        this.durationMonths = durationMonths;
+    }
+
+    public Integer getSessionCount() {
+        return sessionCount;
+    }
+
+    public void setSessionCount(Integer sessionCount) {
+        this.sessionCount = sessionCount;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

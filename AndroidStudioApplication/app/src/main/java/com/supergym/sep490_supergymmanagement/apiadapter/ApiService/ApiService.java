@@ -39,7 +39,7 @@ public interface ApiService {
     Call<Void> registerFace(@Body Map<String, Object> faceData);
 
 
-    @GET("/api/membership")
+    @GET("/api/gymmembership")
     Call<List<MembershipPackage>> getMembershipPackages();
     // 1. Lấy danh sách tất cả danh mục
     @GET("api/posts/categories")
