@@ -239,40 +239,40 @@ public class MembershipActivity extends AppCompatActivity {
         request.setSelectedTimeSlot("empty"); // Example time slot
         request.setMonWedFri(true); // Example schedule
 
-        // Call the API to generate QR codes
-        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
-            @Override
-            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
-                hideLoading();
-                if (response.isSuccessful() && response.body() != null) {
-                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
-
-                    if (!qrItems.isEmpty()) {
-                        qrCodes.clear();
-                        qrNames.clear();
-                        priceSubsInfo.clear();
-
-                        for (QrCodeResponse.QrItem qrItem : qrItems) {
-                            qrCodes.add(qrItem.getQrDataUrl());
-                            qrNames.add(qrItem.getDetails().getGymMembership().getName());
-                            priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND");
-                        }
-
-                        showQrCodeDialog();
-                    } else {
-                        Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(MembershipActivity.this, "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
-                hideLoading();
-                Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        // Call the API to generate QR codes
+//        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
+//            @Override
+//            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
+//                hideLoading();
+//                if (response.isSuccessful() && response.body() != null) {
+//                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
+//
+//                    if (!qrItems.isEmpty()) {
+//                        qrCodes.clear();
+//                        qrNames.clear();
+//                        priceSubsInfo.clear();
+//
+//                        for (QrCodeResponse.QrItem qrItem : qrItems) {
+//                            qrCodes.add(qrItem.getQrDataUrl());
+//                            qrNames.add(qrItem.getDetails().getGymMembership().getName());
+//                            priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND");
+//                        }
+//
+//                        showQrCodeDialog();
+//                    } else {
+//                        Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Toast.makeText(MembershipActivity.this, "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
+//                hideLoading();
+//                Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     // Utility method to show the QR code dialog

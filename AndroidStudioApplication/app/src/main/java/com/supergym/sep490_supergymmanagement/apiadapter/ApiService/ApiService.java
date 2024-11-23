@@ -2,7 +2,6 @@ package com.supergym.sep490_supergymmanagement.apiadapter.ApiService;
 
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
-import com.supergym.sep490_supergymmanagement.models.PaymentQrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
 import com.supergym.sep490_supergymmanagement.models.PostCategory;
 import com.supergym.sep490_supergymmanagement.models.QrCodeBoxingResponse;
