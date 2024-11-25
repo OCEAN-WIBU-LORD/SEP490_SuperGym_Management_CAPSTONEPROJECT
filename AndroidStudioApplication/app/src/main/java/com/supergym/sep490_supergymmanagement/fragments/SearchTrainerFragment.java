@@ -92,11 +92,21 @@ public class SearchTrainerFragment extends Fragment {
         trainerRecyclerView.setLayoutManager(layoutManager);
 
         trainerAdapter = new TrainerAdapter(trainerData, getActivity(), trainer -> {
-            Intent intent = new Intent(getActivity(), ViewTrainerDetails.class);
-            Toast.makeText(getContext(), trainer.getTrainerId(), Toast.LENGTH_SHORT).show();
-            intent.putExtra("trainerId", trainer.getTrainerId()); // Assuming `getId()` returns the trainer's ID
-            startActivity(intent);
+            if (trainer == null) {
+                Toast.makeText(getContext(), "Trainer data is missing", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (trainer.getTrainerId() != null) {
+                Intent intent = new Intent(getActivity(), ViewTrainerDetails.class);
+                intent.putExtra("trainerId", trainer.getTrainerId());
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "Invalid trainer data", Toast.LENGTH_SHORT).show();
+            }
         });
+
+
 
         trainerRecyclerView.setAdapter(trainerAdapter);
 
@@ -120,12 +130,19 @@ public class SearchTrainerFragment extends Fragment {
         trainerResp.getTrainersByName(searchQuery, new Callback<Trainer>() {
             @Override
             public void onCallback(List<Trainer> trainers) {
-                trainerData.clear();
-                trainerData.addAll(trainers);
-                trainerAdapter.notifyDataSetChanged();
+                if (trainers != null) {
+                    trainerData.clear();
+                    trainerData.addAll(trainers);
+                    trainerAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "No trainers found", Toast.LENGTH_SHORT).show();
+                    trainerData.clear();
+                    trainerAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
+
 
     /*@Override
     public void onTrainerClick(Trainer trainer) {

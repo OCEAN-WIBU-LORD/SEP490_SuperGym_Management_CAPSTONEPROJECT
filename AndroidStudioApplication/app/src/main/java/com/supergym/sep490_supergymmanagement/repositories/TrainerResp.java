@@ -95,6 +95,8 @@ public class TrainerResp {
     }
 
 
+
+
     // Fetch trainers by name
     public void getTrainersByName(String searchQuery, Callback<Trainer> callback) {
         trainerTable.get().addOnCompleteListener(task -> {
@@ -103,6 +105,7 @@ public class TrainerResp {
                 for (DataSnapshot snapshot : task.getResult().getChildren()) {
                     Trainer trainer = snapshot.getValue(Trainer.class);
                     if (trainer != null && trainer.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                        trainer.setTrainerId(snapshot.getKey());
                         trainers.add(trainer);
                     }
                 }

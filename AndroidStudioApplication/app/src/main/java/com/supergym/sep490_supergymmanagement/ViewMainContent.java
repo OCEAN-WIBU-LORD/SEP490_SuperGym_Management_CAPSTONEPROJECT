@@ -42,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.supergym.sep490_supergymmanagement.RoleAdapter.UserRoleRetriever;
 import com.supergym.sep490_supergymmanagement.adapters.PostAdapter;
+import com.supergym.sep490_supergymmanagement.adapters.TrainerIdRetriever;
 import com.supergym.sep490_supergymmanagement.databinding.ActivityMainBinding;
 import com.supergym.sep490_supergymmanagement.databinding.ActivityViewMainContentBinding;
 import com.supergym.sep490_supergymmanagement.fragments.AppointmentFragment;
@@ -85,18 +86,20 @@ public class    ViewMainContent extends AppCompatActivity {
             appointmentFragment, searchFragment,
             activeFragment, geminiFragment,
             appointmentListDoctorFragment;
-
+    TrainerIdRetriever retriever = new TrainerIdRetriever();
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
     private ProgressBar progressBar;
     String fragmentType = "";
 
+    private String trainerId;
     FirebaseAuth mAuth;
     private String roleIdTxt, roleNameTxt;
     private View loadingOverlay;
 
     private String userId, userRole, roleId = null;
+    private String trainerIdPro;
     @Override
     public void onStart(){
         super.onStart();
@@ -147,6 +150,19 @@ public class    ViewMainContent extends AppCompatActivity {
             return;
         }
         userId = user.getUid();
+        retriever.getTrainerId(userId, new TrainerIdRetriever.Callback() {
+            @Override
+            public void onSuccess(String trainerId) {
+                // Handle the retrieved trainer ID
+                trainerIdPro = trainerId;
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                // Handle errors
+                System.err.println("Error: " + errorMessage);
+            }
+        });
         showLoadingOverlay();
         // Authentication check and UI setup
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -228,6 +244,11 @@ public class    ViewMainContent extends AppCompatActivity {
             MyApp app = (MyApp) getApplicationContext();
             app.setUserRole("admin"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As Admin!", Toast.LENGTH_SHORT).show();
+        } else  if(roleName.equals("pt")){
+            replaceFragment(new DashBoardAdmin());
+            MyApp app = (MyApp) getApplicationContext();
+            app.setUserRole("pt"); // Set the role based on your logic
+            Toast.makeText(ViewMainContent.this, "You Logged In As PT!", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -298,6 +319,10 @@ public class    ViewMainContent extends AppCompatActivity {
             // Add "Income" for admin role
             bottomNavigationView.getMenu().add(Menu.NONE, R.id.checklog, Menu.NONE, "Check Log")
                     .setIcon(R.drawable.check_log_ic);
+        }else if ("pt".equals(roleName)){
+            // Add "Appointment Schedule" for non-admin roles
+            bottomNavigationView.getMenu().add(Menu.NONE, R.id.trainer_detail, Menu.NONE, "Trainer Profile")
+                    .setIcon(R.drawable.trainer_profile_icon);
         } else {
             // Add "Appointment Schedule" for non-admin roles
             bottomNavigationView.getMenu().add(Menu.NONE, R.id.shorts, Menu.NONE, "Search")
@@ -338,6 +363,17 @@ public class    ViewMainContent extends AppCompatActivity {
                 replaceFragment(new ViewIncomeFragment());
             }else if (itemId == R.id.checklog) {
                 replaceFragment(new CheckLogFragment());
+            }    else if (itemId == R.id.trainer_detail) {
+                Intent intent = new Intent(ViewMainContent.this, ViewTrainerDetails.class);
+
+
+                if(trainerIdPro != null){
+                    intent.putExtra("trainerId", trainerIdPro);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(ViewMainContent.this, "Failed to load TrainerId", Toast.LENGTH_SHORT).show();
+                }
+
             }else if (itemId == R.id.admindashboard) {
                 replaceFragment(new DashBoardAdmin());
             }else if (itemId == R.id.nothing) {
@@ -348,6 +384,16 @@ public class    ViewMainContent extends AppCompatActivity {
 
         fab.setOnClickListener(view -> showBottomDialog());
     }
+
+
+    // Callback interface for asynchronous response
+    public interface TrainerIdCallback {
+        void onSuccess(String trainerId);
+        void onFailure(String error);
+    }
+
+
+
 
     private void loadUserDetails() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +52,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private Spinner packageSpinner, trainerSpinner;
     private RadioGroup trainerTypeRadioGroup, optionRadioGroup;
     private GridLayout dayGridLayout;
+    private CardView returnBtn;
     private SeekBar sessionTimeSeekBar;
     private TextView selectedTimeSlotText, trainerNameTextView, trainerBioTextView, qrCodeImageView;
     private EditText extraUsersEditText, sessionCountEditText;
@@ -75,7 +77,14 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
             apiService = RetrofitClient.getApiService();
 
-
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Simulate the back button press
+                onBackPressed();
+            }
+        });
         // Khởi tạo các thành phần giao diện
         initViews();
 

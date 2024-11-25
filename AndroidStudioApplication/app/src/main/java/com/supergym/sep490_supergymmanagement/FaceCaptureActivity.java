@@ -179,7 +179,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         MyApp app = (MyApp) getApplicationContext();
         String userRole = app.getUserRole();
         if ("admin".equals(userRole)) {
-            Toast.makeText(this, "LMAO1234", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "This is Admin FaceCheck!", Toast.LENGTH_SHORT).show();
             roleCheck = "admin";
         }
 

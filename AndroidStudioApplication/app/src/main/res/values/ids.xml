@@ -4,4 +4,5 @@
     <item name="admindashboard" type="id" />
     <item name="checklog" type="id" />
     <item name="nothing" type="id" />
+    <item name="trainer_detail" type="id" />
 </resources>

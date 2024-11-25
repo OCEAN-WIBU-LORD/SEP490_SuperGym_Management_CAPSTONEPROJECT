@@ -51,6 +51,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/editBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp"
+            android:visibility="gone">
+
+            <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:background="@drawable/baseline_edit_24"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/lowLightBlue"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        </androidx.cardview.widget.CardView>
         <!-- Centering the ImageView -->
         <ImageView
             android:id="@+id/logo"
@@ -159,11 +182,57 @@
             android:backgroundTint="#E0E0E0"
             android:textColor="#000000" />
     </LinearLayout>
+            <LinearLayout
+                android:id="@+id/anotherLayout"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone"> <!-- Initially Hidden -->
 
+                <!-- Content of the second tab -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Training Images"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Add some example training images -->
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <!-- Testimonial 1 -->
+
+                        <!-- Add some example training images -->
+                        <ImageView
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/logo_odg_circle" />
+
+                        <ImageView
+                            android:layout_width="200dp"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:layout_marginTop="16dp"
+                            android:src="@drawable/logo_odg_circle" />
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
+            </LinearLayout>
     <!-- Testimonials -->
     <LinearLayout
+        android:id="@+id/changedLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="280dp"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -177,6 +246,16 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
         <!-- Testimonial 1 -->
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -308,10 +387,30 @@
                 </ScrollView>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
+        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
         <!-- Testimonial 2 -->
 
     </LinearLayout>
+            <androidx.cardview.widget.CardView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="25dp">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/bookingBtn"
+                    android:layout_width="match_parent"
+                    android:background="@color/light_red"
+                    android:text="Book Now !"
+                    android:layout_height="wrap_content">
+
+                </androidx.appcompat.widget.AppCompatButton>
+            </androidx.cardview.widget.CardView>
+
     <!-- Bottom Navigation Bar -->
         </LinearLayout>
     </ScrollView>

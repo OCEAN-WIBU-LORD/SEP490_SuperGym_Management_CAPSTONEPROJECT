@@ -1,11 +1,18 @@
 package com.supergym.sep490_supergymmanagement;
 
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +35,12 @@ import com.supergym.sep490_supergymmanagement.repositories.callbacks.Callback;
 import java.util.List;
 
 public class ViewTrainerDetails extends AppCompatActivity {
-    private CardView returnBtn;
+    private CardView returnBtn, editBtn;
     private TextView trainerName, trainerSpecialization, trainerBio;
     private ImageView userAvatarImg; // For displaying the userAvatar
     private TrainerResp trainerResp = new TrainerResp(); // Assuming this is your database handler class
+    private Button bookingBtn;
+    private String roleCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,63 @@ public class ViewTrainerDetails extends AppCompatActivity {
         trainerSpecialization = findViewById(R.id.trainerSpecialization);
         trainerBio = findViewById(R.id.trainerBio);
         userAvatarImg = findViewById(R.id.userAvatarImg); // Assuming there's an ImageView for the avatar
+         bookingBtn = findViewById(R.id.bookingBtn);
+        editBtn = findViewById(R.id.editBtn);
+        bookingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("BookingButton", "CardView clicked!");
+                Intent intent = new Intent(ViewTrainerDetails.this, Activity_Book_Trainer.class);
+                startActivity(intent);
+            }
+        });
+        MyApp app = (MyApp) getApplicationContext();
+        String userRole = app.getUserRole();
+        if ("pt".equals(userRole)) {
+            roleCheck = "pt";
+           // Toast.makeText(this, "PT oke", Toast.LENGTH_SHORT).show();
+            editBtn.setVisibility(View.VISIBLE);
+        }
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("BookingButton", "CardView clicked!");
+                Intent intent = new Intent(ViewTrainerDetails.this, Activity_Book_Trainer.class);
+                startActivity(intent);
+            }
+        });
+        // Finding the button and the layout to swap
+        Button viewTrainingImageButton = findViewById(R.id.viewTrainingImage);
+        Button viewReviewSessionsButton = findViewById(R.id.viewReviewSesions);
+
+        LinearLayout changedLayout = findViewById(R.id.changedLayout);
+        LinearLayout anotherLayout = findViewById(R.id.anotherLayout);
+
+// Show "anotherLayout" when "viewTrainingImage" is clicked
+        viewTrainingImageButton.setOnClickListener(v -> {
+            changedLayout.setVisibility(View.GONE); // Hide the first tab
+            anotherLayout.setVisibility(View.VISIBLE); // Show the second tab
+            viewReviewSessionsButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
+            viewReviewSessionsButton.setTextColor(Color.BLACK);
+
+            // Set the other button as inactive
+            viewTrainingImageButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            viewTrainingImageButton.setTextColor(Color.WHITE);
+        });
+
+// Show "changedLayout" when "viewReviewSesions" is clicked
+        viewReviewSessionsButton.setOnClickListener(v -> {
+            anotherLayout.setVisibility(View.GONE); // Hide the second tab
+            changedLayout.setVisibility(View.VISIBLE); // Show the first tab
+            viewTrainingImageButton.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E0E0E0")));
+            viewTrainingImageButton.setTextColor(Color.BLACK);
+
+            // Set the other button as inactive
+            viewReviewSessionsButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            viewReviewSessionsButton.setTextColor(Color.WHITE);
+        });
+
+
 
         // Return button logic
         returnBtn.setOnClickListener(v -> finish());
