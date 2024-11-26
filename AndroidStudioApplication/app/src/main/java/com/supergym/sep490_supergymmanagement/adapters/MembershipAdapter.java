@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+import com.supergym.sep490_supergymmanagement.MembershipActivity;
 import com.supergym.sep490_supergymmanagement.R;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 
@@ -26,7 +28,7 @@ public class MembershipAdapter extends RecyclerView.Adapter<MembershipAdapter.Me
     @NonNull
     @Override
     public MembershipViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.membership_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.card_view_layout, parent, false);
         return new MembershipViewHolder(view);
     }
 
@@ -34,9 +36,20 @@ public class MembershipAdapter extends RecyclerView.Adapter<MembershipAdapter.Me
     public void onBindViewHolder(@NonNull MembershipViewHolder holder, int position) {
         MembershipPackage membershipPackage = membershipPackages.get(position);
         holder.nameTextView.setText(membershipPackage.getName());
-        holder.priceTextView.setText(String.format("$%.2f", membershipPackage.getPrice()));
-        holder.durationTextView.setText(membershipPackage.getDurationMonths() + " months");
-        holder.sessionsTextView.setText(membershipPackage.getSessionCount() + " sessions");
+        holder.priceTextView.setText(String.format("%.0f", membershipPackage.getPrice()) + "VND");
+        //holder.durationTextView.setText(membershipPackage.getDurationMonths() + " months, "+ membershipPackage.getSessionCount() + " sessions");
+        holder.durationTextView.setText("");
+        //holder.sessionsTextView.setText(membershipPackage.getSessionCount() + " sessions");
+
+        // Set OnClickListener for the "Generate QR Code" button
+        holder.generateQrCodeButton.setOnClickListener(v -> {
+            // Get the gymMembershipId from the MembershipPackage
+            String gymMembershipId = membershipPackage.getGymMembershipId(); // Assuming 'getId()' method exists
+            // Pass the gymMembershipId to the MembershipActivity
+            if (context instanceof MembershipActivity) {
+                ((MembershipActivity) context).generateQrCodeDialog(gymMembershipId);
+            }
+        });
     }
 
     @Override
@@ -46,13 +59,16 @@ public class MembershipAdapter extends RecyclerView.Adapter<MembershipAdapter.Me
 
     public static class MembershipViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, priceTextView, durationTextView, sessionsTextView;
+        MaterialButton generateQrCodeButton; // Button for generating QR code
 
         public MembershipViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.packageNameTextView);
-            priceTextView = itemView.findViewById(R.id.packagePriceTextView);
-            durationTextView = itemView.findViewById(R.id.packageDurationTextView);
-            sessionsTextView = itemView.findViewById(R.id.packageSessionsTextView);
+            nameTextView = itemView.findViewById(R.id.nameTextView);
+            priceTextView = itemView.findViewById(R.id.priceTextView);
+            durationTextView = itemView.findViewById(R.id.basicPackageTextView);
+            //sessionsTextView = itemView.findViewById(R.id.packageSessionsTextView);
+            generateQrCodeButton = itemView.findViewById(R.id.selectButton); // Button initialization
         }
     }
 }
+

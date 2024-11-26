@@ -20,7 +20,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseUser;
 import com.supergym.sep490_supergymmanagement.adapters.MembershipAdapter;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
@@ -42,10 +41,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-
-
-
 
 public class MembershipActivity extends AppCompatActivity {
 
@@ -76,7 +71,7 @@ public class MembershipActivity extends AppCompatActivity {
         loadingSpinner = findViewById(R.id.loadingSpinner);
         mAuth = FirebaseAuth.getInstance();
 
-        basicPackageButton4.setOnClickListener(v -> generateQrCodeDialog());
+        //  basicPackageButton4.setOnClickListener(v -> generateQrCodeDialog());
         btnReturnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,12 +80,6 @@ public class MembershipActivity extends AppCompatActivity {
             }
         });
 //        // Initialize Retrofit
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://your-csharp-api-url.com/") // replace with your API base URL
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        ApiService api = retrofit.create(ApiService.class);
         ApiService apiService = RetrofitClient.getApiService();
 
         // Make the API call
@@ -109,7 +98,6 @@ public class MembershipActivity extends AppCompatActivity {
                     }
                 }
             }
-
 
             @Override
             public void onFailure(Call<List<MembershipPackage>> call, Throwable t) {
@@ -135,112 +123,15 @@ public class MembershipActivity extends AppCompatActivity {
     }
 
 
-
-//    private void generateQrCodeDialog() {
-//        // Fetch the QR codes dynamically using the Retrofit API call
-//        ApiService apiService = RetrofitClient.getApiService();
-//        showLoading();
-//
-//        // Assuming you have the user UID stored
-//        String uid = mAuth.getUid(); // Replace this with the actual user UID
-//        QrCodeRequest request = new QrCodeRequest(uid);
-//        // request.setGymMembershipId();
-//
-//        // Call the API to generate QR codes
-//        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
-//            @Override
-//            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    // Get the QR items from the API response
-//                    hideLoading();
-//                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
-//
-//                    // Check if the list is not empty
-//                    if (!qrItems.isEmpty()) {
-//                        // Clear any existing data
-//                        qrCodes.clear();
-//                        qrNames.clear();
-//                        priceSubsInfo.clear();
-//
-//                        for (QrCodeResponse.QrItem qrItem : qrItems) {
-//                            qrCodes.add(qrItem.getQrDataUrl()); // Get the QR data URL
-//                            qrNames.add(qrItem.getDetails().getGymMembership().getName()); // Get the course name
-//                            priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND"); // Get the course price
-//                        }
-//
-//                        // Create the AlertDialog and set up its layout
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(MembershipActivity.this);
-//                        LayoutInflater inflater = getLayoutInflater();
-//                        View dialogView = inflater.inflate(R.layout.qr_code_dialog, null);
-//
-//                        ImageView qrCodeImageView = dialogView.findViewById(R.id.qrCodeImageView);
-//                        TextView qrCodeInfo = dialogView.findViewById(R.id.tvQrInfo);
-//                        TextView priceSubs = dialogView.findViewById(R.id.priceSubs);
-//                        Button btnPrevQr = dialogView.findViewById(R.id.btnPrevQr);
-//                        Button btnNextQr = dialogView.findViewById(R.id.btnNextQr);
-//
-//                        TextView tvUserTransferNote = dialogView.findViewById(R.id.tvUserTransferNote);
-//                        tvUserTransferNote.setText(Html.fromHtml("<u>Wait 1 to 2 mins for the payment confirmation</u>"));
-//
-//
-//
-//                        // Display the first QR code and its corresponding course info
-//                        currentQrIndex = 0; // Initialize the index to 0
-//                        updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-//
-//                        // Handle the "Next" button click to go to the next QR code
-//                        btnNextQr.setOnClickListener(v -> {
-//                            currentQrIndex = (currentQrIndex + 1) % qrCodes.size(); // Loop to the next QR code
-//                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-//                        });
-//
-//                        // Handle the "Previous" button click to go to the previous QR code
-//                        btnPrevQr.setOnClickListener(v -> {
-//                            currentQrIndex = (currentQrIndex - 1 + qrCodes.size()) % qrCodes.size(); // Loop to the previous QR code
-//                            updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
-//                        });
-//
-//                        builder.setView(dialogView)
-//                                .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
-//                                .create()
-//                                .show();
-//                    } else {
-//                        // Handle the case when no QR codes are returned
-//                        Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    hideLoading();
-//                    // Handle the case when the API call fails
-//                    Toast.makeText(MembershipActivity.this, "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
-//                // Handle the case when the API call fails
-//                Log.e("Error", "Failed to fetch QR codes", t);
-//                Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
-    private void generateQrCodeDialog() {
+    public void generateQrCodeDialog(String gymMembershipId) {
         // Fetch the QR codes dynamically using the Retrofit API call
         ApiService apiService = RetrofitClient.getApiService();
         showLoading();
 
-        // Ensure the user is logged in before proceeding
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser == null) {
-            Toast.makeText(MembershipActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
-            hideLoading();
-            return;
-        }
-
         // Create a RegisterPackageRequest
         QrCodeRequest request = new QrCodeRequest();
-        request.setEmails(Collections.singletonList(currentUser.getEmail())); // Use logged-in user's email
-        request.setGymMembershipId("your-selected-gym-membership-id"); // Replace with the actual selected GymMembershipId
+        request.setEmails(Collections.singletonList(FirebaseAuth.getInstance().getCurrentUser().getEmail())); // Use logged-in user's email
+        request.setGymMembershipId(gymMembershipId); // Replace with selected GymMembershipId
         request.setQrPayment(true);
 
         // Optional fields
@@ -248,65 +139,25 @@ public class MembershipActivity extends AppCompatActivity {
         request.setSelectedTimeSlot("empty"); // Example time slot
         request.setMonWedFri(true); // Example schedule
 
-// Updated upstream
-//        // Call the API to generate QR codes
-//        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
-//            @Override
-//            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
-//                hideLoading();
-//                if (response.isSuccessful() && response.body() != null) {
-//                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
-//
-//                    if (!qrItems.isEmpty()) {
-//                        qrCodes.clear();
-//                        qrNames.clear();
-//                        priceSubsInfo.clear();
-//
-//                        for (QrCodeResponse.QrItem qrItem : qrItems) {
-//                            qrCodes.add(qrItem.getQrDataUrl());
-//                            qrNames.add(qrItem.getDetails().getGymMembership().getName());
-//                            priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND");
-//                        }
-//
-//                        showQrCodeDialog();
-//                    } else {
-//                        Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
-//                    }
-//                } else {
-//                    Toast.makeText(MembershipActivity.this, "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
-//                hideLoading();
-//                Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
         // Call the API to generate QR codes
-      /*  apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<QrCodeResponse>() {
-
+        apiService.generateQrCodes(request).enqueue(new retrofit2.Callback<List<QrCodeResponse.QrItem>>() {
             @Override
-            public void onResponse(Call<QrCodeResponse> call, Response<QrCodeResponse> response) {
+            public void onResponse(Call<List<QrCodeResponse.QrItem>> call, Response<List<QrCodeResponse.QrItem>> response) {
                 hideLoading();
                 if (response.isSuccessful() && response.body() != null) {
-                    List<QrCodeResponse.QrItem> qrItems = response.body().getQrList();
+                    List<QrCodeResponse.QrItem> qrItems = response.body();
 
                     if (!qrItems.isEmpty()) {
-                        // Initialize or clear previous QR data lists
                         qrCodes.clear();
                         qrNames.clear();
                         priceSubsInfo.clear();
 
-                        // Populate the lists with new QR data
                         for (QrCodeResponse.QrItem qrItem : qrItems) {
                             qrCodes.add(qrItem.getQrDataUrl());
                             qrNames.add(qrItem.getDetails().getGymMembership().getName());
                             priceSubsInfo.add(qrItem.getDetails().getGymMembership().getTotalPrice() + " VND");
                         }
 
-                        // Show the QR code dialog
                         showQrCodeDialog();
                     } else {
                         Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
@@ -317,15 +168,12 @@ public class MembershipActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<QrCodeResponse> call, Throwable t) {
+            public void onFailure(Call<List<QrCodeResponse.QrItem>> call, Throwable t) {
                 hideLoading();
                 Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });*/
-// Stashed changes
+        });
     }
-
-
 
     // Utility method to show the QR code dialog
     private void showQrCodeDialog() {
