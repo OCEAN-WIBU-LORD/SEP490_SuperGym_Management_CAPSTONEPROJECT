@@ -245,7 +245,7 @@ public class    ViewMainContent extends AppCompatActivity {
             app.setUserRole("admin"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As Admin!", Toast.LENGTH_SHORT).show();
         } else  if(roleName.equals("pt")){
-            replaceFragment(new DashBoardAdmin());
+
             MyApp app = (MyApp) getApplicationContext();
             app.setUserRole("pt"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As PT!", Toast.LENGTH_SHORT).show();

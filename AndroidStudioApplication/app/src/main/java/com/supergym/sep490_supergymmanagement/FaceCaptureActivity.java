@@ -53,6 +53,7 @@ import com.supergym.sep490_supergymmanagement.FaceRecognition.GraphicOverlay;
 import com.supergym.sep490_supergymmanagement.FaceRecognition.SimilarityClassifier;
 import com.supergym.sep490_supergymmanagement.ImageToBitmapConverter.YuvToRgbConverter;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.CheckInService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -71,6 +72,8 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
+import com.supergym.sep490_supergymmanagement.models.CheckInRequest;
+import com.supergym.sep490_supergymmanagement.models.CheckInResponse;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -83,6 +86,8 @@ import java.nio.MappedByteBuffer;
 import java.nio.ReadOnlyBufferException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -97,6 +102,8 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpeech.OnInitListener {
@@ -139,6 +146,13 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     private boolean isNameChanged = false; // Flag to check if the name has changed
     private String roleCheck = null;
 
+
+
+    private String userFaceIdFinal = "unknown";
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:5000")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -676,99 +690,147 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         }
     }
 
-
     public String recognizeImage(final Bitmap bitmap) {
-        // Set image to preview
-        previewImg.setImageBitmap(bitmap);
+        try {
+            // Set image to preview
+            previewImg.setImageBitmap(bitmap);
 
-        // Create ByteBuffer to store normalized image
-        ByteBuffer imgData = ByteBuffer.allocateDirect(INPUT_SIZE * INPUT_SIZE * 3 * 4);
-        imgData.order(ByteOrder.nativeOrder());
+            // Prepare input for the model
+            ByteBuffer imgData = ByteBuffer.allocateDirect(INPUT_SIZE * INPUT_SIZE * 3 * 4);
+            imgData.order(ByteOrder.nativeOrder());
+            int[] intValues = new int[INPUT_SIZE * INPUT_SIZE];
+            bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+            imgData.rewind();
 
-        int[] intValues = new int[INPUT_SIZE * INPUT_SIZE];
-
-        // Get pixel values from Bitmap to normalize
-        bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        imgData.rewind();
-
-        for (int i = 0; i < INPUT_SIZE; ++i) {
-            for (int j = 0; j < INPUT_SIZE; ++j) {
-                int pixelValue = intValues[i * INPUT_SIZE + j];
-                imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-                imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-                imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+            for (int i = 0; i < INPUT_SIZE; ++i) {
+                for (int j = 0; j < INPUT_SIZE; ++j) {
+                    int pixelValue = intValues[i * INPUT_SIZE + j];
+                    imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+                    imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+                    imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+                }
             }
-        }
 
-        // imgData is input to our model
-        Object[] inputArray = {imgData};
+            // Run the model
+            Object[] inputArray = {imgData};
+            Map<Integer, Object> outputMap = new HashMap<>();
+            embeddings = new float[1][OUTPUT_SIZE]; // Output will be stored here
+            outputMap.put(0, embeddings);
+            tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
 
-        Map<Integer, Object> outputMap = new HashMap<>();
-        embeddings = new float[1][OUTPUT_SIZE]; // Output of model will be stored in this variable
-        outputMap.put(0, embeddings);
+            // Retrieve registered faces from Firebase
+            DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+            databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    float minDistance = Float.MAX_VALUE;
+                    String closestName = "unknown";
 
-        // Run model
-        tfLite.runForMultipleInputsOutputs(inputArray, outputMap); // Run model to get embeddings
 
-        // Retrieve registered faces from Firebase and compare
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                float minDistance = Float.MAX_VALUE;
-                String closestName = "unknown";
+                    for (DataSnapshot faceSnapshot : dataSnapshot.getChildren()) {
+                        String name = faceSnapshot.child("name").getValue(String.class);
+                        String userFaceId = faceSnapshot.child("userId").getValue(String.class);
+                        List<List<Double>> storedEmbeddingList = (List<List<Double>>) faceSnapshot.child("embeddings").getValue();
 
-                for (DataSnapshot faceSnapshot : dataSnapshot.getChildren()) {
-                    String name = faceSnapshot.child("name").getValue(String.class);
-                    List<List<Double>> storedEmbeddingList = (List<List<Double>>) faceSnapshot.child("embeddings").getValue();
+                        // Convert List<List<Double>> to float[][]
+                        if (storedEmbeddingList != null) {
+                            float[][] storedEmbedding = new float[storedEmbeddingList.size()][storedEmbeddingList.get(0).size()];
+                            for (int i = 0; i < storedEmbeddingList.size(); i++) {
+                                for (int j = 0; j < storedEmbeddingList.get(i).size(); j++) {
+                                    storedEmbedding[i][j] = storedEmbeddingList.get(i).get(j).floatValue();
+                                }
+                            }
 
-                    // Convert List<List<Double>> to float[][]
-                    float[][] storedEmbedding = new float[storedEmbeddingList.size()][storedEmbeddingList.get(0).size()];
-                    for (int i = 0; i < storedEmbeddingList.size(); i++) {
-                        for (int j = 0; j < storedEmbeddingList.get(i).size(); j++) {
-                            storedEmbedding[i][j] = storedEmbeddingList.get(i).get(j).floatValue();
+                            // Calculate the distance
+                            float distance = calculateDistance(embeddings[0], storedEmbedding[0]);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestName = name;
+                                userFaceIdFinal = userFaceId;
+                            }
                         }
                     }
 
-                    // Calculate distance between current embedding and registered embedding
-                    float distance = calculateDistance(embeddings[0], storedEmbedding[0]);
-
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestName = name;
+                    // Evaluate the result
+                    if (minDistance < 1.000f) {
+                        delayedWelcomeMessage(closestName);
                         finalName = closestName;
+
+                    } else {
+                        closestName = "unknown";
+                        finalName = closestName;
+                    }
+
+                    if (!closestName.equals(lastRecognizedName)) {
+                        lastRecognizedName = closestName;
+                        storeRecognizedFaceImage(bitmap, closestName);
+
+                        // Handle the check-in process
+                        handleCheckIn(userFaceIdFinal, closestName);
                     }
                 }
 
-                // Check if the closest match is within the acceptable threshold
-                if (minDistance < 1.000f) {
-                    delayedWelcomeMessage(closestName);
-                    finalName = closestName;
-                } else {
-
-                    closestName = "unknown";  // Assign 'unknown' if no match found within threshold
-                    finalName = closestName;
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-
-                // Check if the name has changed from the last recognized name
-                if (!closestName.equals(lastRecognizedName)) {
-                    isNameChanged = true;
-                    // Store face image with the correct name
-                    storeRecognizedFaceImage(bitmap, closestName);
-                    lastRecognizedName = closestName; // Update the last recognized name after storing
-                } else {
-                    isNameChanged = false;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle errors
-                Toast.makeText(getApplicationContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error processing image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
         return null;
+    }
+
+    /**
+     * Handles the check-in process by calling the CheckIn API.
+     */
+    private void handleCheckIn(String userFaceIdFinaltxt, String name) {
+        CheckInService checkInService = new CheckInService();
+
+        Date currentDateTime;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDateTime now = LocalDateTime.now();
+            String formattedDateTime = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            currentDateTime = java.sql.Timestamp.valueOf(formattedDateTime);
+        } else {
+            currentDateTime = new java.util.Date();
+        }
+        if( roleCheck == "admin"){
+            CheckInRequest request = new CheckInRequest();
+            request.setUserId(userFaceIdFinaltxt); // Replace with the actual user ID
+            SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            String formattedDate = iso8601Format.format(new Date());
+            request.setTime(formattedDate);
+
+
+            Call<CheckInResponse> call = checkInService.checkIn(request);
+            call.enqueue(new Callback<CheckInResponse>() {
+                @Override
+                public void onResponse(Call<CheckInResponse> call, Response<CheckInResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Toast.makeText(FaceCaptureActivity.this, "Check-in success!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Log the failure details
+                        Log.e("FaceCaptureActivity", "Check-in failed with code: " + response.code() +
+                                ", message: " + (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
+
+                        Toast.makeText(FaceCaptureActivity.this, "Check-in failed!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CheckInResponse> call, Throwable t) {
+                    // Show a Toast message for the error
+                    Toast.makeText(FaceCaptureActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    // Write the error to Logcat
+                    Log.e("FaceCaptureActivity", "Network error occurred", t);
+                }
+            });
+
+        }
+
     }
 
 

@@ -1,5 +1,7 @@
 package com.supergym.sep490_supergymmanagement.apiadapter.ApiService;
 
+import com.supergym.sep490_supergymmanagement.models.CheckInRequest;
+import com.supergym.sep490_supergymmanagement.models.CheckInResponse;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -34,6 +36,11 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+    @POST("api/CheckIn")
+    Call<CheckInResponse> checkIn(@Body CheckInRequest request);
+
+
     @POST("/api/Auth/register")
     Call<Void> registerUser(@Body RegisterUserDto registerUserDto);
 
