@@ -8,6 +8,9 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
     <application
         android:name=".MyApp"
@@ -23,9 +26,9 @@
         android:theme="@style/Theme.SEP490SuperGymManagement"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-
-
+        <activity
+            android:name=".LoadingActivity"
+            android:exported="false" />
         <activity
             android:name=".QrCodeDisplayActivity"
             android:exported="false" />

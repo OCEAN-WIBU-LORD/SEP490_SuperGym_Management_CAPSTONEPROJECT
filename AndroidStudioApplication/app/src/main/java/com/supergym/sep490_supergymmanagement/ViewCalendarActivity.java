@@ -185,7 +185,6 @@ public class ViewCalendarActivity extends Fragment {
                     Response<List<Schedule2>> response = apiService.getCustomerSchedules(userId).execute();
                     if (response.isSuccessful() && response.body() != null) {
                         for (Schedule2 schedule : response.body()) {
-                            highlightedDates.add(schedule.getDate());
                             // Highlight màu trắng cho các ngày có lịch tập
                             highlightDate(schedule.getDate(), Color.WHITE);
                         }
@@ -194,14 +193,13 @@ public class ViewCalendarActivity extends Fragment {
                     Response<List<ScheduleForTrainer>> response = apiService.getTrainerSchedules(userId).execute();
                     if (response.isSuccessful() && response.body() != null) {
                         for (ScheduleForTrainer schedule : response.body()) {
-                            highlightedDates.add(schedule.getDate());
                             // Highlight màu trắng cho các ngày có lịch tập
                             highlightDate(schedule.getDate(), Color.WHITE);
                         }
                     }
                 }
 
-                // Gọi hàm để lấy check-in dates cho khách phổ thông
+                // Sau khi đã highlight lịch tập, tiếp tục gọi hàm để lấy check-in dates cho khách phổ thông
                 fetchCheckInDates();
 
             } catch (Exception e) {
@@ -220,8 +218,18 @@ public class ViewCalendarActivity extends Fragment {
                 Response<CheckInDatesResponse> response = apiService.getCheckInDates(userId).execute();
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> checkInDates = response.body().getCheckInDates(); // Lấy danh sách ngày check-in
-                    highlightedDates.addAll(checkInDates);  // Thêm ngày check-in vào danh sách highlightedDates
-                    getActivity().runOnUiThread(this::highlightCheckInDatesOnCalendar);
+                    if (checkInDates != null && !checkInDates.isEmpty()) {
+                        // Log ra các ngày check-in
+                        for (String date : checkInDates) {
+                            Log.d("CheckInDates", "Check-in date: " + date);
+                            // Highlight màu xanh cho các ngày check-in
+                            highlightDate(date, Color.GREEN);
+                        }
+                    } else {
+                        Log.d("CheckInDates", "No check-in dates found.");
+                    }
+                } else {
+                    Log.e("CheckInDates", "Failed to fetch check-in dates. Response body is null.");
                 }
             } catch (Exception e) {
                 Log.e("ViewCalendarActivity", "Error fetching check-in dates: " + e.getMessage());
@@ -231,7 +239,6 @@ public class ViewCalendarActivity extends Fragment {
             }
         }).start();
     }
-
 
     private void highlightDate(String date, int color) {
         // Hàm highlight cho ngày
@@ -244,10 +251,11 @@ public class ViewCalendarActivity extends Fragment {
         }
     }
 
-    private void highlightDatesOnCalendar() {
-        // Chỉ cần gọi hàm này sau khi đã highlight các ngày tập và check-in
+    private void highlightCheckInDatesOnCalendar() {
+        // Chỉ cần gọi hàm này sau khi đã highlight các ngày check-in
         compactCalendarView.invalidate();
     }
+
 
 
     private void loadAppointmentsForSelectedDate(String selectedDate) {
@@ -364,18 +372,6 @@ public class ViewCalendarActivity extends Fragment {
         notesContainer.addView(appointmentView);
     }
 
-
-    private void highlightCheckInDatesOnCalendar() {
-        for (String date : highlightedDates) {
-            try {
-                Date eventDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
-                Event event = new Event(Color.GREEN, eventDate.getTime(), "Check-in");
-                compactCalendarView.addEvent(event);
-            } catch (Exception e) {
-                Log.e("ViewCalendarActivity", "Error parsing date for event: " + e.getMessage());
-            }
-        }
-    }
 
     private String formatDateForDisplay(String date) {
         try {
