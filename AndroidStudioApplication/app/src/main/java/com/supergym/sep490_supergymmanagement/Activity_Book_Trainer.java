@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.SeekBar;
@@ -661,6 +662,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
 
     private void registerPackage() {
+        // Kiểm tra các điều kiện cần thiết
         if (packageIds.isEmpty() || packageSpinner.getSelectedItemPosition() >= packageIds.size()) {
             Toast.makeText(this, "Please select a valid package.", Toast.LENGTH_SHORT).show();
             return;
@@ -683,7 +685,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         }
 
         String userEmail = currentUser.getEmail(); // Current user's email
-
         RegisterPackageRequest request = new RegisterPackageRequest();
 
         // Collect emails from extra users
@@ -726,6 +727,10 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             boolean isMonWedFri = optionRadioGroup.getCheckedRadioButtonId() == R.id.option1;
             request.setMonWedFri(isMonWedFri);
 
+            // Chuyển sang LoadingActivity trước khi gọi API
+            Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
+            startActivity(loadingIntent);
+
             // Call the Boxing Registration API
             apiService.createBoxingRegistration(request).enqueue(new Callback<List<QrCodeBoxingResponse.QrItem>>() {
                 @Override
@@ -756,6 +761,10 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
             request.setSelectedTimeSlot(tsid);
 
+            // Chuyển sang LoadingActivity trước khi gọi API
+            Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
+            startActivity(loadingIntent);
+
             // Call the Trainer Rental Registration API
             apiService.createTrainerRentalRegistration(request).enqueue(new Callback<List<QrCodeRentalResponse.QrItem>>() {
                 @Override
@@ -770,6 +779,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             });
         }
     }
+
+
 
     private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response) {
         if (response.isSuccessful() && response.body() != null) {
@@ -824,7 +835,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         }
     }
 
-
     private void logErrorResponse(Response<?> response) {
         try {
             if (response.errorBody() != null) {
@@ -841,9 +851,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         Log.e("RegisterPackageAPI", "Failure: ", t);
     }
 
-
-
-
     // Phương thức lấy loại gói tập đã chọn
     private String getSelectedPackageType() {
         int checkedId = trainerTypeRadioGroup.getCheckedRadioButtonId();
@@ -855,22 +862,5 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             return "TrainerRental"; // Giá trị mặc định
         }
     }
-
-    public Bitmap base64ToBitmap(String base64String) {
-        try {
-            // Check and remove the prefix if it exists
-            if (base64String.startsWith("data:image/png;base64,")) {
-                base64String = base64String.substring("data:image/png;base64,".length());
-            }
-
-            byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        } catch (IllegalArgumentException e) {
-            Log.e("Base64Error", "Failed to decode Base64 string: " + e.getMessage());
-            e.printStackTrace();
-            return null; // Return null if decoding fails
-        }
-    }
-
 
 }
