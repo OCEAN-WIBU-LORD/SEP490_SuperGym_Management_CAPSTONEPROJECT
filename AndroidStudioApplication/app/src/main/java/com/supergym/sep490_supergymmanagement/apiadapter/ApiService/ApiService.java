@@ -1,7 +1,11 @@
 package com.supergym.sep490_supergymmanagement.apiadapter.ApiService;
 
+
 import com.supergym.sep490_supergymmanagement.models.CheckInRequest;
 import com.supergym.sep490_supergymmanagement.models.CheckInResponse;
+
+import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
+
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -127,5 +131,8 @@ public interface ApiService {
 
     @POST("/api/TrainerRentalRegistration")
     Call<List<QrCodeRentalResponse.QrItem>> createTrainerRentalRegistration(@Body RegisterPackageRequest request);
+
+    @GET("/api/CheckIn/checkInDates/{userId}")
+    Call<CheckInDatesResponse> getCheckInDates(@Path("userId") String userId);
 
 }
