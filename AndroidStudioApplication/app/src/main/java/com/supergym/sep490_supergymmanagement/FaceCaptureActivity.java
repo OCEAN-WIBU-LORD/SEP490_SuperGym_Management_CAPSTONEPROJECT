@@ -815,7 +815,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                         Log.e("FaceCaptureActivity", "Check-in failed with code: " + response.code() +
                                 ", message: " + (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
 
-                        Toast.makeText(FaceCaptureActivity.this, "Check-in failed!", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(FaceCaptureActivity.this, "Check-in failed!", Toast.LENGTH_SHORT).show();
                     }
                 }
 
