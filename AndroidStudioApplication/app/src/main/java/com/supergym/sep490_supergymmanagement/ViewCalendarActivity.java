@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
+import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
 import com.supergym.sep490_supergymmanagement.models.TimeSlot;
@@ -55,6 +56,7 @@ public class ViewCalendarActivity extends Fragment {
     private Button btnPreviousMonth;
     private Button btnNextMonth;
     private TextView monthYearTextView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -178,11 +180,14 @@ public class ViewCalendarActivity extends Fragment {
     private void fetchHighlightedDates() {
         new Thread(() -> {
             try {
+                // Lấy lịch tập của customer hoặc trainer
                 if ("customer".equals(role)) {
                     Response<List<Schedule2>> response = apiService.getCustomerSchedules(userId).execute();
                     if (response.isSuccessful() && response.body() != null) {
                         for (Schedule2 schedule : response.body()) {
                             highlightedDates.add(schedule.getDate());
+                            // Highlight màu trắng cho các ngày có lịch tập
+                            highlightDate(schedule.getDate(), Color.WHITE);
                         }
                     }
                 } else if ("trainer".equals(role)) {
@@ -190,10 +195,15 @@ public class ViewCalendarActivity extends Fragment {
                     if (response.isSuccessful() && response.body() != null) {
                         for (ScheduleForTrainer schedule : response.body()) {
                             highlightedDates.add(schedule.getDate());
+                            // Highlight màu trắng cho các ngày có lịch tập
+                            highlightDate(schedule.getDate(), Color.WHITE);
                         }
                     }
                 }
-                getActivity().runOnUiThread(this::highlightDatesOnCalendar);
+
+                // Gọi hàm để lấy check-in dates cho khách phổ thông
+                fetchCheckInDates();
+
             } catch (Exception e) {
                 Log.e("ViewCalendarActivity", "Error fetching highlighted dates: " + e.getMessage());
                 getActivity().runOnUiThread(() ->
@@ -203,61 +213,42 @@ public class ViewCalendarActivity extends Fragment {
         }).start();
     }
 
-    private void highlightDatesOnCalendar() {
-        for (String date : highlightedDates) {
+    private void fetchCheckInDates() {
+        new Thread(() -> {
             try {
-                Date eventDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
-                Event event = new Event(Color.WHITE, eventDate.getTime(), "Highlighted");
-                compactCalendarView.addEvent(event);
+                // Gọi API để lấy ngày check-in
+                Response<CheckInDatesResponse> response = apiService.getCheckInDates(userId).execute();
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> checkInDates = response.body().getCheckInDates(); // Lấy danh sách ngày check-in
+                    highlightedDates.addAll(checkInDates);  // Thêm ngày check-in vào danh sách highlightedDates
+                    getActivity().runOnUiThread(this::highlightCheckInDatesOnCalendar);
+                }
             } catch (Exception e) {
-                Log.e("ViewCalendarActivity", "Error parsing date for highlight: " + e.getMessage());
+                Log.e("ViewCalendarActivity", "Error fetching check-in dates: " + e.getMessage());
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(getActivity(), "Error fetching check-in dates.", Toast.LENGTH_SHORT).show()
+                );
             }
+        }).start();
+    }
+
+
+    private void highlightDate(String date, int color) {
+        // Hàm highlight cho ngày
+        try {
+            Date eventDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+            Event event = new Event(color, eventDate.getTime(), "Highlighted");
+            compactCalendarView.addEvent(event);
+        } catch (Exception e) {
+            Log.e("ViewCalendarActivity", "Error parsing date for highlight: " + e.getMessage());
         }
     }
 
-    private void loadAppointments() {
-        Log.d("ViewCalendarActivity", "Loading appointments for userId: " + userId + " with role: " + role);
-
-        if ("customer".equals(role)) {
-            apiService.getCustomerSchedules(userId).enqueue(new Callback<List<Schedule2>>() {
-                @Override
-                public void onResponse(Call<List<Schedule2>> call, Response<List<Schedule2>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        notesContainer.removeAllViews();
-                        for (Schedule2 schedule : response.body()) {
-                            displayCustomerAppointment(schedule);
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "Failed to fetch appointments.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Schedule2>> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else if ("trainer".equals(role)) {
-            apiService.getTrainerSchedules(userId).enqueue(new Callback<List<ScheduleForTrainer>>() {
-                @Override
-                public void onResponse(Call<List<ScheduleForTrainer>> call, Response<List<ScheduleForTrainer>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        notesContainer.removeAllViews();
-                        for (ScheduleForTrainer schedule : response.body()) {
-                            displayTrainerAppointment(schedule);
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "Failed to fetch appointments.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<ScheduleForTrainer>> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+    private void highlightDatesOnCalendar() {
+        // Chỉ cần gọi hàm này sau khi đã highlight các ngày tập và check-in
+        compactCalendarView.invalidate();
     }
+
 
     private void loadAppointmentsForSelectedDate(String selectedDate) {
         Log.d("ViewCalendarActivity", "Loading appointments for userId: " + userId + " on date: " + selectedDate);
@@ -371,6 +362,19 @@ public class ViewCalendarActivity extends Fragment {
         }
 
         notesContainer.addView(appointmentView);
+    }
+
+
+    private void highlightCheckInDatesOnCalendar() {
+        for (String date : highlightedDates) {
+            try {
+                Date eventDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+                Event event = new Event(Color.GREEN, eventDate.getTime(), "Check-in");
+                compactCalendarView.addEvent(event);
+            } catch (Exception e) {
+                Log.e("ViewCalendarActivity", "Error parsing date for event: " + e.getMessage());
+            }
+        }
     }
 
     private String formatDateForDisplay(String date) {
