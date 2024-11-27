@@ -94,7 +94,7 @@
         android:layout_width="145dp"
         android:layout_height="49dp"
         android:paddingTop="2dp"
-        android:text="Bank: MB Account: ODGLAB"
+        android:text="Bank: MB Account: SuperGym"
         android:textAlignment="center"
         android:textSize="16sp"
         android:textStyle="bold"

@@ -34,15 +34,6 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="20dp">
 
-        <!-- Button Save QR -->
-        <Button
-            android:id="@+id/saveQrButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Save QR"
-            android:padding="12dp"/>
-
         <!-- Button Back to Home -->
         <Button
             android:id="@+id/backToHomeButton"
@@ -53,4 +44,10 @@
             android:padding="12dp"/>
     </LinearLayout>
 
+    <!-- Fragment container (đã thêm vào để chứa các fragment) -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"/>
 </FrameLayout>

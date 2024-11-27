@@ -40,7 +40,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         holder.nameTextView.setText(user.getName());
         holder.itemView.setOnClickListener(v -> onUserClickListener.onUserClick(user));
     }
-
+    public void clear() {
+        userList.clear(); // Xóa tất cả các phần tử trong danh sách
+        notifyDataSetChanged(); // Cập nhật giao diện RecyclerView
+    }
     @Override
     public int getItemCount() {
         return userList.size();

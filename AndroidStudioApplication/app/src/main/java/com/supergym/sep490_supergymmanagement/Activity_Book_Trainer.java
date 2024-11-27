@@ -106,7 +106,55 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         loadPackagesWithType();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        clearForm();
+    }
 
+
+    private void clearForm() {
+        // Clear Spinner selections
+        packageSpinner.setSelection(0);
+        trainerSpinner.setSelection(0);
+
+        // Clear RadioGroups
+        trainerTypeRadioGroup.clearCheck();
+        optionRadioGroup.clearCheck();
+
+        // Clear SeekBar
+        sessionTimeSeekBar.setProgress(0);
+
+        // Clear TextViews
+        selectedTimeSlotText.setText("");
+        trainerNameTextView.setText("");
+        trainerBioTextView.setText("");
+
+        // Clear EditTexts
+        extraUsersEditText.setText("");
+        sessionCountEditText.setText("");
+
+        // Clear SearchView if it is not null
+        if (userSearchView != null) {
+            userSearchView.setQuery("", false);
+        }
+
+        // Clear RecyclerView Adapter data
+        if (userAdapter != null) {
+            userAdapter.clear();
+        }
+
+        // Clear CheckBoxes
+        monday.setChecked(false);
+        tuesday.setChecked(false);
+        wednesday.setChecked(false);
+        thursday.setChecked(false);
+        friday.setChecked(false);
+        saturday.setChecked(false);
+
+        // Reset the CheckBoxes to their disabled state
+        resetCheckboxes();
+    }
 
 
     private void initViews() {
@@ -214,6 +262,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         thursday = findViewById(R.id.checkboxThursday);
         friday = findViewById(R.id.checkboxFriday);
         saturday = findViewById(R.id.checkboxSaturday);
+        sessionCountEditText = findViewById(R.id.sessionCountEditText);  // Đảm bảo bạn đã khai báo sessionCountEditText
 
         optionRadioGroup.setVisibility(View.GONE);
 
@@ -222,15 +271,17 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
             if (checkedId == R.id.radioBoxing) {
                 optionRadioGroup.setVisibility(View.VISIBLE); // Hiển thị các tùy chọn
-                enableAllCheckboxes();
+                enableAllCheckboxes(); // Bật tất cả checkbox nhưng không cho phép thay đổi trạng thái
+                sessionCountEditText.setVisibility(View.GONE); // Ẩn EditText khi chọn boxing
             } else if (checkedId == R.id.radioGym) {
                 optionRadioGroup.setVisibility(View.GONE); // Ẩn tùy chọn
-                selectAndDisableAll(monday, tuesday, wednesday, thursday, friday, saturday);
+                selectAndDisableAll(monday, tuesday, wednesday, thursday, friday); // Tắt và giữ các checkbox đã chọn
+                sessionCountEditText.setVisibility(View.VISIBLE); // Hiển thị EditText khi chọn gym
             } else {
                 optionRadioGroup.setVisibility(View.GONE);
-                enableAllCheckboxes(); // Cho phép người dùng chọn ngày
+                enableAllCheckboxes(); // Bật tất cả checkbox nhưng không cho phép thay đổi trạng thái
+                sessionCountEditText.setVisibility(View.VISIBLE); // Hiển thị EditText cho loại khác
             }
-
 
             // Tải dữ liệu packages cho loại được chọn
             loadPackagesWithType();
@@ -247,18 +298,26 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         });
     }
 
-    // Hàm bật tất cả các CheckBox và cho phép chỉnh sửa
+
+    // Hàm bật tất cả các CheckBox nhưng không cho phép thay đổi trạng thái
     private void enableAllCheckboxes() {
-        monday.setEnabled(true);
-        tuesday.setEnabled(true);
-        wednesday.setEnabled(true);
-        thursday.setEnabled(true);
-        friday.setEnabled(true);
-        saturday.setEnabled(true);
+        monday.setEnabled(false);
+        tuesday.setEnabled(false);
+        wednesday.setEnabled(false);
+        thursday.setEnabled(false);
+        friday.setEnabled(false);
+        saturday.setEnabled(false);
+
+        // Đảm bảo các checkbox không thể nhấn được nữa
+        monday.setClickable(false);
+        tuesday.setClickable(false);
+        wednesday.setClickable(false);
+        thursday.setClickable(false);
+        friday.setClickable(false);
+        saturday.setClickable(false);
     }
 
-
-
+    // Hàm tắt các checkbox và bỏ chọn tất cả
     private void resetCheckboxes() {
         monday.setChecked(false);
         tuesday.setChecked(false);
@@ -273,21 +332,35 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         thursday.setEnabled(false);
         friday.setEnabled(false);
         saturday.setEnabled(false);
+
+        // Đảm bảo các checkbox không thể nhấn được nữa
+        monday.setClickable(false);
+        tuesday.setClickable(false);
+        wednesday.setClickable(false);
+        thursday.setClickable(false);
+        friday.setClickable(false);
+        saturday.setClickable(false);
     }
 
+    // Hàm chỉ chọn và vô hiệu hóa các checkbox nhất định
     private void selectAndDisableAll(CheckBox... checkBoxes) {
         for (CheckBox checkBox : checkBoxes) {
-            checkBox.setChecked(true);
-            checkBox.setEnabled(false);
+            checkBox.setChecked(true);  // Đặt các checkbox đã chọn
+            checkBox.setEnabled(false); // Tắt tương tác với checkbox
+            checkBox.setClickable(false); // Đảm bảo không thể nhấn vào checkbox
         }
     }
 
+    // Hàm cho phép một số checkbox có thể chọn và vô hiệu hóa các checkbox còn lại
     private void enableCombination(CheckBox... combination) {
         for (CheckBox checkBox : combination) {
-            checkBox.setChecked(true);
-            checkBox.setEnabled(true);
+            checkBox.setChecked(true);  // Đặt checkbox đã chọn
+            checkBox.setEnabled(false); // Tắt tương tác với checkbox
+            checkBox.setClickable(false); // Đảm bảo không thể nhấn vào checkbox
         }
     }
+
+
 
     private void loadPackagesWithType() {
         // Lấy type từ RadioGroup
