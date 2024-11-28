@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkRegistration(String registrationId) {
-        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService api = RetrofitClient.getApiService(requireContext());
 
         // Disable the button until the response is fetched
         btnBookTrainer.setEnabled(false);
@@ -184,7 +184,7 @@ public class HomeFragment extends Fragment {
 
 
     private void fetchLatestPosts() {
-        RetrofitClient.getApiService().getLatestPosts().enqueue(new Callback<List<Post>>() {
+        RetrofitClient.getApiService(requireContext()).getLatestPosts().enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
                 if (response.isSuccessful() && response.body() != null) {

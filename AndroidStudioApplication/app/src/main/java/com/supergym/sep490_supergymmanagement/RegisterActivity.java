@@ -201,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
                 RegisterUserDto registerUserDto = new RegisterUserDto(name, email, password);
 
 // Call the API to register the user
-                ApiService apiService = RetrofitClient.getApiService();
+                ApiService apiService = RetrofitClient.getApiService(v.getContext());
                 Call<Void> call = apiService.registerUser(registerUserDto);
                 call.enqueue(new retrofit2.Callback<Void>() {
                     @Override

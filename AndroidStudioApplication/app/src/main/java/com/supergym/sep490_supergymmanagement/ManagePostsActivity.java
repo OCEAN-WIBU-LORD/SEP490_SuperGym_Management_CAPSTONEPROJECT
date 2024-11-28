@@ -57,7 +57,7 @@ public class ManagePostsActivity extends AppCompatActivity {
     }
 
     private void loadUserPosts(String userId) {
-        Call<List<Post>> call = RetrofitClient.getApiService().getPostsByUserId(userId);
+        Call<List<Post>> call = RetrofitClient.getApiService(this).getPostsByUserId(userId);
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {

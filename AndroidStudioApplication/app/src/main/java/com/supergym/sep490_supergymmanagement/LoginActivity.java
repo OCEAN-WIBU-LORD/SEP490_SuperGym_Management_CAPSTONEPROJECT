@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -32,6 +33,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
+import com.supergym.sep490_supergymmanagement.models.LoginResponse;
 
 
 import androidx.activity.EdgeToEdge;
@@ -42,6 +46,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -172,6 +180,22 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if(task.isSuccessful()){
+                                    // Get Firebase ID Token
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    if (user != null) {
+                                        user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                                            if (tokenTask.isSuccessful()) {
+                                                String firebaseIdToken = tokenTask.getResult().getToken();
+
+                                                // Send Firebase ID Token to your API
+                                                loginToApi(firebaseIdToken);
+                                            } else {
+                                                // Handle error retrieving ID token
+                                                Log.e("Login", "Failed to get Firebase ID token", tokenTask.getException());
+                                                Toast.makeText(LoginActivity.this,"Login with api failed! Failed to get Firebase ID token",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
                                     if (loginTimer != null) {
                                         loginTimer.cancel();
                                     }
@@ -196,6 +220,45 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
+    private void loginToApi(String firebaseIdToken) {
+        // Replace with your API login endpoint and Retrofit setup
+        ApiService apiService = RetrofitClient.getApiService(this);
+        Call<LoginResponse> call = apiService.loginApi(firebaseIdToken);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Save the JWT token
+                    String jwtToken = response.body().getJWTtoken();
+                    saveJwtToken(jwtToken);
+                } else {
+                    // Handle API login failure
+                    Log.e("Login", "API login failed: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                // Handle network or other errors
+                Log.e("Login", "API login call failed", t);
+            }
+        });
+    }
+
+    private void saveJwtToken(String jwtToken) {
+        // Save JWT token securely, e.g., in SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("JWT_TOKEN", jwtToken);
+        editor.apply();
+
+//        MyApp app = (MyApp) getApplicationContext();
+//        app.setJWTtoken(jwtToken);
+//        Toast.makeText(LoginActivity.this, "Saved firebaseToken to MyApp", Toast.LENGTH_SHORT).show();
+    }
+
+
     //getRole Name
 // Function to check role and load appropriate dashboard
     private void loadDashboardBasedOnRole() {

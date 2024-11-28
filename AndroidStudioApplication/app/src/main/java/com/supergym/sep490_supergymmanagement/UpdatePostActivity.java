@@ -62,7 +62,7 @@ public class UpdatePostActivity extends AppCompatActivity {
         btnSelectImage = findViewById(R.id.btnSelectImage);
         btnUpdatePost = findViewById(R.id.btnUpdatePost);
 
-        apiService = RetrofitClient.getApiService();
+        apiService = RetrofitClient.getApiService(this);
         postId = getIntent().getStringExtra("postId");
 
         loadCategories();

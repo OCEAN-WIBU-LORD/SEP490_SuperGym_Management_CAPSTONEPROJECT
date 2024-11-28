@@ -76,7 +76,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
         // Khởi tạo ApiService
 
-            apiService = RetrofitClient.getApiService();
+            apiService = RetrofitClient.getApiService(this);
 
         returnBtn = findViewById(R.id.returnBtn);
         returnBtn.setOnClickListener(new View.OnClickListener() {

@@ -67,7 +67,7 @@ public class CreatePostActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference("post");
         databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        apiService = RetrofitClient.getApiService();
+        apiService = RetrofitClient.getApiService(this);
 
         // Load categories từ API
         loadCategories();

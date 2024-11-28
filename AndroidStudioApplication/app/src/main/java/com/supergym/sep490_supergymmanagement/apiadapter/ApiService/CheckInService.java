@@ -1,5 +1,6 @@
 package com.supergym.sep490_supergymmanagement.apiadapter.ApiService;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.supergym.sep490_supergymmanagement.models.CheckInRequest;
@@ -14,9 +15,9 @@ public class CheckInService {
 
     private final CheckInApi checkInApi;
 
-    public CheckInService() {
+    public CheckInService(Context context) {
         // Use RetrofitClient to get Retrofit instance
-        this.checkInApi = RetrofitClient.getInstance().create(CheckInApi.class);
+        this.checkInApi = RetrofitClient.getInstance(context).create(CheckInApi.class);
     }
 
     /**

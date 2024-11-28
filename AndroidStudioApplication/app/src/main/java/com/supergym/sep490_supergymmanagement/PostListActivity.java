@@ -125,7 +125,7 @@ public class PostListActivity extends AppCompatActivity {
         });
     }
     private void loadCategories() {
-        Call<List<PostCategory>> call = RetrofitClient.getApiService().getCategories();
+        Call<List<PostCategory>> call = RetrofitClient.getApiService(this).getCategories();
         call.enqueue(new Callback<List<PostCategory>>() {
             @Override
             public void onResponse(@NonNull Call<List<PostCategory>> call, @NonNull Response<List<PostCategory>> response) {
@@ -162,7 +162,7 @@ public class PostListActivity extends AppCompatActivity {
     }
 
     private void loadPosts() {
-        Call<List<Post>> call = RetrofitClient.getApiService().getAllPosts();
+        Call<List<Post>> call = RetrofitClient.getApiService(this).getAllPosts();
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
@@ -193,7 +193,7 @@ public class PostListActivity extends AppCompatActivity {
         }
 
         // API call to get posts by selected category
-        call = RetrofitClient.getApiService().getPostsByCategory(categoryId);
+        call = RetrofitClient.getApiService(this).getPostsByCategory(categoryId);
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {

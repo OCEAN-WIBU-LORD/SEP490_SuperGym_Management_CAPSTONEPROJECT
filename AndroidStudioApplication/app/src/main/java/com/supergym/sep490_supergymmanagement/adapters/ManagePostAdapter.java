@@ -39,7 +39,7 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Ma
     public ManagePostAdapter(List<Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
-        this.apiService = RetrofitClient.getApiService(); // Khởi tạo ApiService
+        this.apiService = RetrofitClient.getApiService(context); // Khởi tạo ApiService
     }
 
     @NonNull

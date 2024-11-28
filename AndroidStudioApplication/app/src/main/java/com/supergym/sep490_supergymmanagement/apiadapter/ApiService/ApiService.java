@@ -6,6 +6,7 @@ import com.supergym.sep490_supergymmanagement.models.CheckInResponse;
 
 import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 
+import com.supergym.sep490_supergymmanagement.models.LoginResponse;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -47,6 +48,8 @@ public interface ApiService {
     @POST("api/CheckIn")
     Call<CheckInResponse> checkIn(@Body CheckInRequest request);
 
+    @POST("api/auth/loginWithFirebaseToken")
+    Call<LoginResponse> loginApi(@Body String firebaseToken);
 
     @POST("/api/Auth/register")
     Call<Void> registerUser(@Body RegisterUserDto registerUserDto);
