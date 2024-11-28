@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home2, container, false);
+        isRegistered = false;
         mAuth = FirebaseAuth.getInstance();
         btnBookTrainer = rootView.findViewById(R.id.btnBookTrainer);
         // If the user is not logged in, redirect to LoginActivity
