@@ -41,6 +41,9 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
+    @GET("api/GymRegistration/CheckRegistration/{id}")
+    Call<Boolean> checkRegistration(@Path("id") String registrationId);
+
     @POST("api/CheckIn")
     Call<CheckInResponse> checkIn(@Body CheckInRequest request);
 

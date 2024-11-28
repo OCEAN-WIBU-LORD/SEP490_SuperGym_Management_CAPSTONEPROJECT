@@ -486,7 +486,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                         String  roleIdFinalTxt = dataSnapshot.child("roleId").getValue(String.class);
                         roleIdFinal = String.valueOf(roleIdFinalTxt).trim();
                         if (roleIdFinal!= null){
-                            Toast.makeText(getActivity(), roleIdFinal, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getActivity(), roleIdFinal, Toast.LENGTH_SHORT).show();
                         }else {
                             Toast.makeText(getActivity(), "no role", Toast.LENGTH_SHORT).show();
                         }

@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Super Gym"
+            android:text="Super Gym Trainer"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -99,63 +99,67 @@
 
 
     <!-- Profile Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp">
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="65dp">
-            <ImageView
-                android:id="@+id/userAvatarImg"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/gym_trainer_png"
-                android:contentDescription="Profile Image"
-                android:scaleType="centerCrop"
-                android:background="@color/light_red" />
-        </androidx.cardview.widget.CardView>
+
+            <!-- Action Buttons -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="65dp">
+
+                    <ImageView
+                        android:id="@+id/userAvatarImg"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:background="@color/light_red"
+                        android:contentDescription="Profile Image"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/gym_trainer_png" />
+                </androidx.cardview.widget.CardView>
 
 
-        <TextView
-            android:id="@+id/trainerName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Alex Johnson"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+                <TextView
+                    android:id="@+id/trainerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Alex Johnson"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/trainerSpecialization"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Specialist in Strength &amp; Conditioning"
-            android:textColor="#555555"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/trainerSpecialization"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="Specialist in Strength &amp; Conditioning"
+                    android:textColor="#555555"
+                    android:textSize="16sp" />
 
 
-        <TextView
-            android:id="@+id/trainerBio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="- Nam is a certified personal trainer with over 10 years of experience in helping clients achieve their fitness goals. His approach combines personalized workouts with dietary guidance."
-            android:textColor="#555555"
-            android:textSize="14sp"
-            android:textStyle="bold|italic"
-            android:gravity="left"
-            android:padding="8dp"
-            android:lineSpacingExtra="4dp" />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/trainerBio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:lineSpacingExtra="4dp"
+                    android:padding="8dp"
+                    android:text="- Nam is a certified personal trainer with over 10 years of experience in helping clients achieve their fitness goals. His approach combines personalized workouts with dietary guidance."
+                    android:textColor="#555555"
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic" />
+            </LinearLayout>
 
-    <!-- Action Buttons -->
-    <LinearLayout
+            <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -169,7 +173,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Review Session"
-            android:backgroundTint="#000000"
+            android:backgroundTint="@color/light_red"
             android:textColor="#FFFFFF"
             android:layout_marginEnd="8dp" />
 
@@ -255,11 +259,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="10dp">
         <!-- Testimonial 1 -->
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="25dp">
             <LinearLayout
@@ -325,6 +330,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="25dp">
             <LinearLayout
@@ -393,7 +399,7 @@
 
     </LinearLayout>
             <androidx.cardview.widget.CardView
-
+                android:id="@+id/bookCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -410,7 +416,25 @@
 
                 </androidx.appcompat.widget.AppCompatButton>
             </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/editTrainingImageCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="25dp">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editImageBtn"
+                    android:layout_width="match_parent"
+                    android:background="@color/light_red"
+                    android:text="Edit your Training Image"
+                    android:layout_height="wrap_content">
 
+                </androidx.appcompat.widget.AppCompatButton>
+            </androidx.cardview.widget.CardView>
     <!-- Bottom Navigation Bar -->
         </LinearLayout>
     </ScrollView>

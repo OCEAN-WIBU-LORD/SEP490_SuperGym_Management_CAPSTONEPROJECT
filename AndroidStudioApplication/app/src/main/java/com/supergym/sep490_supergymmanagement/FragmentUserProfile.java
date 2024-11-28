@@ -96,7 +96,7 @@ public class FragmentUserProfile extends Fragment {
     private static final String PHONE_NUMBER = "0978788128";
     private Boolean isAuthenticated = false;
     private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn, resetPasswordBtn;
-    private CardView returnBtn, editProfile;
+    private CardView returnBtn, editProfile, gymPackageCardView, historyPaymentCardView;
     private FirebaseAuth mAuth;
 
     private String publicName;
@@ -113,7 +113,7 @@ public class FragmentUserProfile extends Fragment {
     private List<String> qrCodes = new ArrayList<>(); // Store QR code data
     private List<String> qrNames = new ArrayList<>(); // Store QR code membership names
     private List<String> priceSubsInfo = new ArrayList<>(); // Store QR code prices
-    private String userInforTransfer;
+    private String userInforTransfer, roleCheck;
 
 
 
@@ -154,13 +154,14 @@ public class FragmentUserProfile extends Fragment {
         btn_bmi_Statistic = view.findViewById(R.id.bmi_Statistic);
 
         btnFeedBack = view.findViewById(R.id.btnFeedBack);
-
+        historyPaymentCardView = view.findViewById(R.id.historyPaymentCardView);
         dietBtn = view.findViewById(R.id.dietBtn);
         resetPasswordBtn = view.findViewById(R.id.resetPasswordBtn);
         mAuth = FirebaseAuth.getInstance();
 
         returnBtn  = view.findViewById(R.id.returnBtn);
         editProfile = view.findViewById(R.id.editCardView);
+        gymPackageCardView = view.findViewById(R.id.gymPackageCardView);
         //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
         editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
         returnBtn.setOnClickListener(v -> getActivity().onBackPressed());
@@ -175,7 +176,15 @@ public class FragmentUserProfile extends Fragment {
             }
         });
         btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
+        // Retrieve user role and perform the check
+        MyApp app = (MyApp) requireContext().getApplicationContext();
+        String userRole = app.getUserRole();
 
+        if ("pt".equals(userRole)) {
+            roleCheck = "pt";
+            gymPackageCardView.setVisibility(View.GONE);
+            historyPaymentCardView.setVisibility(View.GONE);
+        }
 
         resetPasswordBtn.setOnClickListener( new View.OnClickListener() {
             @Override

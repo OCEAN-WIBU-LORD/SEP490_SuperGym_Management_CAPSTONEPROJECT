@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide; // For loading images
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,12 +36,12 @@ import com.supergym.sep490_supergymmanagement.repositories.callbacks.Callback;
 import java.util.List;
 
 public class ViewTrainerDetails extends AppCompatActivity {
-    private CardView returnBtn, editBtn;
+    private CardView returnBtn, editBtn, editTrainingImageCardView, bookCardView;
     private TextView trainerName, trainerSpecialization, trainerBio;
     private ImageView userAvatarImg; // For displaying the userAvatar
     private TrainerResp trainerResp = new TrainerResp(); // Assuming this is your database handler class
     private Button bookingBtn;
-    private String roleCheck;
+    private String roleCheck, trainerIdPro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,8 @@ public class ViewTrainerDetails extends AppCompatActivity {
         userAvatarImg = findViewById(R.id.userAvatarImg); // Assuming there's an ImageView for the avatar
          bookingBtn = findViewById(R.id.bookingBtn);
         editBtn = findViewById(R.id.editBtn);
+        editTrainingImageCardView = findViewById(R.id.editTrainingImageCardView);
+        bookCardView = findViewById(R.id.bookCardView);
         bookingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,15 +72,10 @@ public class ViewTrainerDetails extends AppCompatActivity {
             roleCheck = "pt";
            // Toast.makeText(this, "PT oke", Toast.LENGTH_SHORT).show();
             editBtn.setVisibility(View.VISIBLE);
+            editTrainingImageCardView.setVisibility(View.VISIBLE);
+            bookCardView.setVisibility(View.GONE);
         }
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("BookingButton", "CardView clicked!");
-                Intent intent = new Intent(ViewTrainerDetails.this, Activity_Book_Trainer.class);
-                startActivity(intent);
-            }
-        });
+
         // Finding the button and the layout to swap
         Button viewTrainingImageButton = findViewById(R.id.viewTrainingImage);
         Button viewReviewSessionsButton = findViewById(R.id.viewReviewSesions);
@@ -93,7 +91,10 @@ public class ViewTrainerDetails extends AppCompatActivity {
             viewReviewSessionsButton.setTextColor(Color.BLACK);
 
             // Set the other button as inactive
-            viewTrainingImageButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            viewTrainingImageButton.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.light_red))
+            );
+
             viewTrainingImageButton.setTextColor(Color.WHITE);
         });
 
@@ -105,7 +106,9 @@ public class ViewTrainerDetails extends AppCompatActivity {
             viewTrainingImageButton.setTextColor(Color.BLACK);
 
             // Set the other button as inactive
-            viewReviewSessionsButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            viewReviewSessionsButton.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.light_red))
+            );
             viewReviewSessionsButton.setTextColor(Color.WHITE);
         });
 
@@ -120,10 +123,22 @@ public class ViewTrainerDetails extends AppCompatActivity {
         // Fetch trainer details
         if (trainerId != null) {
             Log.d("TrainerId", "Received Trainer ID: " + trainerId);
+            trainerIdPro = trainerId;
             fetchTrainerDetails(trainerId);
         } else {
             Toast.makeText(this, "Trainer ID is null!", Toast.LENGTH_SHORT).show();
         }
+
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("BookingButton", "CardView clicked!");
+
+                Intent intent = new Intent(ViewTrainerDetails.this, TrainerEditBioActivity.class);
+                intent.putExtra("trainerId", trainerIdPro);
+                startActivity(intent);
+            }
+        });
     }
 
     private void fetchTrainerDetails(String trainerId) {

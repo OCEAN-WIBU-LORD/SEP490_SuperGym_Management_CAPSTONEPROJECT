@@ -2,6 +2,7 @@ package com.supergym.sep490_supergymmanagement.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.supergym.sep490_supergymmanagement.Activity_Book_Trainer;
 import com.supergym.sep490_supergymmanagement.LoginActivity;
+import com.supergym.sep490_supergymmanagement.MyApp;
 import com.supergym.sep490_supergymmanagement.PostListActivity; // Import your PostListActivity
 import com.supergym.sep490_supergymmanagement.R;
+import com.supergym.sep490_supergymmanagement.ViewMainContent;
+import com.supergym.sep490_supergymmanagement.ViewTrainerDetails;
 import com.supergym.sep490_supergymmanagement.adapters.PostAdapter;
+import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.models.Post;
 import com.google.android.material.button.MaterialButton;
@@ -48,6 +55,12 @@ public class HomeFragment extends Fragment {
     TextView seeMore; // Declare the seeMore TextView
 
     AppCompatButton btnBookTrainer;
+    private String roleCheck;
+    private CardView bookTrainer;
+    private boolean isRegistered;
+
+    private String userId42;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +75,7 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
             getActivity().finish();
         }
+        bookTrainer = rootView.findViewById(R.id.bookTrainer);
 
         // Initialize RecyclerView for posts
         recyclerView = rootView.findViewById(R.id.postlist);
@@ -85,18 +99,88 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
             }
         });
-        btnBookTrainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), Activity_Book_Trainer.class);
+
+        btnBookTrainer.setOnClickListener(v -> {
+            Log.d("HomeFragment", "Button clicked");
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(getContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
+            }else{
+                userId42 = user.getUid();
+                checkRegistration(userId42);
+            }
+            MyApp app = (MyApp) requireActivity().getApplicationContext();
+            if (app != null) {
+                String userRole = app.getUserRole();
+                Log.d("HomeFragment", "User role: " + userRole);
+
+                if (userRole == null || userRole.isEmpty()) {
+                    Toast.makeText(requireContext(), "User role not found!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if ("pt".equals(userRole)) {
+                    Toast.makeText(requireContext(), "You are a Trainer, booking is not allowed!", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if ("customer".equals(userRole)) {
+                    Toast.makeText(requireContext(), "You are a Customer, Okey", Toast.LENGTH_SHORT).show();
+                    checkRegistration(userId42);
+                    return;
+                }
+            }
+
+            if (isRegistered) {
+                Log.d("HomeFragment", "User is registered");
+                Intent intent = new Intent(requireContext(), Activity_Book_Trainer.class);
                 startActivity(intent);
+            } else {
+                Log.d("HomeFragment", "User is not registered");
+                Toast.makeText(requireContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
             }
         });
+
         // Fetch the latest posts and update the RecyclerView
         fetchLatestPosts();
 
         return rootView;
     }
+
+    private void checkRegistration(String registrationId) {
+        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
+
+        // Disable the button until the response is fetched
+        btnBookTrainer.setEnabled(false);
+
+        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                btnBookTrainer.setEnabled(true); // Re-enable the button
+                if (response.isSuccessful() && response.body() != null) {
+                    isRegistered = response.body();
+                    if (isRegistered) {
+                        Log.d("HomeFragment", "User is registered");
+                        Intent intent = new Intent(requireContext(), Activity_Book_Trainer.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(requireContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                btnBookTrainer.setEnabled(true); // Enable button even on failure
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+
+
 
     private void fetchLatestPosts() {
         RetrofitClient.getApiService().getLatestPosts().enqueue(new Callback<List<Post>>() {
