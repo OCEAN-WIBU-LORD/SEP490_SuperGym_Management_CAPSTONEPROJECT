@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
                     return;
                 }else if ("customer".equals(userRole)) {
                     Toast.makeText(requireContext(), "You are a Customer, Okey", Toast.LENGTH_SHORT).show();
-                    checkRegistration(userId42);
+
                     return;
                 }
             }

@@ -495,7 +495,7 @@ public class    ViewMainContent extends AppCompatActivity {
             public void onClick(View v) {
 
                 dialog.dismiss();
-                Toast.makeText(ViewMainContent.this,"Go live is Clicked",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewMainContent.this,"This function will be developed soon!",Toast.LENGTH_SHORT).show();
 
             }
         });
