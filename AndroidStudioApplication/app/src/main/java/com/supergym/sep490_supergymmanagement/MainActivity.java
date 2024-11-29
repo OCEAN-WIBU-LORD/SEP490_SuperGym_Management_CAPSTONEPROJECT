@@ -22,6 +22,20 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     TextView textView;
     FirebaseUser user;
+    FirebaseAuth mAuth;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance(); // Initialize mAuth
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && currentUser.isEmailVerified()) {
+            Intent intent = new Intent(getApplicationContext(), ViewMainContent.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
