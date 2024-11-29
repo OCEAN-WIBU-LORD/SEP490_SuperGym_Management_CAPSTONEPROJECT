@@ -80,7 +80,7 @@ public class MembershipActivity extends AppCompatActivity {
             }
         });
 //        // Initialize Retrofit
-        ApiService apiService = RetrofitClient.getApiService();
+        ApiService apiService = RetrofitClient.getApiService(this);
 
         // Make the API call
         Call<List<MembershipPackage>> call = apiService.getMembershipPackages();
@@ -125,7 +125,7 @@ public class MembershipActivity extends AppCompatActivity {
 
     public void generateQrCodeDialog(String gymMembershipId) {
         // Fetch the QR codes dynamically using the Retrofit API call
-        ApiService apiService = RetrofitClient.getApiService();
+        ApiService apiService = RetrofitClient.getApiService(this);
         showLoading();
 
         // Create a RegisterPackageRequest
@@ -163,7 +163,15 @@ public class MembershipActivity extends AppCompatActivity {
                         Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(MembershipActivity.this, "Failed to fetch QR codes", Toast.LENGTH_SHORT).show();
+                    // Check if the error body contains the message from the exception
+                    try {
+                        // Assuming the error message is in the response body
+                        String errorMessage = response.errorBody().string();
+                        Toast.makeText(MembershipActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(MembershipActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 

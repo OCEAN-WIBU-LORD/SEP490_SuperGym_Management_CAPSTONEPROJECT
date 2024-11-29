@@ -1,5 +1,7 @@
 package com.supergym.sep490_supergymmanagement.apiadapter;
 
+import android.content.Context;
+
 import com.supergym.sep490_supergymmanagement.DateDeserializer;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.google.gson.Gson;
@@ -19,10 +21,11 @@ public class RetrofitClient {
 
     private static Retrofit retrofit;
 
-    public static Retrofit getInstance() {
+    public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
             // Khởi tạo OkHttpClient với timeout
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .addInterceptor(new AuthInterceptor(context)) // Add interceptor
                     .connectTimeout(60, TimeUnit.SECONDS) // Thời gian chờ kết nối
                     .readTimeout(60, TimeUnit.SECONDS)    // Thời gian chờ đọc dữ liệu
                     .writeTimeout(60, TimeUnit.SECONDS)   // Thời gian chờ ghi dữ liệu
@@ -45,7 +48,7 @@ public class RetrofitClient {
         return retrofit;
     }
 
-    public static ApiService getApiService() {
-        return getInstance().create(ApiService.class);
+    public static ApiService getApiService(Context context) {
+        return getInstance(context).create(ApiService.class);
     }
 }

@@ -72,7 +72,7 @@ public class ViewCalendarActivity extends Fragment {
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
         monthYearTextView = view.findViewById(R.id.monthYearTextView);
 
-        apiService = RetrofitClient.getApiService();
+        apiService = RetrofitClient.getApiService(requireContext());
 
         // Kiểm tra người dùng đăng nhập
         checkUser();

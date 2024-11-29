@@ -210,7 +210,7 @@ public class    ViewMainContent extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (roleNameTxt == null) {
                 hideLoadingOverlay();
-                Toast.makeText(ViewMainContent.this, "Role is Null!", Toast.LENGTH_SHORT).show();
+        //        Toast.makeText(ViewMainContent.this, "Role is Null!", Toast.LENGTH_SHORT).show();
                 bottomNavigationView.setBackground(null);
                 bottomNavigationView.setOnItemSelectedListener(item -> {
                     int itemId = item.getItemId();
@@ -249,6 +249,11 @@ public class    ViewMainContent extends AppCompatActivity {
             MyApp app = (MyApp) getApplicationContext();
             app.setUserRole("pt"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As PT!", Toast.LENGTH_SHORT).show();
+        }else  if(roleName.equals("customer")){
+
+            MyApp app = (MyApp) getApplicationContext();
+            app.setUserRole("customer"); // Set the role based on your logic
+            Toast.makeText(ViewMainContent.this, "You Logged In As Customer!", Toast.LENGTH_SHORT).show();
         }
 
     }

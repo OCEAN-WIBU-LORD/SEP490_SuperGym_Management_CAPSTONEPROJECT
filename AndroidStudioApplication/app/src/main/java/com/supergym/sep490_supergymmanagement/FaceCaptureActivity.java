@@ -1,4 +1,6 @@
 package com.supergym.sep490_supergymmanagement;
+import static com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient.getApiService;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
@@ -648,7 +650,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
 
     private void sendFaceDataToApi(Map<String, Object> faceData) {
-        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService apiService = getApiService(this);
         Call<Void> call = apiService.registerFace(faceData);
 
         call.enqueue(new retrofit2.Callback<Void>() {
@@ -786,7 +788,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
      * Handles the check-in process by calling the CheckIn API.
      */
     private void handleCheckIn(String userFaceIdFinaltxt, String name) {
-        CheckInService checkInService = new CheckInService();
+        CheckInService checkInService = new CheckInService(this);
 
         Date currentDateTime;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

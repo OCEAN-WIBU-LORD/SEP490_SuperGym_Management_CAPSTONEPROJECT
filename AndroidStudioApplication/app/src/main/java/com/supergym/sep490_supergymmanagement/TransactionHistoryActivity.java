@@ -99,7 +99,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
 
     // Fetch Transactions from API
     private void fetchTransactionsFromApi() {
-        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService apiService = RetrofitClient.getApiService(this);
 
         apiService.getPaymentHistory(userId).enqueue(new Callback<List<Transaction>>() {
             @Override

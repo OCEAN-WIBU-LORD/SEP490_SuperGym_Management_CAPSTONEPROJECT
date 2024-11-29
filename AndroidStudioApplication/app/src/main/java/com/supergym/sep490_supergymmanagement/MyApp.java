@@ -4,6 +4,7 @@ import android.app.Application;
 
 public class MyApp extends Application {
     private String userRole; // Global variable to store the user's role
+    //private String JWTtoken;
 
     public String getUserRole() {
         return userRole;
@@ -18,5 +19,14 @@ public class MyApp extends Application {
         super.onCreate();
         // Initialize the userRole or other global variables if needed
         userRole = null; // Default value
+        //JWTtoken = null; // Default value
     }
+
+//    public String getJWTtoken() {
+//        return JWTtoken;
+//    }
+//
+//    public void setJWTtoken(String JWTtoken) {
+//        this.JWTtoken = JWTtoken;
+//    }
 }

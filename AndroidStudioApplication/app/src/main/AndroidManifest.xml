@@ -39,7 +39,7 @@
             android:name=".TrainerDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ViewCalendarActivity"
+            android:name=".TrainerEditBioActivity"
             android:exported="false" />
         <activity
             android:name=".UpdatePostActivity"

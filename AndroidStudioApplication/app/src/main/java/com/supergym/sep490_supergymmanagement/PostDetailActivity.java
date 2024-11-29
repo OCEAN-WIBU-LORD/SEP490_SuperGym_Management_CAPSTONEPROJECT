@@ -53,7 +53,7 @@ public class PostDetailActivity extends AppCompatActivity {
         tvAuthorDetail = findViewById(R.id.tvAuthorDetail);
 
         // Initialize ApiService
-        apiService = RetrofitClient.getInstance().create(ApiService.class);
+        apiService = RetrofitClient.getApiService(this);
 
         // Get postId from intent
         String postId = getIntent().getStringExtra("postId");
