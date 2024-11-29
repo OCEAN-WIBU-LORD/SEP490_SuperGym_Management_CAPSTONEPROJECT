@@ -6,6 +6,8 @@ import com.supergym.sep490_supergymmanagement.models.CheckInResponse;
 
 import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 
+import com.supergym.sep490_supergymmanagement.models.ForgotPasswordRequest;
+import com.supergym.sep490_supergymmanagement.models.LoginResponse;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -43,11 +45,13 @@ public interface ApiService {
 
     @POST("api/CheckIn")
     Call<CheckInResponse> checkIn(@Body CheckInRequest request);
-
+    @POST("api/GymRegistration/CheckRegistration/{id}")
+    Call<Boolean> checkRegistration(@Path("id") String registrationId);
 
     @POST("/api/Auth/register")
     Call<Void> registerUser(@Body RegisterUserDto registerUserDto);
-
+    @POST("api/auth/loginWithFirebaseToken")
+    Call<LoginResponse> loginApi(@Body String firebaseToken);
     // New API call for generating QR codes
     @POST("/api/GymRegistration")
     Call<List<QrCodeResponse.QrItem>> generateQrCodes(@Body QrCodeRequest request);
@@ -135,4 +139,6 @@ public interface ApiService {
     @GET("/api/CheckIn/checkInDates/{userId}")
     Call<CheckInDatesResponse> getCheckInDates(@Path("userId") String userId);
 
+    @POST("/api/Auth/forgot-password")
+    Call<Void> sendPasswordResetEmail(@Body ForgotPasswordRequest forgotPasswordRequest);
 }

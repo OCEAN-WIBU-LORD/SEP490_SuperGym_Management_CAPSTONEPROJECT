@@ -42,7 +42,7 @@ public class ForgotPassword extends AppCompatActivity {
         backToLoginBtn = findViewById(R.id.backToLoginBtn);  // Khởi tạo nút Back to Login
 
         // Get ApiService instance from RetrofitClient
-        apiService = RetrofitClient.getApiService();
+        apiService = RetrofitClient.getApiService(this);
 
         // Set OnClickListener for the register button
         buttonReg.setOnClickListener(new View.OnClickListener() {
