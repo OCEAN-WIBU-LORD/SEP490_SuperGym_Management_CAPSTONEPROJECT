@@ -239,7 +239,9 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
 //                }
 
                 // Calculate inSampleSize
-                options.inSampleSize = calculateInSampleSize(options, 2000, 2000);
+                //PREVIOUS CODE:
+                //options.inSampleSize = calculateInSampleSize(options, 2000, 5000);
+                options.inSampleSize = calculateInSampleSize(options, 500, 500);
                 options.inJustDecodeBounds = false;
 
                 // Load and downsample the image
