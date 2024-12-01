@@ -843,11 +843,17 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-        // Create a unique file name based on user ID and timestamp
-        String fileName = "faces/" + (userId.equals("Unknown") ? "Unknown" : userId) + "_" + System.currentTimeMillis() + ".jpg";
+        // Get the current date in yyyy-MM-dd format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String dateFolder = sdf.format(new Date());  // This will give you the folder name like "2024-11-30"
 
-        // Upload image to Firebase Storage
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(fileName);
+        // Create a unique file name based on user ID and timestamp
+        String fileName = (userId.equals("Unknown") ? "Unknown" : userId) + "_" + System.currentTimeMillis() + ".jpg";
+
+        // Reference to the "/faces/yyyy-MM-dd" folder in Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("faces/" + dateFolder + "/" + fileName);
+
+        // Upload the image to Firebase Storage
         storageRef.putBytes(data)
                 .addOnSuccessListener(taskSnapshot -> {
                     Toast.makeText(getApplicationContext(), "Face image saved successfully.", Toast.LENGTH_SHORT).show();
@@ -856,6 +862,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                     Toast.makeText(getApplicationContext(), "Failed to save face image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     public void delayedWelcomeMessage(final String closestName) {
         // Check if the welcome message is already playing

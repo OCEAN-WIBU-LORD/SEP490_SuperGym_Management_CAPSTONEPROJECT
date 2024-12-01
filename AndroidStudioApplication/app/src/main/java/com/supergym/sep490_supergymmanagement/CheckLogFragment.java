@@ -1,62 +1,44 @@
 package com.supergym.sep490_supergymmanagement;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.supergym.sep490_supergymmanagement.FirebaseImageLoader.FirebaseImageLoader;
-import com.supergym.sep490_supergymmanagement.adapters.LogAdapter;
-import com.supergym.sep490_supergymmanagement.adapters.YourImageAdapter;
-import com.supergym.sep490_supergymmanagement.models.LogEntry;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
+import com.supergym.sep490_supergymmanagement.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CheckLogFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CheckLogFragment extends Fragment {
 
     private RecyclerView recyclerView;
+    private Button btnSelectDate;
+    private FirebaseImageLoader firebaseImageLoader;
+    private String selectedDate;
 
     public CheckLogFragment() {
         // Required empty public constructor
     }
 
-    public static CheckLogFragment newInstance(String param1, String param2) {
-        CheckLogFragment fragment = new CheckLogFragment();
-        Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static CheckLogFragment newInstance() {
+        return new CheckLogFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            // Retrieve any passed parameters if needed
-        }
+        Log.d("CheckLogFragment", "Fragment initialized.");
     }
 
     @Override
@@ -67,81 +49,61 @@ public class CheckLogFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewLogs);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        FirebaseImageLoader firebaseImageLoader = new FirebaseImageLoader(recyclerView, getContext());
-        firebaseImageLoader.loadNewestImages();
+        btnSelectDate = view.findViewById(R.id.btnSelectDate);
+
+        firebaseImageLoader = new FirebaseImageLoader(recyclerView, getContext());
+        selectedDate = getCurrentDate();
+        firebaseImageLoader.loadImages(true, selectedDate); // Load images for today by default
+
+        btnSelectDate.setOnClickListener(v -> showDatePicker());
+
+        addScrollListener();
 
         return view;
     }
 
+    private void showDatePicker() {
 
+        Calendar calendar = Calendar.getInstance();
+        new DatePickerDialog(getContext(),
+                (view, year, month, dayOfMonth) -> {
+                    selectedDate = formatDate(year, month, dayOfMonth);
+                    btnSelectDate.setText(selectedDate);
+                    Log.d("DateSelected", "Selected Date: " + selectedDate);
+                    firebaseImageLoader.resetPagination();
+                    // Reload images based on the selected date
+                    firebaseImageLoader.loadImages(true, selectedDate);
+                    Toast.makeText(getContext(), "Filtered by date: " + selectedDate, Toast.LENGTH_SHORT).show();
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
 
+    private void addScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastVisibleItemPosition() == firebaseImageLoader.getImageList().size() - 1) {
+                    // Trigger pagination (load more images) when reaching the last item
+                    firebaseImageLoader.loadImages(false, selectedDate);
+                }
+            }
+        });
+    }
 
+    private String formatDate(int year, int month, int day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormatter.format(calendar.getTime());
+    }
 
-
-
-
+    private String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return dateFormatter.format(calendar.getTime());
+    }
 }
-
-/*
- private void loadAllImagesFromFacesFolder() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference facesRef = storage.getReference().child("faces");
-
-        facesRef.listAll()
-                .addOnSuccessListener(listResult -> {
-                    imageUrls.clear(); // Clear previous data if reloading
-
-                    // Loop through all items in the "/faces" folder
-                    for (StorageReference item : listResult.getItems()) {
-                        item.getDownloadUrl().addOnSuccessListener(uri -> {
-                            imageUrls.add(uri.toString());  // Add the URL to the list
-                            imageAdapter.notifyDataSetChanged();  // Notify the adapter
-                        }).addOnFailureListener(e -> Log.e("CheckLogFragment", "Failed to get URL", e));
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("CheckLogFragment", "Failed to list items", e));
-    }
-
-    private void loadLogEntries() {
-        // Initialize logEntries list if not already initialized
-        if (logEntries == null) {
-            logEntries = new ArrayList<>();
-        }
-
-        // Assuming you're fetching data from Firebase Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("logs")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Clear the existing list before adding new data
-                        logEntries.clear();
-
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Get the Firestore document fields
-                            String imageUrl = document.getString("imageUrl");  // Firebase URL for the image
-                            String userName = document.getString("userName");
-                            String role = document.getString("role");
-                            String checkInTime = document.getString("checkInTime");
-                            String checkOutTime = document.getString("checkOutTime");
-                            String datetime = document.getString("datetime");
-
-                            // Create a new LogEntry object
-                            LogEntry logEntry = new LogEntry(imageUrl, userName, role, checkInTime, checkOutTime, datetime);
-
-                            // Add the LogEntry to the list
-                            logEntries.add(logEntry);
-                        }
-
-                        // Notify the adapter that data has been updated
-                        if (logAdapter != null) {
-                            logAdapter.notifyDataSetChanged();
-                        }
-
-                    } else {
-                        // Handle error
-                        Toast.makeText(getContext(), "Error loading logs: " + task.getException(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
- */

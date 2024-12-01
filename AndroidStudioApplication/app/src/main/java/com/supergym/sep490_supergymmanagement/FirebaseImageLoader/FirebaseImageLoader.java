@@ -1,72 +1,95 @@
 package com.supergym.sep490_supergymmanagement.FirebaseImageLoader;
 
-
 import android.content.Context;
 import android.util.Log;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 import com.supergym.sep490_supergymmanagement.adapters.ImageAdapter;
 import com.supergym.sep490_supergymmanagement.models.ImageModel;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FirebaseImageLoader {
 
-    private List<ImageModel> imageList = new ArrayList<>();
-    private ImageAdapter imageAdapter;
-    private RecyclerView recyclerView;
+    private static final int PAGE_SIZE = 10;
+    private final List<ImageModel> imageList = new ArrayList<>();
+    private final ImageAdapter imageAdapter;
+    private boolean isLoading = false;
+    private boolean hasMoreImages = true;
+    private String nextPageToken = null;
 
     public FirebaseImageLoader(RecyclerView recyclerView, Context context) {
-        this.recyclerView = recyclerView;
         this.imageAdapter = new ImageAdapter(context, imageList);
         recyclerView.setAdapter(imageAdapter);
     }
 
-    public void loadNewestImages() {
+    public void loadImages(boolean initialLoad, String selectedDate) {
+        if (isLoading || !hasMoreImages) {
+            return; // Prevent concurrent loads or loading when there are no more images
+        }
+
+        if (initialLoad) {
+            resetPagination(); // Reset the image list when a new filter is applied (date change)
+        }
+
+        isLoading = true;
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference facesFolderRef = storage.getReference().child("faces");
+        StorageReference facesFolderRef = storage.getReference().child("faces/" + selectedDate);
 
-        facesFolderRef.listAll().addOnSuccessListener(listResult -> {
-            List<StorageReference> allImages = listResult.getItems();
-            List<ImageModel> tempImageList = new ArrayList<>();
-
-            // Load each image metadata asynchronously
-            for (StorageReference imageRef : allImages) {
-                imageRef.getMetadata().addOnSuccessListener(metadata -> {
-                    long creationTime = metadata.getCreationTimeMillis();
-                    String imageName = imageRef.getName();
-
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // Add each image with its metadata to the temp list
-                        tempImageList.add(new ImageModel(uri.toString(), imageName, creationTime));
-
-                        // Once all items are added to the list, sort by creation time
-                        if (tempImageList.size() == allImages.size()) {
-                            // Sort images by creation time in descending order (newest first)
-                            Collections.sort(tempImageList, (img1, img2) -> Long.compare(img2.getCreationTime(), img1.getCreationTime()));
-
-                            // Take only the 50 newest images
-                            List<ImageModel> newestImages = tempImageList.size() > 50
-                                    ? tempImageList.subList(0, 50)
-                                    : tempImageList;
-
-                            // Update imageList and notify adapter
-                            imageList.clear();
-                            imageList.addAll(newestImages);
-                            imageAdapter.notifyDataSetChanged();
-                        }
-                    }).addOnFailureListener(e -> Log.e("FirebaseImageLoader", "Failed to load image URL", e));
-                }).addOnFailureListener(e -> Log.e("FirebaseImageLoader", "Failed to get metadata", e));
-            }
-        }).addOnFailureListener(e -> Log.e("FirebaseImageLoader", "Failed to list images", e));
+        if (nextPageToken == null) {
+            facesFolderRef.list(PAGE_SIZE)
+                    .addOnSuccessListener(this::handleListResult)
+                    .addOnFailureListener(this::handleError);
+        } else {
+            facesFolderRef.list(PAGE_SIZE, nextPageToken)
+                    .addOnSuccessListener(this::handleListResult)
+                    .addOnFailureListener(this::handleError);
+        }
     }
 
+    // Reset pagination and clear the image list for a fresh load
+    public void resetPagination() {
+        imageList.clear();
+        imageAdapter.notifyDataSetChanged();
+        nextPageToken = null;
+        hasMoreImages = true;
+    }
 
+    private void handleListResult(ListResult listResult) {
+        List<StorageReference> allImages = listResult.getItems();
 
+        if (allImages.isEmpty()) {
+            hasMoreImages = false;
+            isLoading = false;
+            return;
+        }
 
+        for (StorageReference imageRef : allImages) {
+            imageRef.getMetadata().addOnSuccessListener(metadata -> {
+                long creationTime = metadata.getCreationTimeMillis();
+                imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    imageList.add(new ImageModel(uri.toString(), imageRef.getName(), creationTime));
+                    imageAdapter.notifyDataSetChanged();
+                }).addOnFailureListener(e -> Log.e("FirebaseImageLoader", "Error getting download URL: " + e.getMessage()));
+            }).addOnFailureListener(e -> Log.e("FirebaseImageLoader", "Error getting metadata: " + e.getMessage()));
+        }
+
+        nextPageToken = listResult.getPageToken();
+        hasMoreImages = nextPageToken != null;
+        isLoading = false;
+    }
+
+    private void handleError(Exception e) {
+        Log.e("FirebaseImageLoader", "Error loading images: " + e.getMessage());
+        isLoading = false;
+    }
+
+    public List<ImageModel> getImageList() {
+        return imageList;
+    }
 }

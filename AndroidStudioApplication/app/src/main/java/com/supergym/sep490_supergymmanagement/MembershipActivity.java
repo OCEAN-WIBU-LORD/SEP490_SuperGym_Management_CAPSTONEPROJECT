@@ -192,13 +192,11 @@ public class MembershipActivity extends AppCompatActivity {
         ImageView qrCodeImageView = dialogView.findViewById(R.id.qrCodeImageView);
         TextView qrCodeInfo = dialogView.findViewById(R.id.tvQrInfo);
         TextView priceSubs = dialogView.findViewById(R.id.priceSubs);
-        Button btnPrevQr = dialogView.findViewById(R.id.btnPrevQr);
-        Button btnNextQr = dialogView.findViewById(R.id.btnNextQr);
 
         currentQrIndex = 0; // Initialize the index
         updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
 
-        btnNextQr.setOnClickListener(v -> {
+        /*btnNextQr.setOnClickListener(v -> {
             currentQrIndex = (currentQrIndex + 1) % qrCodes.size();
             updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
         });
@@ -207,7 +205,7 @@ public class MembershipActivity extends AppCompatActivity {
             currentQrIndex = (currentQrIndex - 1 + qrCodes.size()) % qrCodes.size();
             updateQrCodeDisplay(qrCodeImageView, qrCodeInfo, priceSubs, currentQrIndex);
         });
-
+*/
         builder.setView(dialogView)
                 .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
                 .create()
