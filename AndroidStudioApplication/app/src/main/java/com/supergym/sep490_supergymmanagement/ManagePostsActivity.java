@@ -1,7 +1,9 @@
 package com.supergym.sep490_supergymmanagement;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,7 @@ public class ManagePostsActivity extends AppCompatActivity {
     private List<Post> userPosts = new ArrayList<>();
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
+    private Button btnCreatePost;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +53,12 @@ public class ManagePostsActivity extends AppCompatActivity {
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(this));
         managePostAdapter = new ManagePostAdapter(userPosts, this);
         recyclerViewPosts.setAdapter(managePostAdapter);
+        btnCreatePost = findViewById(R.id.btnCreatePost);
 
+        btnCreatePost.setOnClickListener(v -> {
+            Intent intent = new Intent(ManagePostsActivity.this, CreatePostActivity.class);
+            startActivity(intent);
+        });
         // Gọi API để tải bài viết của người dùng hiện tại
         loadUserPosts(currentUser.getUid());
     }
