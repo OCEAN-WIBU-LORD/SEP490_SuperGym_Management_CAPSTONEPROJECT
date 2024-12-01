@@ -30,32 +30,30 @@
         android:id="@+id/tvQrInfo"
         android:layout_width="95dp"
         android:layout_height="39dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="80dp"
         android:paddingTop="8dp"
         android:text="QR Code Info"
         android:textAlignment="textEnd"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.592"
-        app:layout_constraintStart_toEndOf="@+id/tvUserTransferNote"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
 
     <TextView
         android:id="@+id/priceSubs"
         android:layout_width="95dp"
         android:layout_height="39dp"
-        android:layout_marginTop="28dp"
-        android:paddingTop="8dp"
+        android:layout_marginTop="87dp"
         android:text="Price"
         android:textAlignment="center"
-        android:textSize="10sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserTransferNote" />
+        app:layout_constraintTop_toBottomOf="@+id/subscription" />
 
-    <TextView
+    <!--<TextView
         android:id="@+id/tvUserTransferNote"
         android:layout_width="194dp"
         android:layout_height="42dp"
@@ -66,7 +64,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.073"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subscription" />
+        app:layout_constraintTop_toBottomOf="@+id/subscription" />-->
 
     <TextView
         android:id="@+id/subscription"

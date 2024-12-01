@@ -172,7 +172,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Review Session"
+            android:text="Main Trainer Information"
             android:backgroundTint="@color/light_red"
             android:textColor="#FFFFFF"
             android:layout_marginEnd="8dp" />
@@ -182,17 +182,77 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="View Training Images"
+            android:text="Write a review"
             android:backgroundTint="#E0E0E0"
             android:textColor="#000000" />
+
+
+
+
     </LinearLayout>
+        <LinearLayout
+            android:id="@+id/anotherLayout2"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+
+            > <!-- Initially Hidden -->
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/etBio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <EditText
+                    android:id="@+id/reviewEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@android:color/transparent"
+                    android:hint="Review Feedback"
+                    android:padding="15sp"
+                    android:textAlignment="inherit"
+                    android:textSize="18sp" />
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="25dp">
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/submit_button"
+                    android:layout_width="match_parent"
+                    android:background="@color/light_red"
+                    android:text="Post Review"
+                    android:layout_height="wrap_content">
+
+                </androidx.appcompat.widget.AppCompatButton>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
             <LinearLayout
                 android:id="@+id/anotherLayout"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:visibility="gone"> <!-- Initially Hidden -->
+
+                > <!-- Initially Hidden -->
 
                 <!-- Content of the second tab -->
                 <TextView
@@ -204,33 +264,90 @@
                     android:layout_marginBottom="16dp" />
 
                 <!-- Add some example training images -->
-                <androidx.core.widget.NestedScrollView
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fillViewport="true">
+                    android:fillViewport="true"
+                    android:scrollbars="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
                         android:padding="16dp">
+
                         <!-- Testimonial 1 -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="20dp"
+                            android:layout_marginEnd="16dp">
+                            <ImageView
+                                android:id="@+id/image1"
+                                android:layout_width="250dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imagetrainer_1" />
+                        </androidx.cardview.widget.CardView>
 
-                        <!-- Add some example training images -->
-                        <ImageView
-                            android:layout_width="200dp"
-                            android:layout_height="200dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/logo_odg_circle" />
+                        <!-- Testimonial 2 -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="20dp"
+                            android:layout_marginEnd="16dp">
+                            <ImageView
+                                android:id="@+id/image2"
+                                android:layout_width="250dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imagetrainer2" />
+                        </androidx.cardview.widget.CardView>
 
-                        <ImageView
-                            android:layout_width="200dp"
-                            android:layout_height="200dp"
-                            android:scaleType="centerCrop"
-                            android:layout_marginTop="16dp"
-                            android:src="@drawable/logo_odg_circle" />
+                        <!-- Testimonial 3 -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="20dp"
+                            android:layout_marginEnd="16dp">
+                            <ImageView
+                                android:id="@+id/image3"
+                                android:layout_width="250dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imagetrainer4" />
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Testimonial 4 -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="20dp"
+                            android:layout_marginEnd="16dp">
+                            <ImageView
+                                android:id="@+id/image4"
+                                android:layout_width="250dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imagetrainer5" />
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Testimonial 5 -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="20dp">
+                            <ImageView
+                                android:id="@+id/image5"
+                                android:layout_width="250dp"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/imagetrainer3" />
+                        </androidx.cardview.widget.CardView>
+
                     </LinearLayout>
-                </androidx.core.widget.NestedScrollView>
+                </HorizontalScrollView>
+
             </LinearLayout>
     <!-- Testimonials -->
     <LinearLayout
@@ -261,138 +378,12 @@
             android:orientation="vertical"
             android:padding="10dp">
         <!-- Testimonial 1 -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="25dp">
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:background="#F5F5F5">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:layout_height="match_parent"
+                android:padding="8dp" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/userAvatar"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
-                    app:cardCornerRadius="25dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/circle_background"
-                        android:contentDescription="Emily R Profile"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/logo_trainer" />
-                </androidx.cardview.widget.CardView>
-
-
-                <TextView
-                    android:id="@+id/textView14"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Emily "
-                    android:layout_marginTop="10dp"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/userAvatar"></TextView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <ScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="&quot;Alex helped me lose 15 pounds in 3 months with his amazing training sessions. His motivational style and expert knowledge make every session enjoyable and productive, leaving me feeling stronger and more energetic each day.&quot;"
-                        android:textColor="#555555"
-                        android:textSize="14sp"
-                        android:padding="8dp"
-                        android:lineSpacingExtra="4dp" />
-                </ScrollView>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="25dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:background="#F5F5F5">
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/userAvatar1"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="10dp"
-                        app:cardCornerRadius="25dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:background="@drawable/circle_background"
-                            android:contentDescription="Emily R Profile"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/logo_odg_circle" />
-                    </androidx.cardview.widget.CardView>
-
-
-                    <TextView
-                        android:id="@+id/textView15"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:text="Mike T. "
-                        android:layout_marginTop="10dp"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userAvatar1"></TextView>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <ScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="&quot;I’ve tried countless fitness programs before, but Alex’s approach stands out. Over six months, I’ve seen incredible improvements in my overall health and stamina. His combination of personalized workouts and nutritional guidance has helped me transform my body and mind. I’ve never felt more supported and understood by a trainer—Alex truly cares about his clients' success.&quot;"
-                        android:textColor="#555555"
-                        android:textSize="14sp"
-                        android:padding="8dp"
-                        android:lineSpacingExtra="4dp" />
-                </ScrollView>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
         </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <!-- Testimonial 2 -->
