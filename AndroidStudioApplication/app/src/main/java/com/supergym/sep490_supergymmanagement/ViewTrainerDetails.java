@@ -55,6 +55,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
     private Button bookingBtn, submit_button;
     private String roleCheck, trainerIdPro;
     private Button submitButton;
+    private boolean isRegistered;
     private  String trainerId, userId;
     // Initialize Firebase database reference
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Review");
@@ -63,6 +64,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trainer_detail);
+
         reviewEditText = findViewById(R.id.reviewEditText);
 
 
@@ -82,8 +84,21 @@ public class ViewTrainerDetails extends AppCompatActivity {
         if (user != null) {
              userId = user.getUid();
         }
+
+        checkRegistration(userId);
+
         bookingBtn.setOnClickListener(v -> {
-            checkRegistration(userId);
+
+            if (isRegistered) {
+                Log.d("ViewTrainerDetails", "User is registered");
+                // Navigate to the booking activity
+                Intent intent = new Intent(ViewTrainerDetails.this, Activity_Book_Trainer.class);
+                intent.putExtra("trainerId", trainerId); // Pass trainerId to the next activity
+                startActivity(intent);
+            } else {
+                Toast.makeText(ViewTrainerDetails.this, "You are not a member. Please register a Membership Package", Toast.LENGTH_SHORT).show();
+            }
+
         });
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,22 +216,14 @@ public class ViewTrainerDetails extends AppCompatActivity {
 
         // Disable the button until the response is fetched
         bookingBtn.setEnabled(false);
-
+        submit_button.setEnabled(false);
         api.checkRegistration(registrationId).enqueue(new retrofit2.Callback<Boolean>() {
             @Override
             public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
                 bookingBtn.setEnabled(true); // Re-enable the button
+                submit_button.setEnabled(true);
                 if (response.isSuccessful() && response.body() != null) {
-                    boolean isRegistered = response.body();
-                    if (isRegistered) {
-                        Log.d("ViewTrainerDetails", "User is registered");
-                        // Navigate to the booking activity
-                        Intent intent = new Intent(ViewTrainerDetails.this, Activity_Book_Trainer.class);
-                        intent.putExtra("trainerId", trainerId); // Pass trainerId to the next activity
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(ViewTrainerDetails.this, "You are not a member. Please register for a package.", Toast.LENGTH_SHORT).show();
-                    }
+                     isRegistered = response.body();
                 } else {
                     Toast.makeText(ViewTrainerDetails.this, "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
                 }
@@ -225,6 +232,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
                 bookingBtn.setEnabled(true); // Enable the button even on failure
+                submit_button.setEnabled(true);
                 Log.e("ViewTrainerDetails", "Error checking registration: " + t.getMessage());
                 Toast.makeText(ViewTrainerDetails.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }

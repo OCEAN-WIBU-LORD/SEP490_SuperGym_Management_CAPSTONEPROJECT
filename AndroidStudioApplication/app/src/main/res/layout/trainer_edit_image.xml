@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Top Navigation Bar -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/light_red"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/back_icon"
+                    android:contentDescription="Back Arrow"
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Upload Photos"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Trainer Profile Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/logo_trainer"
+                android:contentDescription="Trainer Profile Image"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/circle_background" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trainer Profile"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personalized Training Sessions"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Experience Input -->
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="Share your experience here"
+            android:background="@drawable/roundedcorner"
+            android:gravity="start|top"
+            android:padding="12dp"
+            android:layout_marginTop="16dp"
+            android:inputType="textMultiLine"
+            android:lines="4" />
+
+        <!-- Workout Images Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Select Workout Images"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center">
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="15dp">
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/trainer_1"
+                    android:contentDescription="Workout Image 1"
+                    android:scaleType="centerCrop"
+                    />
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="15dp">
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/imagetrainer2"
+                    android:contentDescription="Workout Image 1"
+                    android:scaleType="centerCrop"
+                    />
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="15dp">
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/imagetrainer4"
+                    android:contentDescription="Workout Image 1"
+                    android:scaleType="centerCrop"
+                    />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <!-- Rate Experience Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Rate Your Experience"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:rating="0"
+            android:theme="@style/Widget.AppCompat.RatingBar"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- Upload Button -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#000000"
+            android:text="Upload"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+</ScrollView>

@@ -14,44 +14,62 @@
       android:orientation="horizontal"
       android:gravity="center_horizontal"
       android:padding="8dp">
+<androidx.cardview.widget.CardView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="15dp">
+  <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btnPreviousMonth"
+      android:layout_width="wrap_content"
+      android:background="@color/light_red"
+      android:layout_height="wrap_content"
+      android:text="Previous" />
+</androidx.cardview.widget.CardView>
 
-    <Button
-        android:id="@+id/btnPreviousMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Previous" />
 
     <TextView
         android:id="@+id/monthYearTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="November"
+        android:layout_marginTop="10dp"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginHorizontal="16dp" />
-
-    <Button
-        android:id="@+id/btnNextMonth"
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:cardCornerRadius="15dp">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNextMonth"
+        android:layout_width="wrap_content"
+        android:background="@color/light_red"
+        android:layout_height="wrap_content"
         android:text="Next" />
+    </androidx.cardview.widget.CardView>
 
   </LinearLayout>
 
+  <androidx.cardview.widget.CardView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:cardCornerRadius="15dp">
+    <com.github.sundeepk.compactcalendarview.CompactCalendarView
+        android:id="@+id/compactcalendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:compactCalendarTargetHeight="250dp"
+        app:compactCalendarTextSize="12sp"
+        app:compactCalendarBackgroundColor="#ffe95451"
+        app:compactCalendarTextColor="#ffffff"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="#E57373"
+        app:compactCalendarCurrentDayBackgroundColor="#B71C1C"
+        app:compactCalendarMultiEventIndicatorColor="#ffffff" />
+  </androidx.cardview.widget.CardView>
   <!-- CompactCalendarView -->
-  <com.github.sundeepk.compactcalendarview.CompactCalendarView
-      android:id="@+id/compactcalendar_view"
-      android:layout_width="match_parent"
-      android:layout_height="250dp"
-      android:paddingLeft="10dp"
-      android:paddingRight="10dp"
-      app:compactCalendarTargetHeight="250dp"
-      app:compactCalendarTextSize="12sp"
-      app:compactCalendarBackgroundColor="#ffe95451"
-      app:compactCalendarTextColor="#ffffff"
-      app:compactCalendarCurrentSelectedDayBackgroundColor="#E57373"
-      app:compactCalendarCurrentDayBackgroundColor="#B71C1C"
-      app:compactCalendarMultiEventIndicatorColor="#ffffff" />
+
 
   <!-- Hiển thị ngày được chọn -->
   <TextView

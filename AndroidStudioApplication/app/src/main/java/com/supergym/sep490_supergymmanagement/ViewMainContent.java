@@ -219,7 +219,9 @@ public class    ViewMainContent extends AppCompatActivity {
                     } else if (itemId == R.id.shorts) {
                         replaceFragment(new SearchTrainerFragment());
                     } else if (itemId == R.id.subscriptions) {
-                        replaceFragment(new ProgressActivity());
+                        replaceFragment(new ViewCalendarActivity());
+
+                        //replaceFragment(new ProgressActivity());
                     } else if (itemId == R.id.library) {
                         replaceFragment(new FragmentUserProfile());
                     }
