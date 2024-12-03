@@ -386,7 +386,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     // Xử lý danh sách gói tập
                     List<PackagesAndTrainersResponse.PackageDetails> packages = packagesAndTrainers.getPackages();
                     if (packages == null || packages.isEmpty()) {
-                        Toast.makeText(Activity_Book_Trainer.this, "No packages found.", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(Activity_Book_Trainer.this, "No packages found.", Toast.LENGTH_SHORT).show();
                         packageIds.clear(); // Xóa danh sách cũ
                         updateSpinner(packageSpinner, new ArrayList<>()); // Làm rỗng Spinner
                         return;
@@ -469,9 +469,9 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                         // Kiểm tra điều kiện của gói
                         if (!trainer.isMonthlyPackage()) {
                             enableDaySelection(); // Cho phép chọn ngày
-                            Toast.makeText(Activity_Book_Trainer.this,
-                                    "Sessions: " + trainer.getMinSessions() + " - " + trainer.getMaxSessions(),
-                                    Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(Activity_Book_Trainer.this,
+//                                    "Sessions: " + trainer.getMinSessions() + " - " + trainer.getMaxSessions(),
+//                                    Toast.LENGTH_SHORT).show();
                         } else {
                             selectAndDisableAll(monday, tuesday, wednesday, thursday, friday, saturday); // Check tất cả ngày
                         }
@@ -834,10 +834,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
             request.setSelectedTimeSlot(tsid);
 
-            // Chuyển sang LoadingActivity trước khi gọi API
-            Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-            startActivity(loadingIntent);
-
             // Call the Trainer Rental Registration API
             apiService.createTrainerRentalRegistration(request).enqueue(new Callback<List<QrCodeRentalResponse.QrItem>>() {
                 @Override
@@ -852,7 +848,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             });
         }
     }
-
 
 
     private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response) {
@@ -875,12 +870,14 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
+                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
+                startActivity(loadingIntent);
             }
         } else {
+            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
     }
-
 
     private void handleRentalApiResponse(Response<List<QrCodeRentalResponse.QrItem>> response) {
         if (response.isSuccessful() && response.body() != null) {
@@ -902,8 +899,11 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
+                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
+                startActivity(loadingIntent);
             }
         } else {
+            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
     }
@@ -911,13 +911,38 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private void logErrorResponse(Response<?> response) {
         try {
             if (response.errorBody() != null) {
-                Log.e("RegisterPackageAPI", "Error Body: " + response.errorBody().string());
+                String errorResponse = response.errorBody().string();
+                Log.e("API Error", "Error Response: " + errorResponse);
+
+                // Phân tích lỗi chi tiết dựa trên response
+                if (response.code() == 400) {
+                    // Lỗi Bad Request
+                    if (errorResponse.contains("Number of sessions is not valid")) {
+                        Toast.makeText(this, "Number of sessions is not valid to register this membership.", Toast.LENGTH_LONG).show();
+                    } else if (errorResponse.contains("Trainer is fully booked")) {
+                        Toast.makeText(this, "Trainer is fully booked for one or more slot dates.", Toast.LENGTH_LONG).show();
+                    } else if (errorResponse.contains("One or more users already have active Trainer Rental Registrations")) {
+                        Toast.makeText(this, "One or more users already have active Trainer Rental Registrations.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Bad Request: " + errorResponse, Toast.LENGTH_LONG).show();
+                    }
+                } else if (response.code() == 500) {
+                    // Lỗi Internal Server Error
+                    Toast.makeText(this, "Internal Server Error: " + errorResponse, Toast.LENGTH_LONG).show();
+                } else {
+                    // Lỗi khác
+                    Toast.makeText(this, "An error occurred: " + errorResponse, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Log.e("API Error", "Unknown error occurred.");
+                Toast.makeText(this, "Unknown error occurred.", Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("API Error", "Error reading error response: " + e.getMessage());
+            Toast.makeText(this, "Error reading error response.", Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(Activity_Book_Trainer.this, "Failed to register package. Code: " + response.code(), Toast.LENGTH_SHORT).show();
     }
+
 
     private void handleApiFailure(Throwable t) {
         Toast.makeText(this, "Failed to connect to server: " + t.getMessage(), Toast.LENGTH_SHORT).show();

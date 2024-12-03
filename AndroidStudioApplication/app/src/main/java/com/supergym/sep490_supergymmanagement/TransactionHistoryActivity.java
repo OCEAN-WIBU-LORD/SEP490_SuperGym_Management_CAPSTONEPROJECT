@@ -31,7 +31,6 @@ public class TransactionHistoryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TransactionAdapter transactionAdapter;
     private List<Transaction> transactionList;
-    private Spinner spinnerFilter, spinnerSort;
     private String userId;
 
     @Override
@@ -58,43 +57,19 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         transactionAdapter = new TransactionAdapter(transactionList); // Pass initial list
         recyclerView.setAdapter(transactionAdapter);
 
-        // Setup Filter and Sort Spinners
-        spinnerFilter = findViewById(R.id.spinnerFilter);
-        spinnerSort = findViewById(R.id.spinnerSort);
+
 
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(this,
                 R.array.filter_options, android.R.layout.simple_spinner_item);
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFilter.setAdapter(filterAdapter);
 
         ArrayAdapter<CharSequence> sortAdapter = ArrayAdapter.createFromResource(this,
                 R.array.sort_options, android.R.layout.simple_spinner_item);
         sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSort.setAdapter(sortAdapter);
-
         // Fetch Transactions via API
         fetchTransactionsFromApi();
 
-        // Listen to Filter and Sort Spinner Events
-        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                applyFilterAndSort();
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                applyFilterAndSort();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
 
     // Fetch Transactions from API
@@ -108,7 +83,6 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                     transactionList.clear();
                     transactionList.addAll(response.body());
                     transactionAdapter.setTransactions(transactionList); // Update adapter's list
-                    applyFilterAndSort(); // Apply filter and sort after fetching data
                 } else {
                     Log.e("TransactionHistory", "Failed to fetch transactions: " + response.message());
                     Toast.makeText(TransactionHistoryActivity.this, "Failed to load transactions", Toast.LENGTH_SHORT).show();
@@ -123,29 +97,5 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         });
     }
 
-    // Apply Filter and Sort
-    private void applyFilterAndSort() {
-        // Filter Transactions
-        String selectedFilter = spinnerFilter.getSelectedItem().toString();
-        List<Transaction> filteredList = new ArrayList<>();
 
-        for (Transaction transaction : transactionList) {
-            if ("All".equals(selectedFilter) || transaction.getPackageName().contains(selectedFilter)) {
-                filteredList.add(transaction);
-            }
-        }
-
-        // Sort Transactions
-        String selectedSort = spinnerSort.getSelectedItem().toString();
-        if ("Amount Ascending".equals(selectedSort)) {
-            Collections.sort(filteredList, Comparator.comparingDouble(Transaction::getAmount));
-        } else if ("Amount Descending".equals(selectedSort)) {
-            Collections.sort(filteredList, (t1, t2) -> Double.compare(t2.getAmount(), t1.getAmount()));
-        } else if ("Package Name".equals(selectedSort)) {
-            Collections.sort(filteredList, Comparator.comparing(Transaction::getPackageName));
-        }
-
-        // Update Adapter
-        transactionAdapter.setTransactions(filteredList); // Update filtered list
-    }
 }
