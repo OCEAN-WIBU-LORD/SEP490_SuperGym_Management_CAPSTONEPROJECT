@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -666,7 +667,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
         userRecyclerView.setAdapter(userAdapter); // Liên kết Adapter với RecyclerView
 
-        // Xử lý SearchView
         SearchView userSearchView = findViewById(R.id.userSearchView);
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -735,32 +735,45 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
 
     private void registerPackage() {
-        // Kiểm tra các điều kiện cần thiết
+        Button submitButton = findViewById(R.id.submit_button);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+
+        // Ẩn nút submit và hiển thị ProgressBar
+        submitButton.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
         if (packageIds.isEmpty() || packageSpinner.getSelectedItemPosition() >= packageIds.size()) {
             Toast.makeText(this, "Please select a valid package.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         if (trainerIds.isEmpty() || trainerSpinner.getSelectedItemPosition() >= trainerIds.size()) {
             Toast.makeText(this, "Please select a valid trainer.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         if (timeSlots.isEmpty() || sessionTimeSeekBar.getProgress() >= timeSlots.size()) {
             Toast.makeText(this, "Please select a valid time slot.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null || currentUser.getEmail() == null) {
             Toast.makeText(this, "User not logged in or email not found. Please login again.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         String userEmail = currentUser.getEmail(); // Current user's email
         RegisterPackageRequest request = new RegisterPackageRequest();
 
-        // Collect emails from extra users
         String extraUsers = extraUsersEditText.getText().toString();
         List<String> emails = new ArrayList<>();
         emails.add(userEmail); // Add current user's email
@@ -769,11 +782,12 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         }
         request.setEmails(emails);
 
-        // Get selected package type
         String selectedPackageType = getSelectedPackageType();
         UserResponse selectedTrainer = (UserResponse) trainerSpinner.getSelectedItem();
         if (selectedTrainer == null) {
             Toast.makeText(this, "Failed to determine trainer. Please try again.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
@@ -783,74 +797,96 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             selectedPackageId = selectedTrainer.getBoxingMembershipPlanId();
             if (selectedPackageId == null) {
                 Toast.makeText(this, "Invalid Boxing Membership Plan ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setBoxingMembershipPlanId(selectedPackageId);
             request.setQrPayment(true); // Always QR payment
             request.setDuration(1);
 
-            // Get TimeSlot ID
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setSelectedTimeSlot(tsid);
-            // Get day selection option
+
             boolean isMonWedFri = optionRadioGroup.getCheckedRadioButtonId() == R.id.option1;
             request.setMonWedFri(isMonWedFri);
 
-            // Chuyển sang LoadingActivity trước khi gọi API
-            Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-            startActivity(loadingIntent);
-
-            // Call the Boxing Registration API
             apiService.createBoxingRegistration(request).enqueue(new Callback<List<QrCodeBoxingResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeBoxingResponse.QrItem>> call, Response<List<QrCodeBoxingResponse.QrItem>> response) {
-                    handleBoxingApiResponse(response);
+                    handleBoxingApiResponse(response, submitButton, progressBar);
                 }
 
                 @Override
                 public void onFailure(Call<List<QrCodeBoxingResponse.QrItem>> call, Throwable t) {
-                    handleApiFailure(t);
+                    handleApiFailure(t, submitButton, progressBar);
                 }
             });
         } else if ("TrainerRental".equals(selectedPackageType)) {
             selectedPackageId = selectedTrainer.getTrainerRentalPlanId();
+
             if (selectedPackageId == null) {
                 Toast.makeText(this, "Invalid Trainer Rental Plan ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
+
+            String sessionCountInput = sessionCountEditText.getText().toString().trim();
+            if (sessionCountInput.isEmpty()) {
+                Toast.makeText(this, "Please input number of sessions", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+
+            try {
+                int sessionCount = Integer.parseInt(sessionCountInput);
+                request.setDuration(sessionCount);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid number of sessions", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+
             request.setTrainerRentalPlanId(selectedPackageId);
             request.setQrPayment(true); // Always QR payment
-            request.setDuration(Integer.parseInt(sessionCountEditText.getText().toString()));
 
-            // Get TimeSlot ID
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setSelectedTimeSlot(tsid);
 
-            // Call the Trainer Rental Registration API
             apiService.createTrainerRentalRegistration(request).enqueue(new Callback<List<QrCodeRentalResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeRentalResponse.QrItem>> call, Response<List<QrCodeRentalResponse.QrItem>> response) {
-                    handleRentalApiResponse(response);
+                    handleRentalApiResponse(response, submitButton, progressBar);
                 }
 
                 @Override
                 public void onFailure(Call<List<QrCodeRentalResponse.QrItem>> call, Throwable t) {
-                    handleApiFailure(t);
+                    handleApiFailure(t, submitButton, progressBar);
                 }
             });
         }
     }
 
+    private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
 
-    private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response) {
         if (response.isSuccessful() && response.body() != null) {
             List<QrCodeBoxingResponse.QrItem> qrItems = response.body();
             if (!qrItems.isEmpty()) {
@@ -870,16 +906,17 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
-                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-                startActivity(loadingIntent);
             }
         } else {
-            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
     }
 
-    private void handleRentalApiResponse(Response<List<QrCodeRentalResponse.QrItem>> response) {
+    private void handleRentalApiResponse(Response<List<QrCodeRentalResponse.QrItem>> response, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
+
         if (response.isSuccessful() && response.body() != null) {
             List<QrCodeRentalResponse.QrItem> qrItems = response.body();
             if (!qrItems.isEmpty()) {
@@ -899,13 +936,19 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
-                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-                startActivity(loadingIntent);
             }
         } else {
-            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
+    }
+
+    private void handleApiFailure(Throwable t, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this, "Failed to connect to server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        Log.e("RegisterPackageAPI", "Failure: ", t);
     }
 
     private void logErrorResponse(Response<?> response) {
@@ -942,14 +985,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             Toast.makeText(this, "Error reading error response.", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-    private void handleApiFailure(Throwable t) {
-        Toast.makeText(this, "Failed to connect to server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-        Log.e("RegisterPackageAPI", "Failure: ", t);
-    }
-
-    // Phương thức lấy loại gói tập đã chọn
     private String getSelectedPackageType() {
         int checkedId = trainerTypeRadioGroup.getCheckedRadioButtonId();
         if (checkedId == R.id.radioGym) {
