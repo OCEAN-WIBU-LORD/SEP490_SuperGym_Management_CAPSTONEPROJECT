@@ -88,7 +88,7 @@
     <string name="history_payment">Transaction History</string>
     <string name="report_feedback">Report and Feedback</string>
     <string name="buy_membership">Buy Gym Package</string>
-    <string name="reset_password">Reset Password</string>
+    <string name="reset_password">Change Password</string>
     <string name="edit_setting">Setting</string>
     <string name="log_out">Log Out</string>
 

@@ -8,6 +8,7 @@ import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 
 import com.supergym.sep490_supergymmanagement.models.ForgotPasswordRequest;
 import com.supergym.sep490_supergymmanagement.models.LoginResponse;
+import com.supergym.sep490_supergymmanagement.models.MembershipCountResponse;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.PackagesAndTrainersResponse;
 import com.supergym.sep490_supergymmanagement.models.Post;
@@ -42,6 +43,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+    @GET("GetMembershipCounts")  // This matches the API endpoint defined in your controller
+    Call<MembershipCountResponse> getMembershipCounts();
 
     @POST("api/CheckIn")
     Call<CheckInResponse> checkIn(@Body CheckInRequest request);
