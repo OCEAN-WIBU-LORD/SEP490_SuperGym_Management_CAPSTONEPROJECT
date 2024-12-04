@@ -60,7 +60,7 @@ public interface ApiService {
     Call<Void> registerFace(@Body Map<String, Object> faceData);
 
 
-    @GET("/api/gymmembership")
+    @GET("/api/GymMembership")
     Call<List<MembershipPackage>> getMembershipPackages();
     // 1. Lấy danh sách tất cả danh mục
     @GET("api/posts/categories")
@@ -105,11 +105,20 @@ public interface ApiService {
     @GET("/api/PaymentHistory/{userId}")
     Call<List<Transaction>> getPaymentHistory(@Path("userId") String userId);
 
-    @GET("api/Schedule/Slot/Customer/{userId}")
-    Call<List<Schedule2>> getCustomerSchedules(@Path("userId") String userId);
+    @GET("api/Schedule/Slot/Customer/{userId}/{year}/{month}")
+    Call<List<Schedule2>> getCustomerSchedules(
+            @Path("userId") String userId,
+            @Path("year") int year,
+            @Path("month") int month
+    );
 
-    @GET("api/Schedule/Slot/Trainer/{userId}")
-    Call<List<ScheduleForTrainer>> getTrainerSchedules(@Path("userId") String userId);
+    @GET("api/Schedule/Slot/Trainer/{userId}/{year}/{month}")
+    Call<List<ScheduleForTrainer>> getTrainerSchedules(
+            @Path("userId") String userId,
+            @Path("year") int year,
+            @Path("month") int month
+    );
+
 
     @GET("/api/Schedule/TimeSlots")
     Call<List<TimeSlot>> getTimeSlots();
