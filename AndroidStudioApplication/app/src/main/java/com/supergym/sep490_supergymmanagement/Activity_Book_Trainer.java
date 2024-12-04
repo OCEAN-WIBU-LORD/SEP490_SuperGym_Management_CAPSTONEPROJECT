@@ -667,7 +667,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
         userRecyclerView.setAdapter(userAdapter); // Liên kết Adapter với RecyclerView
 
-        // Xử lý SearchView
         SearchView userSearchView = findViewById(R.id.userSearchView);
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -736,7 +735,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
 
     private void registerPackage() {
-        // Lấy các thành phần UI
         Button submitButton = findViewById(R.id.submit_button);
         ProgressBar progressBar = findViewById(R.id.progressBar);
 
@@ -744,7 +742,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         submitButton.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
-        // Kiểm tra các điều kiện cần thiết
         if (packageIds.isEmpty() || packageSpinner.getSelectedItemPosition() >= packageIds.size()) {
             Toast.makeText(this, "Please select a valid package.", Toast.LENGTH_SHORT).show();
             submitButton.setVisibility(View.VISIBLE);
@@ -777,7 +774,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         String userEmail = currentUser.getEmail(); // Current user's email
         RegisterPackageRequest request = new RegisterPackageRequest();
 
-        // Collect emails from extra users
         String extraUsers = extraUsersEditText.getText().toString();
         List<String> emails = new ArrayList<>();
         emails.add(userEmail); // Add current user's email
@@ -786,7 +782,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         }
         request.setEmails(emails);
 
-        // Get selected package type
         String selectedPackageType = getSelectedPackageType();
         UserResponse selectedTrainer = (UserResponse) trainerSpinner.getSelectedItem();
         if (selectedTrainer == null) {
@@ -810,7 +805,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             request.setQrPayment(true); // Always QR payment
             request.setDuration(1);
 
-            // Get TimeSlot ID
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
@@ -820,11 +814,9 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
             request.setSelectedTimeSlot(tsid);
 
-            // Get day selection option
             boolean isMonWedFri = optionRadioGroup.getCheckedRadioButtonId() == R.id.option1;
             request.setMonWedFri(isMonWedFri);
 
-            // Gọi API Boxing Registration
             apiService.createBoxingRegistration(request).enqueue(new Callback<List<QrCodeBoxingResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeBoxingResponse.QrItem>> call, Response<List<QrCodeBoxingResponse.QrItem>> response) {
@@ -846,7 +838,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                 return;
             }
 
-            // Kiểm tra xem trường sessionCountEditText có rỗng không
             String sessionCountInput = sessionCountEditText.getText().toString().trim();
             if (sessionCountInput.isEmpty()) {
                 Toast.makeText(this, "Please input number of sessions", Toast.LENGTH_SHORT).show();
@@ -856,22 +847,18 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
 
             try {
-                // Chuyển đổi giá trị từ EditText sang số nguyên
                 int sessionCount = Integer.parseInt(sessionCountInput);
                 request.setDuration(sessionCount);
             } catch (NumberFormatException e) {
-                // Nếu không thể chuyển đổi thành số, hiển thị thông báo lỗi
                 Toast.makeText(this, "Invalid number of sessions", Toast.LENGTH_SHORT).show();
                 submitButton.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
                 return;
             }
 
-            // Thiết lập TrainerRentalPlanId và QR Payment
             request.setTrainerRentalPlanId(selectedPackageId);
             request.setQrPayment(true); // Always QR payment
 
-            // Lấy ID của TimeSlot đã chọn
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
@@ -881,7 +868,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
             request.setSelectedTimeSlot(tsid);
 
-            // Gọi API đăng ký thuê huấn luyện viên
             apiService.createTrainerRentalRegistration(request).enqueue(new Callback<List<QrCodeRentalResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeRentalResponse.QrItem>> call, Response<List<QrCodeRentalResponse.QrItem>> response) {
@@ -999,11 +985,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             Toast.makeText(this, "Error reading error response.", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-    // Phương thức lấy loại gói tập đã chọn
     private String getSelectedPackageType() {
         int checkedId = trainerTypeRadioGroup.getCheckedRadioButtonId();
         if (checkedId == R.id.radioGym) {
