@@ -1,9 +1,11 @@
+// ViewCalendarActivity.java
 package com.supergym.sep490_supergymmanagement;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.SpannableString;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -24,11 +27,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
-import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
 import com.supergym.sep490_supergymmanagement.models.TimeSlot;
+import com.supergym.sep490_supergymmanagement.views.appointment.CustomerAppointmentHandler;
+import com.supergym.sep490_supergymmanagement.views.appointment.TrainerAppointmentHandler;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,12 +55,19 @@ public class ViewCalendarActivity extends Fragment {
 
     private ApiService apiService;
 
-    // Lưu danh sách TimeSlot vào Map để tối ưu hóa
     private HashMap<String, String> timeSlotMap = new HashMap<>();
     private List<String> highlightedDates = new ArrayList<>();
     private Button btnPreviousMonth;
     private Button btnNextMonth;
     private TextView monthYearTextView;
+
+    private AppointmentHandler appointmentHandler;
+
+    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    private final SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.ENGLISH);
+
+    private static final String TAG = "ViewCalendarActivity";
 
     @Nullable
     @Override
@@ -74,55 +86,52 @@ public class ViewCalendarActivity extends Fragment {
 
         apiService = RetrofitClient.getApiService(requireContext());
 
-        // Kiểm tra người dùng đăng nhập
+        setupListeners();
+
         checkUser();
 
-        // Thiết lập tiêu đề tháng năm ban đầu
-        updateMonthYearDisplay();
+        return view;
+    }
 
-        // Xử lý sự kiện nút "Tháng trước"
+    /**
+     * Sets up UI listeners for buttons and the calendar view.
+     */
+    private void setupListeners() {
         btnPreviousMonth.setOnClickListener(v -> {
-            compactCalendarView.scrollLeft();
+            compactCalendarView.scrollLeft();  // Scroll to previous month
+            updateMonthYearDisplay();
         });
 
-        // Xử lý sự kiện nút "Tháng sau"
         btnNextMonth.setOnClickListener(v -> {
-            compactCalendarView.scrollRight();
+            compactCalendarView.scrollRight();  // Scroll to next month
+            updateMonthYearDisplay();
         });
 
-        // Xử lý chọn ngày trên lịch và cập nhật tháng năm khi cuộn
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                String selectedDate = new SimpleDateFormat("yyyy-MM-dd").format(dateClicked);
+                String selectedDate = apiDateFormat.format(dateClicked);
                 String displayText = "Appointments for " + formatDateForDisplay(selectedDate);
-                selectedDateInfo.setText(displayText); // Hiển thị "Appointments for [date]"
-                selectedDateInfo.setTypeface(null, Typeface.BOLD); // In đậm văn bản
+                selectedDateInfo.setText(displayText);
+                selectedDateInfo.setTypeface(null, Typeface.BOLD);
                 loadAppointmentsForSelectedDate(selectedDate);
             }
-
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 updateMonthYearDisplay();
             }
         });
-
-        return view;
     }
 
-    private void updateMonthYearDisplay() {
-        Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", new Locale("en"));
-        String monthYear = dateFormat.format(currentDate);
-        monthYearTextView.setText(monthYear);
-    }
-
+    /**
+     * Checks if the user is authenticated and determines their role.
+     */
     private void checkUser() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
-            Log.d("ViewCalendarActivity", "User logged in with userId: " + userId);
+            Log.d(TAG, "User logged in with userId: " + userId);
 
             FirebaseDatabase.getInstance().getReference("users")
                     .child(userId)
@@ -131,21 +140,27 @@ public class ViewCalendarActivity extends Fragment {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
                             String roleId = task.getResult().getValue(String.class);
-                            Log.d("ViewCalendarActivity", "Fetched roleId: " + roleId);
+                            Log.d(TAG, "Fetched roleId: " + roleId);
 
-                            if ("-O7sA4aJbpHG6gZeX13p".equals(roleId)) {
-                                role = "trainer";
-                            } else if ("-O7s8sU2ZMyRWjrImzCO".equals(roleId)) {
-                                role = "customer";
-                            } else {
-                                role = "unknown";
-                                Toast.makeText(getActivity(), "Unknown role. Access denied.", Toast.LENGTH_SHORT).show();
-                                getActivity().finish();
+                            switch (roleId) {
+                                case "-O7sA4aJbpHG6gZeX13p":
+                                    role = "trainer";
+                                    appointmentHandler = new TrainerAppointmentHandler();
+                                    break;
+                                case "-O7s8sU2ZMyRWjrImzCO":
+                                    role = "customer";
+                                    appointmentHandler = new CustomerAppointmentHandler();
+                                    break;
+                                default:
+                                    role = "unknown";
+                                    Toast.makeText(getActivity(), "Unknown role. Access denied.", Toast.LENGTH_SHORT).show();
+                                    getActivity().finish();
+                                    return;
                             }
 
                             fetchTimeSlots();
                         } else {
-                            Log.e("ViewCalendarActivity", "Failed to fetch roleId for userId: " + userId);
+                            Log.e(TAG, "Failed to fetch roleId for userId: " + userId);
                             Toast.makeText(getActivity(), "Failed to determine role. Please try again.", Toast.LENGTH_SHORT).show();
                             getActivity().finish();
                         }
@@ -156,6 +171,9 @@ public class ViewCalendarActivity extends Fragment {
         }
     }
 
+    /**
+     * Fetches available time slots from the backend API.
+     */
     private void fetchTimeSlots() {
         apiService.getTimeSlots().enqueue(new Callback<List<TimeSlot>>() {
             @Override
@@ -177,210 +195,228 @@ public class ViewCalendarActivity extends Fragment {
         });
     }
 
+    /**
+     * Fetches and highlights dates that have appointments.
+     */
     private void fetchHighlightedDates() {
-        new Thread(() -> {
-            try {
-                // Lấy lịch tập của customer hoặc trainer
-                if ("customer".equals(role)) {
-                    Response<List<Schedule2>> response = apiService.getCustomerSchedules(userId).execute();
-                    if (response.isSuccessful() && response.body() != null) {
-                        for (Schedule2 schedule : response.body()) {
-                            // Highlight màu trắng cho các ngày có lịch tập
-                            highlightDate(schedule.getDate(), Color.WHITE);
-                        }
-                    }
-                } else if ("trainer".equals(role)) {
-                    Response<List<ScheduleForTrainer>> response = apiService.getTrainerSchedules(userId).execute();
-                    if (response.isSuccessful() && response.body() != null) {
-                        for (ScheduleForTrainer schedule : response.body()) {
-                            // Highlight màu trắng cho các ngày có lịch tập
-                            highlightDate(schedule.getDate(), Color.WHITE);
-                        }
-                    }
-                }
+        Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
+        String yearMonth = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(currentDate);
+        String[] parts = yearMonth.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
 
-                // Sau khi đã highlight lịch tập, tiếp tục gọi hàm để lấy check-in dates cho khách phổ thông
-                fetchCheckInDates();
+        if (appointmentHandler == null) return;
 
-            } catch (Exception e) {
-                Log.e("ViewCalendarActivity", "Error fetching highlighted dates: " + e.getMessage());
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(getActivity(), "Error fetching highlighted dates.", Toast.LENGTH_SHORT).show()
-                );
-            }
-        }).start();
-    }
-
-    private void fetchCheckInDates() {
-        new Thread(() -> {
-            try {
-                // Gọi API để lấy ngày check-in
-                Response<CheckInDatesResponse> response = apiService.getCheckInDates(userId).execute();
-                if (response.isSuccessful() && response.body() != null) {
-                    List<String> checkInDates = response.body().getCheckInDates(); // Lấy danh sách ngày check-in
-                    if (checkInDates != null && !checkInDates.isEmpty()) {
-                        // Log ra các ngày check-in
-                        for (String date : checkInDates) {
-                            Log.d("CheckInDates", "Check-in date: " + date);
-                            // Highlight màu xanh cho các ngày check-in
-                            highlightDate(date, Color.GREEN);
-                        }
-                    } else {
-                        Log.d("CheckInDates", "No check-in dates found.");
-                    }
+        appointmentHandler.fetchSchedules(apiService, userId, year, month, new AppointmentHandler.ScheduleFetchCallback() {
+            @Override
+            public void onSuccess(List<?> schedules) {
+                if (schedules.isEmpty()) {
+                    // No appointments for this month
+                    notesContainer.removeAllViews();
+                    addNoAppointmentsView(notesContainer, "No appointments for this month");
                 } else {
-                    Log.e("CheckInDates", "Failed to fetch check-in dates. Response body is null.");
+                    for (Object schedule : schedules) {
+                        String date = null;
+                        if (schedule instanceof Schedule2) {
+                            date = ((Schedule2) schedule).getDate();
+                        } else if (schedule instanceof ScheduleForTrainer) {
+                            date = ((ScheduleForTrainer) schedule).getDate();
+                        }
+                        if (date != null && !highlightedDates.contains(date)) {
+                            highlightDate(date, Color.WHITE);
+                            highlightedDates.add(date);
+                        }
+                    }
                 }
-            } catch (Exception e) {
-                Log.e("ViewCalendarActivity", "Error fetching check-in dates: " + e.getMessage());
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(getActivity(), "Error fetching check-in dates.", Toast.LENGTH_SHORT).show()
-                );
             }
-        }).start();
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(TAG, "Error fetching highlighted dates: " + t.getMessage());
+                Toast.makeText(getActivity(), "Error fetching highlighted dates.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void highlightDate(String date, int color) {
-        // Hàm highlight cho ngày
-        try {
-            Date eventDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
-            Event event = new Event(color, eventDate.getTime(), "Highlighted");
-            compactCalendarView.addEvent(event);
-        } catch (Exception e) {
-            Log.e("ViewCalendarActivity", "Error parsing date for highlight: " + e.getMessage());
-        }
+    /**
+     * Updates the month and year display based on the currently viewed month.
+     */
+    private void updateMonthYearDisplay() {
+        Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
+        String monthYear = monthYearFormat.format(currentDate);
+        monthYearTextView.setText(monthYear);
+
+        String selectedDate = apiDateFormat.format(currentDate);
+        selectedDateInfo.setText("Appointments for " + formatDateForDisplay(selectedDate));
+        selectedDateInfo.setTypeface(null, Typeface.BOLD);
+        loadAppointmentsForSelectedDate(selectedDate);
     }
 
-    private void highlightCheckInDatesOnCalendar() {
-        // Chỉ cần gọi hàm này sau khi đã highlight các ngày check-in
-        compactCalendarView.invalidate();
-    }
-
-
-
+    /**
+     * Loads and displays appointments for the selected date.
+     *
+     * @param selectedDate The selected date in "yyyy-MM-dd" format.
+     */
     private void loadAppointmentsForSelectedDate(String selectedDate) {
-        Log.d("ViewCalendarActivity", "Loading appointments for userId: " + userId + " on date: " + selectedDate);
+        Log.d(TAG, "Loading appointments for userId: " + userId + " on date: " + selectedDate);
 
-        if ("customer".equals(role)) {
-            apiService.getCustomerSchedules(userId).enqueue(new Callback<List<Schedule2>>() {
-                @Override
-                public void onResponse(Call<List<Schedule2>> call, Response<List<Schedule2>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        notesContainer.removeAllViews();
-                        boolean hasAppointments = false; // Thêm biến kiểm tra
+        Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
+        String yearMonth = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(currentDate);
+        String[] parts = yearMonth.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
 
-                        for (Schedule2 schedule : response.body()) {
-                            if (selectedDate.equals(schedule.getDate())) {
-                                displayCustomerAppointment(schedule);
-                                hasAppointments = true; // Có lịch tập
-                            }
-                        }
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            Log.e(TAG, "Selected date is invalid: " + selectedDate);
+            return;
+        }
 
-                        if (!hasAppointments) {
-                            // Không có lịch tập vào ngày này
-                            TextView noAppointmentsView = new TextView(getActivity());
-                            noAppointmentsView.setText("No appointments on this day");
-                            noAppointmentsView.setTextSize(16);
-                            noAppointmentsView.setTextColor(Color.BLACK);
-                            notesContainer.addView(noAppointmentsView);
-                        }
+        notesContainer.removeAllViews();
 
-                    } else {
-                        Toast.makeText(getActivity(), "Failed to fetch appointments for date.", Toast.LENGTH_SHORT).show();
+        if (appointmentHandler == null) return;
+
+        appointmentHandler.fetchSchedules(apiService, userId, year, month, new AppointmentHandler.ScheduleFetchCallback() {
+            @Override
+            public void onSuccess(List<?> schedules) {
+                List<Object> filteredSchedules = new ArrayList<>();
+                for (Object schedule : schedules) {
+                    String date = null;
+                    if (schedule instanceof Schedule2) {
+                        date = ((Schedule2) schedule).getDate();
+                    } else if (schedule instanceof ScheduleForTrainer) {
+                        date = ((ScheduleForTrainer) schedule).getDate();
+                    }
+                    if (selectedDate.equals(date)) {
+                        filteredSchedules.add(schedule);
                     }
                 }
 
-                @Override
-                public void onFailure(Call<List<Schedule2>> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                if (filteredSchedules.isEmpty()) {
+                    addNoAppointmentsView(notesContainer, "No appointments on this day");
+                } else {
+                    appointmentHandler.displayAppointments(filteredSchedules, notesContainer);
                 }
-            });
-        } else if ("trainer".equals(role)) {
-            apiService.getTrainerSchedules(userId).enqueue(new Callback<List<ScheduleForTrainer>>() {
-                @Override
-                public void onResponse(Call<List<ScheduleForTrainer>> call, Response<List<ScheduleForTrainer>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        notesContainer.removeAllViews();
-                        boolean hasAppointments = false; // Thêm biến kiểm tra
+            }
 
-                        for (ScheduleForTrainer schedule : response.body()) {
-                            if (selectedDate.equals(schedule.getDate())) {
-                                displayTrainerAppointment(schedule);
-                                hasAppointments = true; // Có lịch tập
-                            }
-                        }
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e(TAG, "Error fetching schedules: " + t.getMessage());
+                Toast.makeText(getActivity(), "Error fetching appointments.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-                        if (!hasAppointments) {
-                            // Không có lịch tập vào ngày này
-                            TextView noAppointmentsView = new TextView(getActivity());
-                            noAppointmentsView.setText("No appointments on this day");
-                            noAppointmentsView.setTextSize(16);
-                            noAppointmentsView.setTextColor(Color.BLACK);
-                            notesContainer.addView(noAppointmentsView);
-                        }
-
-                    } else {
-                        Toast.makeText(getActivity(), "Failed to fetch appointments for date.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<ScheduleForTrainer>> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+    /**
+     * Highlights a specific date on the calendar.
+     *
+     * @param date  The date in "yyyy-MM-dd" format.
+     * @param color The color to highlight the date.
+     */
+    private void highlightDate(String date, int color) {
+        Date dateObj = parseDate(date);
+        if (dateObj != null) {
+            Event event = new Event(color, dateObj.getTime());
+            compactCalendarView.addEvent(event);
         }
     }
 
-
-    private void displayCustomerAppointment(Schedule2 schedule) {
-        addAppointmentsToView(schedule.getDate(), schedule.getTimeSlot(), schedule.getTrainerName(), null);
+    /**
+     * Parses a date string into a Date object.
+     *
+     * @param dateStr The date string in "yyyy-MM-dd" format.
+     * @return The parsed Date object or null if parsing fails.
+     */
+    private Date parseDate(String dateStr) {
+        try {
+            return apiDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e(TAG, "Date parsing error: " + e.getMessage());
+            return null;
+        }
     }
 
-    private void displayTrainerAppointment(ScheduleForTrainer schedule) {
-        addAppointmentsToView(schedule.getDate(), schedule.getTimeSlot(), null, schedule.getCustomers());
+    /**
+     * Formats a date string for display purposes.
+     *
+     * @param date The date string in "yyyy-MM-dd" format.
+     * @return The formatted date string in "dd-MM-yyyy" format.
+     */
+    private String formatDateForDisplay(String date) {
+        try {
+            Date parsedDate = apiDateFormat.parse(date);
+            return parsedDate != null ? displayDateFormat.format(parsedDate) : date;
+        } catch (ParseException e) {
+            return date;
+        }
     }
 
-    private void addAppointmentsToView(String date, String timeSlot, String trainerName, List<String> customers) {
-        LinearLayout appointmentView = new LinearLayout(getActivity());
+    /**
+     * Static helper method to add appointment views to the container.
+     *
+     * @param date           The appointment date.
+     * @param timeSlot       The time slot of the appointment.
+     * @param trainerName    The trainer's name (if applicable).
+     * @param customers      The list of customers (if applicable).
+     * @param container      The LinearLayout container to add the view to.
+     */
+    public static void addAppointmentsToView(String date, String timeSlot, String trainerName, List<String> customers, LinearLayout container) {
+        Context context = container.getContext();
+
+        LinearLayout appointmentView = new LinearLayout(context);
         appointmentView.setOrientation(LinearLayout.VERTICAL);
-        appointmentView.setPadding(8, 8, 8, 8);
+        int padding = dpToPx(context, 8);
+        appointmentView.setPadding(padding, padding, padding, padding);
 
-        TextView timeView = new TextView(getActivity());
+        TextView timeView = new TextView(context);
         timeView.setText(timeSlot);
         timeView.setTextSize(16);
-        timeView.setTypeface(null, android.graphics.Typeface.BOLD);
-        timeView.setTextColor(getResources().getColor(android.R.color.black));
+        timeView.setTypeface(null, Typeface.BOLD);
+        timeView.setTextColor(Color.BLACK);
         appointmentView.addView(timeView);
 
         if (trainerName != null) {
-            TextView trainerView = new TextView(getActivity());
+            TextView trainerView = new TextView(context);
             trainerView.setText("Practice with trainer: " + trainerName);
-            trainerView.setTypeface(null, android.graphics.Typeface.BOLD);
-            trainerView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+            trainerView.setTypeface(null, Typeface.BOLD);
+            trainerView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_blue_dark));
             appointmentView.addView(trainerView);
         }
 
         if (customers != null && !customers.isEmpty()) {
-            TextView customerView = new TextView(getActivity());
-            customerView.setText("Practice with customers: " + String.join(", ", customers));
-            customerView.setTypeface(null, android.graphics.Typeface.BOLD);
-            customerView.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+            TextView customerView = new TextView(context);
+            customerView.setText("Practice with customers: " + TextUtils.join(", ", customers));
+            customerView.setTypeface(null, Typeface.BOLD);
+            customerView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_blue_dark));
             appointmentView.addView(customerView);
         }
 
-        notesContainer.addView(appointmentView);
+        container.addView(appointmentView);
     }
 
+    /**
+     * Static helper method to add a "no appointments" message to the container.
+     *
+     * @param container The LinearLayout container to add the message to.
+     * @param message   The message to display.
+     */
+    public static void addNoAppointmentsView(LinearLayout container, String message) {
+        Context context = container.getContext();
+        TextView noAppointmentsView = new TextView(context);
+        noAppointmentsView.setText(message);
+        noAppointmentsView.setTextSize(16);
+        noAppointmentsView.setTextColor(Color.BLACK);
+        container.addView(noAppointmentsView);
+    }
 
-    private String formatDateForDisplay(String date) {
-        try {
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
-            Date parsedDate = inputFormat.parse(date);
-            return outputFormat.format(parsedDate);
-        } catch (Exception e) {
-            return date;
-        }
+    /**
+     * Converts density-independent pixels (dp) to pixels (px).
+     *
+     * @param context The context to access resources.
+     * @param dp      The value in dp to convert.
+     * @return The converted value in px.
+     */
+    private static int dpToPx(Context context, int dp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 }
