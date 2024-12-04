@@ -37,6 +37,34 @@ public class Exercise {
 
     public List<Set> getSets() { return sets; }
     public void setSets(List<Set> sets) { this.sets = sets; }
+
+    /**
+     * Kiểm tra xem bài tập có ít nhất một set hay không.
+     *
+     * @return true nếu có ít nhất một set, ngược lại false
+     */
+    public boolean hasSets() {
+        return sets != null && !sets.isEmpty();
+    }
+    public boolean isValid() {
+        // Kiểm tra các trường cơ bản không được null hoặc rỗng
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        if (muscleGroup == null || muscleGroup.trim().isEmpty()) {
+            return false;
+        }
+        if (equipment == null) {
+            // Equipment có thể là chuỗi rỗng, tùy thuộc vào yêu cầu của bạn
+            // Nếu equipment bắt buộc, hãy kiểm tra như các trường khác
+            return false;
+        }
+        // Bạn có thể thêm các kiểm tra bổ sung khác nếu cần
+        return true;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -2,6 +2,8 @@ package com.supergym.sep490_supergymmanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.supergym.sep490_supergymmanagement.models.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,9 +35,12 @@ public class HomeActivity extends AppCompatActivity {
     private SessionAdapter sessionAdapter;
     private List<Session> sessionList;
     private DatabaseReference sessionsRef;
+    private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
+    private FirebaseUser userDetails;
     private RecyclerView sessionRecyclerView;
     private String userId;  // Lấy userId từ Firebase Auth
-
+    private Button addExercise;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,14 +80,45 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Nút thêm bài tập mới
-        Button addExercise = findViewById(R.id.add_exercise_button);
+        addExercise = findViewById(R.id.add_exercise_button);
+        addExercise.setVisibility(View.GONE);
         addExercise.setOnClickListener(view -> {
             // Chuyển đến màn hình thêm Exercise
             Intent intent = new Intent(HomeActivity.this, AddExerciseActivity.class);
             startActivity(intent);
         });
-    }
+        mAuth = FirebaseAuth.getInstance();
+        userDetails = mAuth.getCurrentUser();
 
+        // Check if the user is logged in
+        if (userDetails == null) {
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return; // Prevent further execution of onCreate
+        } else {
+            // Check user role
+            String userId = userDetails.getUid();
+            checkUserRole(userId);
+        }
+    }
+    private void checkUserRole(String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if (user != null && user.getRoleId().equals("-O7sA4aJbpHG6gZeX13p")) { // Role "pt"
+                    addExercise.setVisibility(View.VISIBLE); // Show the "Manage My Posts" button
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("PostListActivity", "Error retrieving user role: " + error.getMessage());
+            }
+        });
+    }
     // Lấy danh sách các buổi tập từ Firebase và cập nhật RecyclerView
     private void fetchSessionsFromFirebase() {
         DatabaseReference sessionsRef = FirebaseDatabase.getInstance().getReference("Session");  // Truy cập trực tiếp vào node "sessions"

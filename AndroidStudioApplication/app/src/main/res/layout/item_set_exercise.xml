@@ -22,4 +22,14 @@
         android:layout_weight="1"
         android:text="Weight: "
         android:textSize="16sp" />
+
+    <!-- ImageButton for deleting the set -->
+    <ImageButton
+        android:id="@+id/button_delete_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete"
+    android:contentDescription="Delete Set"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:padding="8dp" />
 </LinearLayout>

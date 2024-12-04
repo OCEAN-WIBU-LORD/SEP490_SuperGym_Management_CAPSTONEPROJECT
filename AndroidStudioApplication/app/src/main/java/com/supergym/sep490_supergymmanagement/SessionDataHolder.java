@@ -10,4 +10,3 @@ public class SessionDataHolder {
     // Static Map to hold sets for each exercise by exerciseId
     public static Map<String, List<Set>> exerciseSetsMap = new HashMap<>();
 }
-

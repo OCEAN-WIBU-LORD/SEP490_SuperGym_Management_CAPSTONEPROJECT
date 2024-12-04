@@ -60,6 +60,18 @@ public class SelectedExerciseAdapter extends RecyclerView.Adapter<SelectedExerci
         notifyDataSetChanged();
     }
 
+    /**
+     * Xóa một bài tập khỏi danh sách.
+     *
+     * @param position Vị trí của bài tập trong danh sách
+     */
+    public void removeExercise(int position) {
+        if (position >= 0 && position < exercises.size()) {
+            exercises.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
     static class SelectedExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView exerciseName;
 

@@ -1,6 +1,5 @@
 package com.supergym.sep490_supergymmanagement;
 
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +37,7 @@ public class ExerciseDetailActivity extends AppCompatActivity {
 
         // Retrieve existing sets for the exercise from the static map
         if (exerciseId != null && SessionDataHolder.exerciseSetsMap.containsKey(exerciseId)) {
-            setsList = SessionDataHolder.exerciseSetsMap.get(exerciseId); // Get sets from map
+            setsList = new ArrayList<>(SessionDataHolder.exerciseSetsMap.get(exerciseId)); // Get sets from map
         }
 
         setsAdapter = new ExerciseSetDetailAdapter(setsList);
@@ -53,8 +52,14 @@ public class ExerciseDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         String exerciseId = getIntent().getStringExtra("exercise_id");
         if (exerciseId != null) {
-            // Store the sets for the exercise in the static map
-            SessionDataHolder.exerciseSetsMap.put(exerciseId, setsList);
+            // Kiểm tra nếu có ít nhất một set thì lưu lại, ngược lại không
+            if (setsList != null && !setsList.isEmpty()) {
+                // Store the sets for the exercise in the static map
+                SessionDataHolder.exerciseSetsMap.put(exerciseId, setsList);
+            } else {
+                // Nếu không có set nào, xóa bất kỳ dữ liệu cũ nào (nếu có)
+                SessionDataHolder.exerciseSetsMap.remove(exerciseId);
+            }
         }
         super.onBackPressed();
     }
@@ -72,17 +77,29 @@ public class ExerciseDetailActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
 
         addButton.setOnClickListener(v -> {
-            String reps = repsInput.getText().toString();
-            String weight = weightInput.getText().toString();
+            String repsStr = repsInput.getText().toString().trim();
+            String weightStr = weightInput.getText().toString().trim();
 
-            if (!reps.isEmpty() && !weight.isEmpty()) {
-                // Create new Set and add to list
-                Set set = new Set(Integer.parseInt(reps), Double.parseDouble(weight));
-                setsList.add(set);
-                setsAdapter.notifyDataSetChanged(); // Notify adapter to refresh the RecyclerView
-                dialog.dismiss();
+            if (!repsStr.isEmpty() && !weightStr.isEmpty()) {
+                try {
+                    int reps = Integer.parseInt(repsStr);
+                    double weight = Double.parseDouble(weightStr);
+
+                    if (reps <= 0 || weight < 0) {
+                        Toast.makeText(ExerciseDetailActivity.this, "Reps and Weight must be positive numbers.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Create new Set and add to list
+                    Set set = new Set(reps, weight);
+                    setsList.add(set);
+                    setsAdapter.notifyDataSetChanged(); // Notify adapter to refresh the RecyclerView
+                    dialog.dismiss();
+                } catch (NumberFormatException e) {
+                    Toast.makeText(ExerciseDetailActivity.this, "Please enter valid numbers for Reps and Weight.", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(ExerciseDetailActivity.this, "Please enter reps and weight", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ExerciseDetailActivity.this, "Please enter Reps and Weight", Toast.LENGTH_SHORT).show();
             }
         });
 
