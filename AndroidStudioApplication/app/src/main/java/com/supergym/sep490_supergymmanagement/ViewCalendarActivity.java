@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
+import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
 import com.supergym.sep490_supergymmanagement.models.TimeSlot;
@@ -40,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Calendar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,6 +59,7 @@ public class ViewCalendarActivity extends Fragment {
 
     private HashMap<String, String> timeSlotMap = new HashMap<>();
     private List<String> highlightedDates = new ArrayList<>();
+    private List<String> allCheckInDates = new ArrayList<>();
     private Button btnPreviousMonth;
     private Button btnNextMonth;
     private TextView monthYearTextView;
@@ -120,6 +123,7 @@ public class ViewCalendarActivity extends Fragment {
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 updateMonthYearDisplay();
+                highlightCheckInDatesForNewMonth();
             }
         });
     }
@@ -154,7 +158,9 @@ public class ViewCalendarActivity extends Fragment {
                                 default:
                                     role = "unknown";
                                     Toast.makeText(getActivity(), "Unknown role. Access denied.", Toast.LENGTH_SHORT).show();
-                                    getActivity().finish();
+                                    if (getActivity() != null) {
+                                        getActivity().finish();
+                                    }
                                     return;
                             }
 
@@ -162,17 +168,21 @@ public class ViewCalendarActivity extends Fragment {
                         } else {
                             Log.e(TAG, "Failed to fetch roleId for userId: " + userId);
                             Toast.makeText(getActivity(), "Failed to determine role. Please try again.", Toast.LENGTH_SHORT).show();
-                            getActivity().finish();
+                            if (getActivity() != null) {
+                                getActivity().finish();
+                            }
                         }
                     });
         } else {
             Toast.makeText(getActivity(), "User not logged in", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         }
     }
 
     /**
-     * Fetches available time slots from the backend API.
+     * Fetches time slots and then proceeds to fetch highlighted dates.
      */
     private void fetchTimeSlots() {
         apiService.getTimeSlots().enqueue(new Callback<List<TimeSlot>>() {
@@ -196,7 +206,7 @@ public class ViewCalendarActivity extends Fragment {
     }
 
     /**
-     * Fetches and highlights dates that have appointments.
+     * Fetches and highlights dates that have appointments and check-ins.
      */
     private void fetchHighlightedDates() {
         Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
@@ -228,6 +238,9 @@ public class ViewCalendarActivity extends Fragment {
                         }
                     }
                 }
+
+                // After highlighting appointments, fetch and highlight check-in dates
+                fetchAndHighlightCheckInDates();
             }
 
             @Override
@@ -237,6 +250,170 @@ public class ViewCalendarActivity extends Fragment {
             }
         });
     }
+
+    /**
+     * Fetches and highlights check-in dates.
+     */
+    private void fetchAndHighlightCheckInDates() {
+        Log.d(TAG, "Fetching Check-In Dates for userId: " + userId);
+        apiService.getCheckInDates(userId).enqueue(new Callback<CheckInDatesResponse>() {
+            @Override
+            public void onResponse(Call<CheckInDatesResponse> call, Response<CheckInDatesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allCheckInDates = response.body().getCheckInDates();
+                    Log.d(TAG, "Successfully fetched Check-In Dates: " + allCheckInDates);
+                    highlightCheckInDatesForCurrentMonth();
+                } else {
+                    Log.e(TAG, "Failed to fetch Check-In Dates. Response Code: " + response.code());
+                    Toast.makeText(getActivity(), "Failed to fetch Check-In Dates", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CheckInDatesResponse> call, Throwable t) {
+                Log.e(TAG, "Error fetching Check-In Dates: " + t.getMessage());
+                Toast.makeText(getActivity(), "Error fetching Check-In Dates: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    /**
+     * Highlights check-in dates that fall within the current month.
+     */
+    private void highlightCheckInDatesForCurrentMonth() {
+        Log.d(TAG, "Highlighting Check-In Dates for the current month.");
+
+        // First, remove existing green events to prevent duplication
+        List<Event> allEvents = compactCalendarView.getEvents(compactCalendarView.getFirstDayOfCurrentMonth());
+        List<Event> greenEventsToRemove = new ArrayList<>();
+
+        for (Event event : allEvents) {
+            if (event.getColor() == Color.GREEN) {
+                greenEventsToRemove.add(event);
+            }
+        }
+
+        if (!greenEventsToRemove.isEmpty()) {
+            compactCalendarView.removeEvents(greenEventsToRemove);
+            Log.d(TAG, "Removed existing green Check-In events: " + greenEventsToRemove.size());
+        }
+
+        Date firstDayOfCurrentMonth = compactCalendarView.getFirstDayOfCurrentMonth();
+        Calendar currentCal = Calendar.getInstance();
+        currentCal.setTime(firstDayOfCurrentMonth);
+        int currentYear = currentCal.get(Calendar.YEAR);
+        int currentMonth = currentCal.get(Calendar.MONTH) + 1; // Months are 0-based
+
+        for (String date : allCheckInDates) {
+            try {
+                Date dateObj = apiDateFormat.parse(date);
+                if (dateObj == null) {
+                    Log.e(TAG, "Parsed Date is null for date string: " + date);
+                    continue;
+                }
+
+                Calendar dateCal = Calendar.getInstance();
+                dateCal.setTime(dateObj);
+                int dateYear = dateCal.get(Calendar.YEAR);
+                int dateMonth = dateCal.get(Calendar.MONTH) + 1;
+
+                Log.d(TAG, "Processing Check-In Date: " + date + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
+
+                if (currentYear == dateYear && currentMonth == dateMonth) {
+                    // Check if the date is already highlighted to prevent duplicates
+                    boolean alreadyHighlighted = false;
+                    List<Event> eventsOnDate = compactCalendarView.getEvents(dateObj);
+                    for (Event event : eventsOnDate) {
+                        if (event.getColor() == Color.GREEN && event.getTimeInMillis() == dateObj.getTime()) {
+                            alreadyHighlighted = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyHighlighted) {
+                        highlightDate(date, Color.GREEN);
+                        Log.d(TAG, "Highlighted Check-In Date: " + date);
+                    } else {
+                        Log.d(TAG, "Check-In Date already highlighted: " + date);
+                    }
+                }
+            } catch (ParseException e) {
+                Log.e(TAG, "Invalid date format: " + date + " Error: " + e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Highlights check-in dates when the month is scrolled.
+     */
+    /**
+     * Highlights check-in dates when the month is scrolled.
+     */
+    private void highlightCheckInDatesForNewMonth() {
+        Log.d(TAG, "Highlighting Check-In Dates for the new month.");
+
+        // Remove all existing green events from the previous month
+        List<Event> previousMonthEvents = compactCalendarView.getEvents(compactCalendarView.getFirstDayOfCurrentMonth());
+        List<Event> greenEventsToRemove = new ArrayList<>();
+
+        for (Event event : previousMonthEvents) {
+            if (event.getColor() == Color.GREEN) {
+                greenEventsToRemove.add(event);
+            }
+        }
+
+        if (!greenEventsToRemove.isEmpty()) {
+            compactCalendarView.removeEvents(greenEventsToRemove);
+            Log.d(TAG, "Removed existing green Check-In events for new month: " + greenEventsToRemove.size());
+        }
+
+        Date firstDayOfNewMonth = compactCalendarView.getFirstDayOfCurrentMonth();
+        Calendar currentCal = Calendar.getInstance();
+        currentCal.setTime(firstDayOfNewMonth);
+        int currentYear = currentCal.get(Calendar.YEAR);
+        int currentMonth = currentCal.get(Calendar.MONTH) + 1; // Months are 0-based
+
+        for (String date : allCheckInDates) {
+            try {
+                Date dateObj = apiDateFormat.parse(date);
+                if (dateObj == null) {
+                    Log.e(TAG, "Parsed Date is null for date string: " + date);
+                    continue;
+                }
+
+                Calendar dateCal = Calendar.getInstance();
+                dateCal.setTime(dateObj);
+                int dateYear = dateCal.get(Calendar.YEAR);
+                int dateMonth = dateCal.get(Calendar.MONTH) + 1;
+
+                Log.d(TAG, "Processing Check-In Date for new month: " + date + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
+
+                if (currentYear == dateYear && currentMonth == dateMonth) {
+                    // Check if the date is already highlighted to prevent duplicates
+                    boolean alreadyHighlighted = false;
+                    List<Event> eventsOnDate = compactCalendarView.getEvents(dateObj);
+                    for (Event event : eventsOnDate) {
+                        if (event.getColor() == Color.GREEN && event.getTimeInMillis() == dateObj.getTime()) {
+                            alreadyHighlighted = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyHighlighted) {
+                        highlightDate(date, Color.GREEN);
+                        Log.d(TAG, "Highlighted Check-In Date for new month: " + date);
+                    } else {
+                        Log.d(TAG, "Check-In Date already highlighted for new month: " + date);
+                    }
+                }
+            } catch (ParseException e) {
+                Log.e(TAG, "Invalid date format: " + date + " Error: " + e.getMessage());
+            }
+        }
+    }
+
 
     /**
      * Updates the month and year display based on the currently viewed month.
@@ -317,8 +494,12 @@ public class ViewCalendarActivity extends Fragment {
         if (dateObj != null) {
             Event event = new Event(color, dateObj.getTime());
             compactCalendarView.addEvent(event);
+            Log.d(TAG, "Added Event: " + date + " with color: " + color);
+        } else {
+            Log.e(TAG, "Failed to parse date for highlighting: " + date);
         }
     }
+
 
     /**
      * Parses a date string into a Date object.
@@ -353,11 +534,11 @@ public class ViewCalendarActivity extends Fragment {
     /**
      * Static helper method to add appointment views to the container.
      *
-     * @param date           The appointment date.
-     * @param timeSlot       The time slot of the appointment.
-     * @param trainerName    The trainer's name (if applicable).
-     * @param customers      The list of customers (if applicable).
-     * @param container      The LinearLayout container to add the view to.
+     * @param date        The appointment date.
+     * @param timeSlot    The time slot of the appointment.
+     * @param trainerName The trainer's name (if applicable).
+     * @param customers   The list of customers (if applicable).
+     * @param container   The LinearLayout container to add the view to.
      */
     public static void addAppointmentsToView(String date, String timeSlot, String trainerName, List<String> customers, LinearLayout container) {
         Context context = container.getContext();
