@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -735,25 +736,41 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
 
     private void registerPackage() {
+        // Lấy các thành phần UI
+        Button submitButton = findViewById(R.id.submit_button);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+
+        // Ẩn nút submit và hiển thị ProgressBar
+        submitButton.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
         // Kiểm tra các điều kiện cần thiết
         if (packageIds.isEmpty() || packageSpinner.getSelectedItemPosition() >= packageIds.size()) {
             Toast.makeText(this, "Please select a valid package.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         if (trainerIds.isEmpty() || trainerSpinner.getSelectedItemPosition() >= trainerIds.size()) {
             Toast.makeText(this, "Please select a valid trainer.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         if (timeSlots.isEmpty() || sessionTimeSeekBar.getProgress() >= timeSlots.size()) {
             Toast.makeText(this, "Please select a valid time slot.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null || currentUser.getEmail() == null) {
             Toast.makeText(this, "User not logged in or email not found. Please login again.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
@@ -774,6 +791,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         UserResponse selectedTrainer = (UserResponse) trainerSpinner.getSelectedItem();
         if (selectedTrainer == null) {
             Toast.makeText(this, "Failed to determine trainer. Please try again.", Toast.LENGTH_SHORT).show();
+            submitButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             return;
         }
 
@@ -783,6 +802,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             selectedPackageId = selectedTrainer.getBoxingMembershipPlanId();
             if (selectedPackageId == null) {
                 Toast.makeText(this, "Invalid Boxing Membership Plan ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setBoxingMembershipPlanId(selectedPackageId);
@@ -793,64 +814,93 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setSelectedTimeSlot(tsid);
+
             // Get day selection option
             boolean isMonWedFri = optionRadioGroup.getCheckedRadioButtonId() == R.id.option1;
             request.setMonWedFri(isMonWedFri);
 
-            // Chuyển sang LoadingActivity trước khi gọi API
-            Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-            startActivity(loadingIntent);
-
-            // Call the Boxing Registration API
+            // Gọi API Boxing Registration
             apiService.createBoxingRegistration(request).enqueue(new Callback<List<QrCodeBoxingResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeBoxingResponse.QrItem>> call, Response<List<QrCodeBoxingResponse.QrItem>> response) {
-                    handleBoxingApiResponse(response);
+                    handleBoxingApiResponse(response, submitButton, progressBar);
                 }
 
                 @Override
                 public void onFailure(Call<List<QrCodeBoxingResponse.QrItem>> call, Throwable t) {
-                    handleApiFailure(t);
+                    handleApiFailure(t, submitButton, progressBar);
                 }
             });
         } else if ("TrainerRental".equals(selectedPackageType)) {
             selectedPackageId = selectedTrainer.getTrainerRentalPlanId();
+
             if (selectedPackageId == null) {
                 Toast.makeText(this, "Invalid Trainer Rental Plan ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
+
+            // Kiểm tra xem trường sessionCountEditText có rỗng không
+            String sessionCountInput = sessionCountEditText.getText().toString().trim();
+            if (sessionCountInput.isEmpty()) {
+                Toast.makeText(this, "Please input number of sessions", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+
+            try {
+                // Chuyển đổi giá trị từ EditText sang số nguyên
+                int sessionCount = Integer.parseInt(sessionCountInput);
+                request.setDuration(sessionCount);
+            } catch (NumberFormatException e) {
+                // Nếu không thể chuyển đổi thành số, hiển thị thông báo lỗi
+                Toast.makeText(this, "Invalid number of sessions", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                return;
+            }
+
+            // Thiết lập TrainerRentalPlanId và QR Payment
             request.setTrainerRentalPlanId(selectedPackageId);
             request.setQrPayment(true); // Always QR payment
-            request.setDuration(Integer.parseInt(sessionCountEditText.getText().toString()));
 
-            // Get TimeSlot ID
+            // Lấy ID của TimeSlot đã chọn
             String tsid = timeSlots.get(sessionTimeSeekBar.getProgress()).getTimeSlotId();
             if (tsid == null) {
                 Toast.makeText(this, "Invalid Time Slot ID.", Toast.LENGTH_SHORT).show();
+                submitButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
                 return;
             }
             request.setSelectedTimeSlot(tsid);
 
-            // Call the Trainer Rental Registration API
+            // Gọi API đăng ký thuê huấn luyện viên
             apiService.createTrainerRentalRegistration(request).enqueue(new Callback<List<QrCodeRentalResponse.QrItem>>() {
                 @Override
                 public void onResponse(Call<List<QrCodeRentalResponse.QrItem>> call, Response<List<QrCodeRentalResponse.QrItem>> response) {
-                    handleRentalApiResponse(response);
+                    handleRentalApiResponse(response, submitButton, progressBar);
                 }
 
                 @Override
                 public void onFailure(Call<List<QrCodeRentalResponse.QrItem>> call, Throwable t) {
-                    handleApiFailure(t);
+                    handleApiFailure(t, submitButton, progressBar);
                 }
             });
         }
     }
 
+    private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
 
-    private void handleBoxingApiResponse(Response<List<QrCodeBoxingResponse.QrItem>> response) {
         if (response.isSuccessful() && response.body() != null) {
             List<QrCodeBoxingResponse.QrItem> qrItems = response.body();
             if (!qrItems.isEmpty()) {
@@ -870,16 +920,17 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
-                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-                startActivity(loadingIntent);
             }
         } else {
-            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
     }
 
-    private void handleRentalApiResponse(Response<List<QrCodeRentalResponse.QrItem>> response) {
+    private void handleRentalApiResponse(Response<List<QrCodeRentalResponse.QrItem>> response, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
+
         if (response.isSuccessful() && response.body() != null) {
             List<QrCodeRentalResponse.QrItem> qrItems = response.body();
             if (!qrItems.isEmpty()) {
@@ -899,13 +950,19 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                     Log.e("QR Code Error", "QR Data URL is null or empty.");
                     Toast.makeText(this, "QR Code data is missing.", Toast.LENGTH_SHORT).show();
                 }
-                Intent loadingIntent = new Intent(Activity_Book_Trainer.this, LoadingActivity.class);
-                startActivity(loadingIntent);
             }
         } else {
-            // Xử lý lỗi khi response không thành công
             logErrorResponse(response);
         }
+    }
+
+    private void handleApiFailure(Throwable t, Button submitButton, ProgressBar progressBar) {
+        // Ẩn ProgressBar và hiển thị lại submitButton
+        progressBar.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this, "Failed to connect to server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        Log.e("RegisterPackageAPI", "Failure: ", t);
     }
 
     private void logErrorResponse(Response<?> response) {
@@ -944,10 +1001,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
 
-    private void handleApiFailure(Throwable t) {
-        Toast.makeText(this, "Failed to connect to server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-        Log.e("RegisterPackageAPI", "Failure: ", t);
-    }
+
 
     // Phương thức lấy loại gói tập đã chọn
     private String getSelectedPackageType() {
