@@ -146,7 +146,7 @@ public class    ViewMainContent extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Toast.makeText(ViewMainContent.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ViewMainContent.this, getString(R.string.user_not_authenticated), Toast.LENGTH_SHORT).show();
             return;
         }
         userId = user.getUid();
@@ -220,7 +220,6 @@ public class    ViewMainContent extends AppCompatActivity {
                         replaceFragment(new SearchTrainerFragment());
                     } else if (itemId == R.id.subscriptions) {
                         replaceFragment(new ViewCalendarActivity());
-
                         //replaceFragment(new ProgressActivity());
                     } else if (itemId == R.id.library) {
                         replaceFragment(new FragmentUserProfile());

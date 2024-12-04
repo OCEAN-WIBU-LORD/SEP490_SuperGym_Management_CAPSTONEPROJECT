@@ -139,6 +139,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+// Add this method to validate password
+
+
         // Set OnClickListener to the register button
         buttonReg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,48 +153,57 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = editTextPassword.getText().toString().trim();
                 String rePassword = editTextRePassword.getText().toString().trim();
                 // Validate the inputs
+                // Validate the inputs
                 if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(getApplicationContext(), "Name is required", Toast.LENGTH_SHORT).show();
-                    editTextName.setError("Name is required");
+                    Toast.makeText(getApplicationContext(), getString(R.string.name_required), Toast.LENGTH_SHORT).show();
+                    editTextName.setError(getString(R.string.name_required));
                     editTextName.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
+
                 if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), "Email is required", Toast.LENGTH_SHORT).show();
-                    editTextEmail.setError("Email is required");
+                    Toast.makeText(getApplicationContext(), getString(R.string.email_required), Toast.LENGTH_SHORT).show();
+                    editTextEmail.setError(getString(R.string.email_required));
                     editTextEmail.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(getApplicationContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
-                    editTextEmail.setError("Please enter a valid email");
+                    Toast.makeText(getApplicationContext(), getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
+                    editTextEmail.setError(getString(R.string.invalid_email));
                     editTextEmail.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getApplicationContext(), "Password is required", Toast.LENGTH_SHORT).show();
-                    editTextPassword.setError("Password is required");
+                    Toast.makeText(getApplicationContext(), getString(R.string.password_required), Toast.LENGTH_SHORT).show();
+                    editTextPassword.setError(getString(R.string.password_required));
+                    editTextPassword.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (!isValidPassword(password)) {
+                    editTextPassword.setError(getString(R.string.invalid_password));
                     editTextPassword.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (password.length() < 6) {
-                    Toast.makeText(getApplicationContext(), "Password should be at least 6 characters long", Toast.LENGTH_SHORT).show();
-                    editTextPassword.setError("Password should be at least 6 characters long");
+                    Toast.makeText(getApplicationContext(), getString(R.string.password_too_short), Toast.LENGTH_SHORT).show();
+                    editTextPassword.setError(getString(R.string.password_too_short));
                     editTextPassword.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 if (!password.equals(rePassword)) {
-                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
-                    editTextRePassword.setError("Passwords do not match");
+                    Toast.makeText(getApplicationContext(), getString(R.string.passwords_do_not_match), Toast.LENGTH_SHORT).show();
+                    editTextRePassword.setError(getString(R.string.passwords_do_not_match));
                     editTextRePassword.requestFocus();
                     progressBar.setVisibility(View.GONE);
                     return;
@@ -227,6 +239,13 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+
+    private boolean isValidPassword(String password) {
+        // Updated regex to require at least one digit
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{6,}$";
+        return password.matches(passwordPattern);
+    }
+
 
     private void showLoginPrompt() {
         new AlertDialog.Builder(this)

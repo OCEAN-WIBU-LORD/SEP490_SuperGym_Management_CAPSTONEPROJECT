@@ -21,8 +21,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
-                android:fontFamily="@font/calibri"
-                android:text="Profile"
+                android:fontFamily="@font/arial_regular"
+                android:text="@string/profile"
                 android:textColor="#171D33"
                 android:textSize="28sp"
                 android:textStyle="bold"
@@ -93,7 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:layout_marginTop="32dp"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         android:textFontWeight="900"
                         android:layout_marginLeft="25dp"
                         android:textSize="20sp"
@@ -216,18 +216,18 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView26"
+                android:id="@+id/foodanddiet"
                 android:layout_width="383dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="450dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
                 app:cardCornerRadius="25dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/cardView26">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -262,8 +262,9 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="Food &amp; Drink Diet"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/food_drink_diet"
+
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline1"
@@ -277,7 +278,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name1" />
 
@@ -307,7 +308,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView26">
+                app:layout_constraintTop_toBottomOf="@+id/foodanddiet">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -340,8 +341,9 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="History Payment"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/history_payment"
+
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline5"
@@ -355,7 +357,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name3" />
 
@@ -416,11 +418,11 @@
 
                     <TextView
                         android:id="@+id/text_user_name31"
-                        android:layout_width="191dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="Report and Feedback"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/report_feedback"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline61"
@@ -435,7 +437,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name31" />
 
@@ -499,8 +501,8 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="My Gym Packages"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/buy_membership"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline66"
@@ -514,7 +516,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name39" />
 
@@ -577,8 +579,8 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="Personal Information"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/edit_setting"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline6"
@@ -592,7 +594,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name778" />
 
@@ -655,8 +657,8 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="Reset Password"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/reset_password"
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline69"
@@ -670,7 +672,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name32" />
 
@@ -733,8 +735,9 @@
                         android:layout_width="191dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="Log Out"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/log_out"
+
                         android:textFontWeight="100"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline62"
@@ -748,7 +751,7 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
+                        android:fontFamily="@font/arial_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/text_user_name33" />
 
@@ -766,23 +769,19 @@
             </androidx.cardview.widget.CardView>
 
 
-
-
-
-
-
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView26"
                 android:layout_width="383dp"
                 android:layout_height="128dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="300dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginRight="20dp"
                 app:cardCornerRadius="25dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/cvProfile">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -816,8 +815,8 @@
                         android:layout_width="161dp"
                         android:layout_height="32dp"
                         android:layout_marginTop="24dp"
-                        android:fontFamily="@font/calibri"
-                        android:text="BMI Statistic"
+                        android:fontFamily="@font/arial_regular"
+                        android:text="@string/bmi_statistic"
                         android:textFontWeight="900"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -827,15 +826,16 @@
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/bmi_Statistic"
-                        android:layout_width="101dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:layout_marginTop="-5dp"
                         android:layout_marginEnd="15dp"
-                        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
-                        android:fontFamily="@font/calibri"
-                        android:paddingRight="15dp"
-                        android:text="Read"
                         android:background="@drawable/rounded_button"
+                        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
+                        android:fontFamily="@font/arial_regular"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="15dp"
+                        android:text="@string/read_more"
 
                         android:textColor="#FFFF"
                         android:textSize="15sp"
@@ -848,7 +848,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        app:layout_constraintGuide_begin="287dp" />
+                        app:layout_constraintGuide_percent="0.7467363" />
 
                     <TextView
                         android:id="@+id/textView21"
@@ -856,7 +856,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginBottom="28dp"
-                        android:text="Check Your BMI Statistic History"
+                        android:text="@string/checkbmi"
                         android:textFontWeight="700"
                         android:textSize="18dp"
                         app:layout_constraintBottom_toBottomOf="parent"

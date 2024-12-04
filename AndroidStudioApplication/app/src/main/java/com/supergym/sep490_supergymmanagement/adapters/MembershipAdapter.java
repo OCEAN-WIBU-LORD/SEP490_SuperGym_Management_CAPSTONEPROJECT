@@ -36,10 +36,13 @@ public class MembershipAdapter extends RecyclerView.Adapter<MembershipAdapter.Me
     public void onBindViewHolder(@NonNull MembershipViewHolder holder, int position) {
         MembershipPackage membershipPackage = membershipPackages.get(position);
         holder.nameTextView.setText(membershipPackage.getName());
-        holder.priceTextView.setText(String.format("%.0f", membershipPackage.getPrice()) + "VND");
-        //holder.durationTextView.setText(membershipPackage.getDurationMonths() + " months, "+ membershipPackage.getSessionCount() + " sessions");
+
+        // Format the price with commas and append "VND"
+        double price = membershipPackage.getPrice();
+        String formattedPrice = String.format("%,d VND", (long) price);
+        holder.priceTextView.setText(formattedPrice);
+
         holder.durationTextView.setText("");
-        //holder.sessionsTextView.setText(membershipPackage.getSessionCount() + " sessions");
 
         // Set OnClickListener for the "Generate QR Code" button
         holder.generateQrCodeButton.setOnClickListener(v -> {
@@ -51,6 +54,7 @@ public class MembershipAdapter extends RecyclerView.Adapter<MembershipAdapter.Me
             }
         });
     }
+
 
     @Override
     public int getItemCount() {

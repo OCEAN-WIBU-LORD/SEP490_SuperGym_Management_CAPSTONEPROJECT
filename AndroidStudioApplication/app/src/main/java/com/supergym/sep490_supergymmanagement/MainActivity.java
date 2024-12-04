@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+import com.supergym.sep490_supergymmanagement.languagePackage.LocaleHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
+        // Áp dụng ngôn ngữ dựa trên hệ thống
+        LocaleHelper.applySystemLanguage(this);
         // Check if the user is already logged in and email is verified
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();

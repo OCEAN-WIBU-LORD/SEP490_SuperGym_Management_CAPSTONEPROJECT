@@ -124,7 +124,7 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(requireContext(), "You are a Trainer, booking is not allowed!", Toast.LENGTH_SHORT).show();
                     return;
                 }else if ("customer".equals(userRole)) {
-                    Toast.makeText(requireContext(), "You are a Customer, Okey", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(requireContext(), "You are a Customer, Okey", Toast.LENGTH_SHORT).show();
 
                     return;
                 }

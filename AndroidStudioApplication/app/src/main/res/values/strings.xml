@@ -12,103 +12,7 @@
     <string name="switch_camera">switch camera</string>
     <string name="face_detected">Face Detected</string>
     <string name="no_face_detected">No Face Detected!</string>
-    <string name="large_text">
 
-        <string-array name="trainer_list">
-            <item>Trainer A</item>
-            <item>Trainer B</item>
-            <item>Trainer C</item>
-        </string-array>
-
-
-        "Material is the metaphor.\n\n"
-
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
-
-        "Bold, graphic, intentional.\n\n"
-
-        "The foundational elements of print based design typography, grids, space, scale, color, "
-        "and use of imagery guide visual treatments. These elements do far more than please the "
-        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
-        "imagery, large scale typography, and intentional white space create a bold and graphic "
-        "interface that immerse the user in the experience.\n"
-        "An emphasis on user actions makes core functionality immediately apparent and provides "
-        "waypoints for the user.\n\n"
-
-        "Motion provides meaning.\n\n"
-
-        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
-        "inflection points that initiate motion, transforming the whole design.\n"
-        "All action takes place in a single environment. Objects are presented to the user without "
-        "breaking the continuity of experience even as they transform and reorganize.\n"
-        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
-        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
-
-        "3D world.\n\n"
-
-        "The material environment is a 3D space, which means all objects have x, y, and z "
-        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
-        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
-        "position along the z-axis and has a standard 1dp thickness.\n"
-        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
-        "emulated by manipulating the y-axis.\n\n"
-
-        "Light and shadow.\n\n"
-
-        "Within the material environment, virtual lights illuminate the scene. Key lights create "
-        "directional shadows, while ambient light creates soft shadows from all angles.\n"
-        "Shadows in the material environment are cast by these two light sources. In Android "
-        "development, shadows occur when light sources are blocked by sheets of material at "
-        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
-        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
-
-        "Resting elevation.\n\n"
-
-        "All material objects, regardless of size, have a resting elevation, or default elevation "
-        "that does not change. If an object changes elevation, it should return to its resting "
-        "elevation as soon as possible.\n\n"
-
-        "Component elevations.\n\n"
-
-        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
-        "does not vary from 6dp in one app to 16dp in another app).\n"
-        "Components may have different resting elevations across platforms, depending on the depth "
-        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
-
-        "Responsive elevation and dynamic elevation offsets.\n\n"
-
-        "Some component types have responsive elevation, meaning they change elevation in response "
-        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
-        "changes are consistently implemented using dynamic elevation offsets.\n"
-        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
-        "to the component’s resting state. They ensure that elevation changes are consistent "
-        "across actions and component types. For example, all components that lift on press have "
-        "the same elevation change relative to their resting elevation.\n"
-        "Once the input event is completed or cancelled, the component will return to its resting "
-        "elevation.\n\n"
-
-        "Avoiding elevation interference.\n\n"
-
-        "Components with responsive elevations may encounter other components as they move between "
-        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
-        "through other material, components avoid interfering with one another any number of ways, "
-        "whether on a per component basis or using the entire app layout.\n"
-        "On a component level, components can move or be removed before they cause interference. "
-        "For example, a floating action button (FAB) can disappear or move off screen before a "
-        "user picks up a card, or it can move if a snackbar appears.\n"
-        "On the layout level, design your app layout to minimize opportunities for interference. "
-        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
-    </string>
     <string name="disease">Disease</string>
     <string name="record_list">Record List</string>
     <string name="no_records">No records yet</string>
@@ -129,41 +33,122 @@
     <string name="previous">Previous</string>
     <string name="transfer_note"><![CDATA[<u>Please Transfer with your Description above for us to check and further confirmation!</u>]]></string>
 
-    <string name="lorem_ipsum">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
-        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
-        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
-        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
-        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
-        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
-        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
-        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
-        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
-        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
-        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
-        bibendum, vel congue leo egestas.\n\n
-        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
-        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
-        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
-        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
-        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
-        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
-        est.\n\n
-        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
-        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
-        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
-        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
-        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
-        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
-        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
-        convallis.\n\n
-        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
-        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
-        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
-        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
-        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
-        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
-        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
-    </string>
+    //Language Package
+    <string name="name_required">Name is required</string>
+    <string name="email_required">Email is required</string>
+    <string name="invalid_email">Please enter a valid email</string>
+    <string name="password_required">Password is required</string>
+    <string name="invalid_password">Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character</string>
+    <string name="password_too_short">Password should be at least 6 characters long</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="account_created">Account Created. Please verify your email.</string>
+    <string name="email_already_registered">Email is already registered</string>
+    <string name="error_creating_user">Error creating user: %1$s</string>
+    <string name="failed_register">Failed to register: %1$s</string>
+
+        <string name="register_new_account">Register new Account</string>
+        <string name="register">Register</string>
+        <string name="register_info">Please Register with your information</string>
+        <string name="name_label">Name</string>
+        <string name="email_label">Email Address</string>
+        <string name="password_label">Password</string>
+        <string name="reenter_password_label">Re Enter Password</string>
+        <string name="remember_me">Remember me</string>
+        <string name="forgot_password">I forgot my password</string>
+        <string name="or_login_with">Or Login with</string>
+
+
+    <string name="book_trainer_title">Book Trainer Appointment</string>
+    <string name="select_exercise_type">Select Exercise Type</string>
+    <string name="choose_package">Choose Training Package</string>
+    <string name="choose_trainer">Choose Trainer</string>
+    <string name="trainer_name">Trainer Name: Alex Johnson</string>
+    <string name="specialization">Specialization: Strength Training</string>
+    <string name="select_session">Select Training Session</string>
+    <string name="select_preferred_days">Select Preferred Days</string>
+    <string name="select_preferred_times">Select Preferred Times</string>
+    <string name="add_extra_users">Add Extra Users</string>
+    <string name="search_user_by_email">Search User by Email</string>
+    <string name="enter_user_email">Enter User Email</string>
+
+
+    <string name="select_trainer_description">Select a trainer to start your fitness journey with personalized sessions.</string>
+
+    <string name="header_all_rights_reserved">ODG-LAB All Rights Reserved</string>
+    <string name="header_contact">Contact: odglab.vip@gmail.com</string>
+
+    <string name="bmi_statistic">BMI Statistic</string>
+    <string name="read_more">Read</string>
+
+
+    <string name="checkbmi">Check Your BMI Statistic History</string>
+
+
+    <string name="food_drink_diet">Food &amp; Drink Diet</string>
+    <string name="history_payment">Transaction History</string>
+    <string name="report_feedback">Report and Feedback</string>
+    <string name="buy_membership">Buy Gym Package</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="edit_setting">Setting</string>
+    <string name="log_out">Log Out</string>
+
+    <string name="detailed_profile">Detailed Profile</string>
+    <string name="name_hint">NAME</string>
+    <string name="dob_hint">DOB</string>
+    <string name="address_hint">Address</string>
+    <string name="gender_hint">Gender</string>
+    <string name="phone_number_hint">Phone Number</string>
+    <string name="cccd_hint">CCCD</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
+
+    <string name="title_more_function">More Function</string>
+    <string name="gemini_ai_support">Gemini AI Support</string>
+    <string name="lesson_workout">Lesson Workout</string>
+    <string name="faceid_scanner">FaceID Scanner</string>
+    <string name="ai_calculate_calories">AI Calculate Calories</string>
+
+    <string name="user_not_authenticated">User is not authenticated</string>
+    <string name="please_login">Please login</string>
+    <string name="role_null">Role is Null!</string>
+    <string name="admin_logged_in">You logged in as Admin!</string>
+    <string name="pt_logged_in">You logged in as PT!</string>
+    <string name="customer_logged_in">You logged in as Customer!</string>
+    <string name="trainer_id_load_failed">Failed to load Trainer ID</string>
+    <string name="profile">Profile</string>
+
+    <string name="hint_search">Search</string>
+    <string name="doctor_name_placeholder"></string>
+    <string name="date_info_placeholder">25/05/2024</string>
+    <string name="time_info_placeholder">14:30</string>
+    <string name="reschedule_button">Reschedule</string>
+    <string name="latest_posts_title">Latest Posts</string>
+    <string name="see_more_button">>> See more</string>
+    <string name="book_trainer_title1">Training With Our Professional Trainer</string>
+    <string name="book_now_button">Book Now!</string>
+
+    <string name="navhome">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_gemini">Gemini Analysis</string>
+    <string name="nav_appointment">Appointment</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="check_in_logs_title">Check-in Logs</string>
+    <string name="select_date">Select Date</string>
+
+    <string name="gemini_name">Gemini Chat</string>
+    <string name="send_button">Send</string>
+    <string name="attachment_icon_description">Attachment Icon</string>
+    <string name="enter_message_hint">Enter Message</string>
+    <string name="image_view_description_ex">Image View</string>
+    <string name="facebook_icon_description">Facebook Icon</string>
+
+
+    <string name="nav_home">Home</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_share">Share</string>
+    <string name="nav_about">About Us</string>
+    <string name="logout">Logout</string>
+    <string name="call_support">Call Support</string>
 
 </resources>

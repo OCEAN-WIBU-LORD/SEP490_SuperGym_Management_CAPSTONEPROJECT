@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
-                android:fontFamily="@font/calibri"
+                android:fontFamily="@font/arial_regular"
                 android:text="Detailed Profile"
                 android:textColor="#171D33"
                 android:textSize="28sp"
@@ -101,9 +101,9 @@
                                 android:layout_height="150dp"
                                 android:background="@android:color/transparent"
                                 android:hint="Bio"
-                                android:padding="15sp"
+                                android:padding="5sp"
 
-                                android:textSize="18sp" />
+                                android:textSize="15sp" />
                         </androidx.cardview.widget.CardView>
 
 
@@ -127,9 +127,9 @@
                                 android:layout_height="150dp"
                                 android:background="@android:color/transparent"
                                 android:hint="Specialization"
-                                android:padding="15sp"
+                                android:padding="5sp"
                                 android:textAlignment="inherit"
-                                android:textSize="18sp" />
+                                android:textSize="15sp" />
                         </androidx.cardview.widget.CardView>
 
 

@@ -52,7 +52,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Payment Package"
+                android:text="Buy Membership "
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"

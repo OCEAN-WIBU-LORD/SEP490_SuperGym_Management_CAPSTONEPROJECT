@@ -1,0 +1,157 @@
+<resources>
+        <string name="app_name">SuperGym</string>
+        <!-- TODO: Xóa hoặc thay đổi văn bản placeholder này -->
+        <string name="hello_blank_fragment">Xin chào, fragment trống</string>
+        <string name="appointment_details">Chi tiết cuộc hẹn</string>
+        <string name="image_view_description">Hình ảnh đã chọn</string>
+        <string name="open_nav">Mở ngăn điều hướng</string>
+        <string name="close_nav">Đóng ngăn điều hướng</string>
+
+        <string name="preview_photo">Xem trước ảnh</string>
+        <string name="register_face">Đăng ký khuôn mặt</string>
+        <string name="switch_camera">Chuyển đổi camera</string>
+        <string name="face_detected">Khuôn mặt được phát hiện</string>
+        <string name="no_face_detected">Không phát hiện khuôn mặt!</string>
+
+        <string name="disease">Bệnh lý</string>
+        <string name="record_list">Danh sách hồ sơ</string>
+        <string name="no_records">Chưa có hồ sơ</string>
+        <string name="reschedule">Dời lịch</string>
+        <string name="cancel">Hủy bỏ</string>
+        <string name="publish_result">Xuất kết quả\n</string>
+        <string name="publish_results">Xuất kết quả</string>
+        <string name="publish">Xuất bản</string>
+        <string name="treatment">Điều trị</string>
+        <string name="diagnosis">Chẩn đoán</string>
+        <string name="medical_record">Hồ sơ y tế</string>
+        <string name="back_button_description">Quay lại</string>
+        <string name="address">Địa chỉ</string>
+        <!-- Các chuỗi được sử dụng cho các fragment để điều hướng -->
+        <string name="first_fragment_label">Fragment đầu tiên</string>
+        <string name="second_fragment_label">Fragment thứ hai</string>
+        <string name="next">Tiếp theo</string>
+        <string name="previous">Trước đó</string>
+        <string name="transfer_note"><![CDATA[<u>Vui lòng chuyển với mô tả của bạn ở trên để chúng tôi kiểm tra và xác nhận thêm!</u>]]></string>
+
+
+    <string name="name_required">Vui Lòng Nhập Tên</string>
+    <string name="email_required">Vui Lòng Nhập Mail</string>
+    <string name="invalid_email">Vui lòng nhập email hợp lệ</string>
+    <string name="password_required">Mật khẩu là bắt buộc</string>
+    <string name="invalid_password">Mật khẩu phải chứa ít nhất một chữ cái hoa, một chữ cái thường, một số và một ký tự đặc biệt</string>
+    <string name="password_too_short">Mật khẩu phải dài ít nhất 6 ký tự</string>
+    <string name="passwords_do_not_match">Mật khẩu không khớp</string>
+    <string name="account_created">Tài khoản đã được tạo. Vui lòng xác minh email của bạn.</string>
+    <string name="email_already_registered">Email đã được đăng ký</string>
+    <string name="error_creating_user">Lỗi tạo người dùng: %1$s</string>
+    <string name="failed_register">Đăng ký thất bại: %1$s</string>
+
+
+    <string name="register_new_account">Đăng ký tài khoản mới</string>
+    <string name="register">Đăng ký</string>
+    <string name="register_info">Vui lòng đăng ký với thông tin của bạn</string>
+    <string name="name_label">Tên</string>
+    <string name="email_label">Địa chỉ Email</string>
+    <string name="password_label">Mật khẩu</string>
+    <string name="reenter_password_label">Nhập lại mật khẩu</string>
+    <string name="remember_me">Ghi nhớ tài khoản</string>
+    <string name="forgot_password">Quên mật khẩu</string>
+    <string name="or_login_with">Hoặc đăng nhập bằng</string>
+
+
+    <string name="book_trainer_title">Đặt Hẹn Huấn Luyện Viên</string>
+    <string name="select_exercise_type">Chọn Loại Bài Tập</string>
+    <string name="choose_package">Chọn Gói Tập</string>
+    <string name="choose_trainer">Chọn Huấn Luyện Viên</string>
+    <string name="trainer_name">Tên Huấn Luyện Viên: Alex Johnson</string>
+    <string name="specialization">Chuyên Môn: Tập Thể Lực</string>
+    <string name="select_session">Chọn Số Buổi Tập</string>
+    <string name="select_preferred_days">Chọn Ngày Ưa Thích</string>
+    <string name="select_preferred_times">Chọn Giờ Ưa Thích</string>
+    <string name="add_extra_users">Thêm Người Dùng Thêm</string>
+    <string name="search_user_by_email">Tìm Kiếm Người Dùng Theo Email</string>
+    <string name="enter_user_email">Nhập Email Người Dùng</string>
+
+    <string name="select_trainer_description">Chọn huấn luyện viên để bắt đầu hành trình thể hình của bạn với các buổi tập cá nhân hóa.</string>
+
+    <!-- Header -->
+    <string name="header_all_rights_reserved">ODG-LAB All Rights Reserved</string>
+    <string name="header_contact">Liên hệ: odglab.vip@gmail.com</string>
+
+    <string name="bmi_statistic">Thống Kê BMI</string>
+    <string name="read_more">Chi Tiết</string>
+
+    <string name="checkbmi">Kiểm tra Lịch sử Thống kê BMI của Bạn</string>
+
+    <string name="food_drink_diet">Quản Lý Chế Độ Ăn</string>
+    <string name="history_payment">Lịch sử Thanh toán</string>
+    <string name="report_feedback">Báo cáo và Phản hồi</string>
+    <string name="buy_membership">Mua Gói Gym</string>
+    <string name="reset_password">Đặt lại Mật khẩu</string>
+    <string name="log_out">Đăng xuất</string>
+    <string name="edit_setting">Cài Đặt</string>
+
+    <string name="detailed_profile">Hồ Sơ Chi Tiết</string>
+    <string name="name_hint">Tên</string>
+    <string name="dob_hint">Ngày Sinh</string>
+    <string name="address_hint">Địa Chỉ</string>
+    <string name="gender_hint">Giới Tính</string>
+    <string name="phone_number_hint">Số Điện Thoại</string>
+    <string name="cccd_hint">CCCD</string>
+    <string name="save_button">Lưu</string>
+    <string name="cancel_button">Hủy</string>
+
+
+
+    <string name="title_more_function">Chức Năng Mở Rộng</string>
+    <string name="gemini_ai_support">Hỗ Trợ AI Gemini</string>
+    <string name="lesson_workout">Track Quá Trình Tập Luyện</string>
+    <string name="faceid_scanner">Quét Khuôn Mặt</string>
+    <string name="ai_calculate_calories">AI Tính Lượng Calo Đồ Ăn</string>
+
+
+    <string name="user_not_authenticated">Người dùng chưa đăng nhập</string>
+    <string name="please_login">Vui lòng đăng nhập</string>
+    <string name="role_null">Vai trò chưa xác định!</string>
+    <string name="admin_logged_in">Bạn đã đăng nhập với tư cách Quản trị viên!</string>
+    <string name="pt_logged_in">Bạn đã đăng nhập với tư cách Huấn luyện viên cá nhân!</string>
+    <string name="customer_logged_in">Bạn đã đăng nhập với tư cách Khách hàng!</string>
+    <string name="trainer_id_load_failed">Không thể tải ID của Huấn luyện viên</string>
+    <string name="profile">Hồ Sơ</string>
+
+
+    <string name="hint_search">Tìm kiếm</string>
+    <string name="doctor_name_placeholder"></string>
+    <string name="date_info_placeholder">25/05/2024</string>
+    <string name="time_info_placeholder">14:30</string>
+    <string name="reschedule_button">Đặt lại lịch</string>
+    <string name="latest_posts_title">Bài viết mới nhất</string>
+    <string name="see_more_button">>> Xem thêm</string>
+    <string name="book_trainer_title1">Tập luyện cùng Huấn luyện viên chuyên nghiệp</string>
+    <string name="book_now_button">Đặt lịch ngay!</string>
+
+    <string name="navhome">Trang Chủ</string>
+    <string name="nav_search">Tìm Kiếm</string>
+    <string name="nav_gemini">Phân Tích Gemini</string>
+    <string name="nav_appointment">Cuộc Hẹn</string>
+    <string name="nav_profile">Hồ Sơ</string>
+
+
+    <string name="check_in_logs_title">Nhật ký Check-in</string>
+    <string name="select_date">Chọn Ngày</string>
+
+    <string name="gemini_name">Gemini Chat</string>
+    <string name="send_button">Gửi</string>
+    <string name="attachment_icon_description">Biểu tượng đính kèm</string>
+    <string name="enter_message_hint">Nhập tin nhắn</string>
+    <string name="image_view_description_ex">Hình ảnh</string>
+    <string name="facebook_icon_description">Biểu tượng Facebook</string>
+
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_settings">Cài đặt</string>
+    <string name="nav_share">Chia sẻ</string>
+    <string name="nav_about">Về chúng tôi</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="call_support">Gọi hỗ trợ</string>
+
+</resources>

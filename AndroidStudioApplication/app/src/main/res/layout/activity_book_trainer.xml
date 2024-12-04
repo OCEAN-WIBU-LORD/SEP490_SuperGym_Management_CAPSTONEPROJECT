@@ -92,7 +92,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Book Your Trainer"
+            android:text="@string/book_trainer_title"
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
@@ -102,7 +102,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select a trainer to start your fitness journey with personalized sessions."
+            android:text="@string/select_trainer_description"
             android:layout_marginTop="8dp"
             android:textColor="#666666" />
 
@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Select Exercise Type"
+            android:text="@string/select_exercise_type"
             android:layout_marginTop="8dp"
             android:textColor="#000000" />
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -168,7 +168,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose a Packages:"
+            android:text="@string/choose_package"
             android:layout_marginTop="16dp"
             android:textColor="#000000" />
         <androidx.cardview.widget.CardView
@@ -208,7 +208,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose a Trainer:"
+            android:text="@string/choose_trainer"
             android:layout_marginTop="16dp"
             android:textColor="#000000" />
         <androidx.cardview.widget.CardView
@@ -271,7 +271,7 @@
                         android:id="@+id/trainerNameTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Trainer Name: Alex Johnson"
+                        android:text="@string/trainer_name"
                         android:textSize="16sp"
                         android:textColor="#000000" />
 
@@ -279,7 +279,7 @@
                         android:id="@+id/bioTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Specialization: Strength Training"
+                        android:text="@string/specialization"
                         android:textSize="14sp"
                         android:textColor="#666666"
                         android:layout_marginTop="4dp" />
@@ -293,7 +293,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Session"
+            android:text="@string/select_session"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"
