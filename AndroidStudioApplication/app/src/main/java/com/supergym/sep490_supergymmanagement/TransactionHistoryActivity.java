@@ -73,6 +73,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
     }
 
     // Fetch Transactions from API
+// Fetch Transactions from API
     private void fetchTransactionsFromApi() {
         ApiService apiService = RetrofitClient.getApiService(this);
 
@@ -82,7 +83,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     transactionList.clear();
                     transactionList.addAll(response.body());
-                    transactionAdapter.setTransactions(transactionList); // Update adapter's list
+                    transactionAdapter.setTransactions(transactionList); // Cập nhật adapter
                 } else {
                     Log.e("TransactionHistory", "Failed to fetch transactions: " + response.message());
                     Toast.makeText(TransactionHistoryActivity.this, "Failed to load transactions", Toast.LENGTH_SHORT).show();
@@ -96,6 +97,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

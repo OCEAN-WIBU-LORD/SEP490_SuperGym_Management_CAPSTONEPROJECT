@@ -35,4 +35,24 @@
         android:text="Completed"
         android:textColor="@color/gray"
         android:textSize="14sp"/>
+
+    <!-- Ngày bắt đầu -->
+    <TextView
+        android:id="@+id/tvStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Date: 01/01/2024"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"/>
+
+    <!-- Ngày kết thúc -->
+    <TextView
+        android:id="@+id/tvEndDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="End Date: 31/12/2024"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:layout_marginTop="2dp"/>
 </LinearLayout>
