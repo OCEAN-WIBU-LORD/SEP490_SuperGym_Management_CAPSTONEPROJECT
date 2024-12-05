@@ -19,6 +19,7 @@ import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.RegisterPackageRequest;
 import com.supergym.sep490_supergymmanagement.models.RegisterUserDto;
+import com.supergym.sep490_supergymmanagement.models.RegistrationGrowthResponse;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
 import com.supergym.sep490_supergymmanagement.models.SearchUser;
@@ -153,4 +154,6 @@ public interface ApiService {
 
     @POST("/api/Auth/forgot-password")
     Call<Void> sendPasswordResetEmail(@Body ForgotPasswordRequest forgotPasswordRequest);
+    @GET("/api/Finance/registration-growth")
+    Call<RegistrationGrowthResponse> getRegistrationGrowth();
 }

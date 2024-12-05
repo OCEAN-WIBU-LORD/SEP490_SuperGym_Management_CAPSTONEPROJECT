@@ -98,6 +98,4 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         });
     }
 
-
-
 }

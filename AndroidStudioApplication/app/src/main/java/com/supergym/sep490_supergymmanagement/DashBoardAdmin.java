@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.models.MembershipCountResponse;
+import com.supergym.sep490_supergymmanagement.models.RegistrationGrowthResponse;
 
 import java.io.IOException;
 
@@ -80,8 +81,8 @@ public class DashBoardAdmin extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Fetch membership counts from the API after the view is created
-        fetchMembershipCounts();
+        // Fetch registration growth data from the API after the view is created
+        fetchRegistrationGrowthData();
     }
 
     private void getTotalUserCountWithRole(String targetRoleName, String targetRoleName2) {
@@ -133,29 +134,27 @@ public class DashBoardAdmin extends Fragment {
         });
     }
 
-    private void fetchMembershipCounts() {
+    private void fetchRegistrationGrowthData() {
         // Create Retrofit instance
         ApiService apiService = RetrofitClient.getApiService(getContext());
 
-        // Make the API call
-        Call<MembershipCountResponse> call = apiService.getMembershipCounts();
-        call.enqueue(new Callback<MembershipCountResponse>() {
+        // Make the API call to get registration growth data
+        Call<RegistrationGrowthResponse> call = apiService.getRegistrationGrowth();
+        call.enqueue(new Callback<RegistrationGrowthResponse>() {
             @Override
-            public void onResponse(Call<MembershipCountResponse> call, Response<MembershipCountResponse> response) {
+            public void onResponse(Call<RegistrationGrowthResponse> call, Response<RegistrationGrowthResponse> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         // Handle successful response
-                        MembershipCountResponse membershipCount = response.body();
-                        int gymCount = membershipCount.getTotalGymMemberships();
-                        int boxingCount = membershipCount.getTotalBoxingMemberships();
-                        int total = membershipCount.getTotalMemberships();
+                        RegistrationGrowthResponse registrationGrowthResponse = response.body();
+                        int totalRegistrations = registrationGrowthResponse.getTotalRegistrations();
 
-                        // Update UI
-                        totalMembership.setText("Total Memberships: " + total);
+                        // Update the totalMembership TextView with the total registrations count
+                        totalMembership.setText("Total Registrations: " + totalRegistrations);
                     } else {
                         // Response body is null, log error
                         Log.e("API Error", "Response body is null");
-                        Toast.makeText(getContext(), "Failed to load membership counts", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed to load registration data", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     // Log the error code and body if the response is not successful
@@ -165,18 +164,17 @@ public class DashBoardAdmin extends Fragment {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(getContext(), "Failed to load membership counts", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to load registration data", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<MembershipCountResponse> call, Throwable t) {
+            public void onFailure(Call<RegistrationGrowthResponse> call, Throwable t) {
                 // Log the failure reason
                 Log.e("API Error", "Error: " + t.getMessage());
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
 }
+
