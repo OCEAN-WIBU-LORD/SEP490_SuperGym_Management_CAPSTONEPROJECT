@@ -540,7 +540,6 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
 
-
     private void loadTrainerDetails(String trainerId) {
         // Kiểm tra `trainerId` có tồn tại trong danh sách không
         if (!trainerIds.contains(trainerId)) {
@@ -966,7 +965,10 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                         Toast.makeText(this, "Trainer is fully booked for one or more slot dates.", Toast.LENGTH_LONG).show();
                     } else if (errorResponse.contains("One or more users already have active Trainer Rental Registrations")) {
                         Toast.makeText(this, "One or more users already have active Trainer Rental Registrations.", Toast.LENGTH_LONG).show();
-                    } else {
+                    }else if(errorResponse.contains("Do not enter duplicate emails")){
+                        Toast.makeText(this, "Do not enter duplicate emails.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
                         Toast.makeText(this, "Bad Request: " + errorResponse, Toast.LENGTH_LONG).show();
                     }
                 } else if (response.code() == 500) {
