@@ -323,7 +323,7 @@ public class Diet_Eating_Fragment extends Fragment {
         }
     }
 
-    private void changeColorProgress(int totalCalories){
+    public void changeColorProgress(int totalCalories){
         // Get the drawable (circle_shape.xml) and cast it to GradientDrawable
         // You can use this method to get the drawable safely
         GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(getContext(), R.drawable.circle_shape);

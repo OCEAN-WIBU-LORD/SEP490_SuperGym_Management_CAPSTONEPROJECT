@@ -754,7 +754,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                     }
 
                     // Evaluate the result
-                    if (minDistance < 1.000f) {
+                    if (minDistance < 0.800f) {
                         delayedWelcomeMessage(closestName);
                         finalName = closestName;
 
@@ -765,7 +765,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
                     if (!closestName.equals(lastRecognizedName)) {
                         lastRecognizedName = closestName;
-                        storeRecognizedFaceImage(bitmap, closestName);
+                        storeRecognizedFaceImage(bitmap, finalName);
 
                         // Handle the check-in process
                         handleCheckIn(userFaceIdFinal, closestName);

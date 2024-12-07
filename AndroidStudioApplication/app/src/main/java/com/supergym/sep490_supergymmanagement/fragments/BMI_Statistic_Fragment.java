@@ -52,6 +52,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -182,15 +183,22 @@ public class BMI_Statistic_Fragment extends Fragment {
 
     }
 
-    private void displayWaterLevel(){
-        // Assuming txtWaterTextView contains the water in liters (for supergym "1")
-        String waterText = txtWaterTextView.getText().toString();
-        float waterInLiters = Float.parseFloat(waterText);  // Convert to float
+    private void displayWaterLevel() {
+        String waterText = txtWaterTextView.getText().toString().trim();
+        try {
+            // Create a NumberFormat instance for Vietnamese locale
+            NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+            Number waterNumber = numberFormat.parse(waterText);
+            float waterInLiters = waterNumber.floatValue();
 
-        float maxLiters = 2.0f;  // The maximum capacity of the cup is 2 liters
-        cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters);  // Set the initial water level
-
+            float maxLiters = 2.0f; // The maximum capacity of the cup is 2 liters
+            cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters); // Set the initial water level
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Invalid number format for water intake!", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
 
     private void functionAllButton(){
@@ -295,53 +303,111 @@ public class BMI_Statistic_Fragment extends Fragment {
         userWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 v.startAnimation(cardClickAnimation);
                 String datePicked = DatePicked.getText().toString().trim();
-                if(compareDates(datePicked)){
-                    if(checkUserInput()){
-                            saveStatisticsToFirebase(userId, datePicked,
-                                    Double.valueOf(txtBMITextView.getText().toString().trim()),
-                                    txtBMIStatus.getText().toString().trim(),
-                                    Integer.valueOf(txtcaloriesTextView.getText().toString().trim()),
-                                    Integer.valueOf(stepsTextView.getText().toString().trim()),
-                                    ( Double.valueOf(txtWaterTextView.getText().toString().trim())+0.25));
-                            txtWaterTextView.setText(String.valueOf(Double.valueOf(txtWaterTextView.getText().toString().trim())+0.25));
-                             controlWaterAnimation();
+
+                if (compareDates(datePicked)) {
+                    if (checkUserInput()) {
+                        try {
+                            // Dynamically get the current locale
+                            Locale currentLocale = Locale.getDefault();
+                            NumberFormat numberFormat = NumberFormat.getInstance(currentLocale);
+
+                            // Parse water intake value from TextView
+                            double currentWater = numberFormat.parse(txtWaterTextView.getText().toString().trim()).doubleValue();
+
+                            // Parse the BMI value using NumberFormat
+                            double bmi = numberFormat.parse(txtBMITextView.getText().toString().trim()).doubleValue();
+
+                            // Add 0.25 to the current water value
+                            double updatedWater = currentWater + 0.25;
+
+                            // Parse calories and steps (integers are locale-independent)
+                            int calories = Integer.parseInt(txtcaloriesTextView.getText().toString().trim());
+                            int steps = Integer.parseInt(stepsTextView.getText().toString().trim());
+
+                            // Save updated water intake and other statistics to Firebase
+                            saveStatisticsToFirebase(userId, datePicked, bmi, txtBMIStatus.getText().toString().trim(), calories, steps, updatedWater);
+
+                            // Update the UI with the updated water value
+                            txtWaterTextView.setText(String.format(currentLocale, "%.2f", updatedWater));
+
+                            // Trigger animations and display water level
+                            controlWaterAnimation();
                             displayWaterLevel();
-
-                    }else{
-                        Toast.makeText(getContext(), "Please check Again, The Input Is Null", Toast.LENGTH_SHORT).show();
-
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Invalid water input format!", Toast.LENGTH_SHORT).show();
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Please enter valid numeric values!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Please check again. The input is null.", Toast.LENGTH_SHORT).show();
                     }
-                }else{
+                } else {
                     Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
-
                 }
-
-
             }
         });
+
+
+
 
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String datePicked = DatePicked.getText().toString().trim();
+                String bmiText = txtBMITextView.getText().toString().trim();
+                String caloriesText = txtcaloriesTextView.getText().toString().trim();
+                String stepsText = stepsTextView.getText().toString().trim();
+                String waterText = txtWaterTextView.getText().toString().trim();
 
-                if (compareDates(datePicked)) {
-                    saveStatisticsToFirebase(userId, datePicked,
-                            Double.valueOf(txtBMITextView.getText().toString().trim()),
-                            txtBMIStatus.getText().toString().trim(),
-                            Integer.valueOf(txtcaloriesTextView.getText().toString().trim()),
-                            Integer.valueOf(stepsTextView.getText().toString().trim()),
-                            Double.valueOf(txtWaterTextView.getText().toString().trim()));
-                            displayWaterLevel();
-                } else {
-                    Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
+                // Validate fields
+                if (bmiText.isEmpty() || caloriesText.isEmpty() || stepsText.isEmpty() || waterText.isEmpty()) {
+                    Toast.makeText(getContext(), "All fields must be filled!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                try {
+                    // Create a NumberFormat instance for the Vietnamese locale
+                    NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+                    // Parse the numeric values
+                    double bmi = numberFormat.parse(bmiText).doubleValue();
+                    int calories = Integer.parseInt(caloriesText); // Integers are locale-independent
+                    int steps = Integer.parseInt(stepsText);
+                    double water = numberFormat.parse(waterText).doubleValue();
+
+                    if (compareDates(datePicked)) {
+                        // Save statistics to Firebase
+                        saveStatisticsToFirebase(
+                                userId,
+                                datePicked,
+                                bmi,
+                                txtBMIStatus.getText().toString().trim(),
+                                calories,
+                                steps,
+                                water
+                        );
+
+                        // Update water level display
+                        displayWaterLevel();
+                    } else {
+                        Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Invalid number format. Please check your input!", Toast.LENGTH_SHORT).show();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Please enter valid numeric values!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+
 
         // Set click listener for edit card to toggle visibility
         dropdownBtn.setOnClickListener(new View.OnClickListener() {

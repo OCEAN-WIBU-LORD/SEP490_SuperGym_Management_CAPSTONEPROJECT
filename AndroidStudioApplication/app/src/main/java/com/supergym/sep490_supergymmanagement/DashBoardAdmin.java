@@ -16,12 +16,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.supergym.sep490_supergymmanagement.FirebaseImageLoader.FirebaseHelper;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.models.MembershipCountResponse;
 import com.supergym.sep490_supergymmanagement.models.RegistrationGrowthResponse;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,7 +38,7 @@ public class DashBoardAdmin extends Fragment {
     private String mParam2;
 
     private int userCount = 0, ptCount = 0;
-    private TextView userCountTextView, ptCountTextView, totalMembership;
+    private TextView userCountTextView, ptCountTextView, totalMembership, nearBirthDate, tvExpiredUsersCount, paidCourseThisMonth;
 
     public DashBoardAdmin() {
         // Required empty public constructor
@@ -70,10 +72,25 @@ public class DashBoardAdmin extends Fragment {
         userCountTextView = view.findViewById(R.id.userCountTextView);
         ptCountTextView = view.findViewById(R.id.ptCountTextView);
         totalMembership = view.findViewById(R.id.totalMembership);
-
+        nearBirthDate = view.findViewById(R.id.nearBirthDate);
+        paidCourseThisMonth = view.findViewById(R.id.paidCourseThisMonth);
         // Call method to get total user count from Firebase
         getTotalUserCountWithRole("customer", "pt");
+        tvExpiredUsersCount = view.findViewById(R.id.tvExpiredUsersCount);
 
+        // Call the method to count expired users
+        FirebaseHelper firebaseHelper = new FirebaseHelper();
+        firebaseHelper.countExpiredUsers(new FirebaseHelper.CountExpiredUsersCallback() {
+            @Override
+            public void onCountExpiredUsers(int count) {
+                // Update the TextView with the count
+                tvExpiredUsersCount.setText(String.valueOf(count) );
+            }
+        });
+
+        // Fetch registration growth data from the API after the view is created
+        fetchRegistrationGrowthData();
+        countUsersWithDOBInCurrentOrNextMonth();
         return view;
     }
 
@@ -81,11 +98,47 @@ public class DashBoardAdmin extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Fetch registration growth data from the API after the view is created
-        fetchRegistrationGrowthData();
+        // Count users with birthdays in the current or next month
+        countUsersWithDOBInCurrentOrNextMonth();
     }
 
-    private void getTotalUserCountWithRole(String targetRoleName, String targetRoleName2) {
+    public void countUsersWithDOBInCurrentOrNextMonth() {
+        // Get the current month and the next month
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Months are 0-based
+        int nextMonth = (currentMonth % 12) + 1;
+
+        // Get reference to the Firebase Realtime Database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
+
+        // Add a listener to count users
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int count = 0;
+
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    DataSnapshot dobSnapshot = userSnapshot.child("dob");
+                    if (dobSnapshot.exists()) {
+                        int month = dobSnapshot.child("month").getValue(Integer.class);
+                        if (month == currentMonth || month == nextMonth) {
+                            count++;
+                        }
+                    }
+                }
+                nearBirthDate.setText(String.valueOf(count));
+                // Update UI with the count of users with birthdays in the current or next month
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle errors
+                Toast.makeText(getContext(), "Error fetching user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void getTotalUserCountWithRole(String targetRoleName, String targetRoleName2) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -148,9 +201,10 @@ public class DashBoardAdmin extends Fragment {
                         // Handle successful response
                         RegistrationGrowthResponse registrationGrowthResponse = response.body();
                         int totalRegistrations = registrationGrowthResponse.getTotalRegistrations();
-
+                        paidCourseThisMonth.setText(String.valueOf(registrationGrowthResponse.getRegistrationsThisMonth())) ;
+                      //  growthPercentage.setText(String.valueOf(registrationGrowthResponse.getGrowthPercentage()));
                         // Update the totalMembership TextView with the total registrations count
-                        totalMembership.setText("Total Registrations: " + totalRegistrations);
+                        totalMembership.setText(String.valueOf(totalRegistrations));
                     } else {
                         // Response body is null, log error
                         Log.e("API Error", "Response body is null");
@@ -177,4 +231,3 @@ public class DashBoardAdmin extends Fragment {
         });
     }
 }
-

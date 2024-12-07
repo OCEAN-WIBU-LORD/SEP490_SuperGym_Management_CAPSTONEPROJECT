@@ -193,7 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="28dp"
-                    android:text=""
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -270,7 +270,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="28dp"
-                    android:text=""
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -383,11 +383,11 @@
                     android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="40dp"
                     app:cardBackgroundColor="@color/lowLightBlue"
                     app:cardCornerRadius="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/totalTrainer22"
+                    app:layout_constraintEnd_toStartOf="@+id/tvExpiredUsersCount"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -406,10 +406,10 @@
                 <TextView
                     android:id="@+id/text_trainer_name22"
                     android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/arial_regular"
-                    android:text="Near Expiration"
+                    android:text="Growth Percentage"
                     android:textAlignment="center"
                     android:textFontWeight="900"
                     android:textSize="20sp"
@@ -419,12 +419,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/totalTrainer22"
+                    android:id="@+id/tvExpiredUsersCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="28dp"
-                    android:text="100"
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -464,7 +464,7 @@
                     app:cardBackgroundColor="@color/lowLightBlue"
                     app:cardCornerRadius="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/totalTrainer1"
+                    app:layout_constraintEnd_toStartOf="@+id/totalMembership"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -484,7 +484,7 @@
                     android:id="@+id/text_trainer_name1"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/arial_regular"
                     android:text="Current Membership"
                     android:textAlignment="center"
@@ -501,7 +501,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="28dp"
-                    android:text="100"
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -540,7 +540,7 @@
                     app:cardBackgroundColor="@color/lowLightBlue"
                     app:cardCornerRadius="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/totalTrainer12"
+                    app:layout_constraintEnd_toStartOf="@+id/nearBirthDate"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -572,12 +572,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/totalTrainer12"
+                    android:id="@+id/nearBirthDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="28dp"
-                    android:text="100"
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -647,12 +647,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/totalTrainer122"
+                    android:id="@+id/paidCourseThisMonth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="28dp"
-                    android:text="100"
+                    android:text="0"
                     android:textFontWeight="700"
                     android:textSize="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
