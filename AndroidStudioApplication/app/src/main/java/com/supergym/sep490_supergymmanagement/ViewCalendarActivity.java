@@ -69,6 +69,7 @@ public class ViewCalendarActivity extends Fragment {
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     private final SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.ENGLISH);
+    private String currentDisplayedMonthYear = "";
 
     private static final String TAG = "ViewCalendarActivity";
 
@@ -93,6 +94,7 @@ public class ViewCalendarActivity extends Fragment {
 
         checkUser();
 
+        updateMonthYearDisplay();
         return view;
     }
 
@@ -421,6 +423,13 @@ public class ViewCalendarActivity extends Fragment {
     private void updateMonthYearDisplay() {
         Date currentDate = compactCalendarView.getFirstDayOfCurrentMonth();
         String monthYear = monthYearFormat.format(currentDate);
+
+        // Kiểm tra nếu tháng và năm đã được hiển thị thì không làm gì cả
+        if (monthYear.equals(currentDisplayedMonthYear)) {
+            return;
+        }
+
+        currentDisplayedMonthYear = monthYear;
         monthYearTextView.setText(monthYear);
 
         String selectedDate = apiDateFormat.format(currentDate);
@@ -428,6 +437,7 @@ public class ViewCalendarActivity extends Fragment {
         selectedDateInfo.setTypeface(null, Typeface.BOLD);
         loadAppointmentsForSelectedDate(selectedDate);
     }
+
 
     /**
      * Loads and displays appointments for the selected date.
@@ -580,7 +590,25 @@ public class ViewCalendarActivity extends Fragment {
      * @param container The LinearLayout container to add the message to.
      * @param message   The message to display.
      */
+    /**
+     * Static helper method to add a "no appointments" message to the container.
+     *
+     * @param container The LinearLayout container to add the message to.
+     * @param message   The message to display.
+     */
     public static void addNoAppointmentsView(LinearLayout container, String message) {
+        // Kiểm tra xem thông báo đã tồn tại chưa
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            if (child instanceof TextView) {
+                TextView textView = (TextView) child;
+                if (textView.getText().toString().equals(message)) {
+                    return; // Thông báo đã được thêm, không thêm nữa
+                }
+            }
+        }
+
+        // Nếu chưa tồn tại, thêm thông báo
         Context context = container.getContext();
         TextView noAppointmentsView = new TextView(context);
         noAppointmentsView.setText(message);
@@ -588,6 +616,7 @@ public class ViewCalendarActivity extends Fragment {
         noAppointmentsView.setTextColor(Color.BLACK);
         container.addView(noAppointmentsView);
     }
+
 
     /**
      * Converts density-independent pixels (dp) to pixels (px).
