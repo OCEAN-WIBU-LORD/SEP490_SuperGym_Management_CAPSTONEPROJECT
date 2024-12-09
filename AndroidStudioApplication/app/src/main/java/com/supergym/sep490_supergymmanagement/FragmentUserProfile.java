@@ -96,7 +96,7 @@ public class FragmentUserProfile extends Fragment {
     private static final String PHONE_NUMBER = "0978788128";
     private Boolean isAuthenticated = false;
     private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn, resetPasswordBtn;
-    private CardView returnBtn, editProfile, gymPackageCardView, historyPaymentCardView, foodanddiet;
+    private CardView returnBtn,bmicardView, editProfile, gymPackageCardView, historyPaymentCardView, foodanddiet, feedbackCardView;
     private FirebaseAuth mAuth;
 
     private String publicName;
@@ -157,8 +157,9 @@ public class FragmentUserProfile extends Fragment {
         historyPaymentCardView = view.findViewById(R.id.historyPaymentCardView);
         dietBtn = view.findViewById(R.id.dietBtn);
         resetPasswordBtn = view.findViewById(R.id.resetPasswordBtn);
+        feedbackCardView = view.findViewById(R.id.feedbackCardView);
         mAuth = FirebaseAuth.getInstance();
-
+        bmicardView = view.findViewById(R.id.bmicardView);
         returnBtn  = view.findViewById(R.id.returnBtn);
         editProfile = view.findViewById(R.id.editCardView);
         gymPackageCardView = view.findViewById(R.id.gymPackageCardView);
@@ -190,6 +191,8 @@ public class FragmentUserProfile extends Fragment {
             gymPackageCardView.setVisibility(View.GONE);
             historyPaymentCardView.setVisibility(View.GONE);
             foodanddiet.setVisibility(View.GONE);
+            feedbackCardView.setVisibility(View.GONE);
+            bmicardView.setVisibility(View.GONE);
         }
         resetPasswordBtn.setOnClickListener( new View.OnClickListener() {
             @Override

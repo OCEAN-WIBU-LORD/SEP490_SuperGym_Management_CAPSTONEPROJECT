@@ -21,10 +21,11 @@ import java.util.UUID;
 
 public class AddExerciseActivity extends AppCompatActivity {
 
-    private EditText exerciseNameInput;
-    private Spinner muscleGroupSpinner, equipmentSpinner;
+    public EditText exerciseNameInput;
+    public Spinner muscleGroupSpinner;
+    public Spinner equipmentSpinner;
     private Button saveExerciseButton;
-    private DatabaseReference exercisesRef;
+    public DatabaseReference exercisesRef;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class AddExerciseActivity extends AppCompatActivity {
         });
     }
 
-    private void saveExerciseToDatabase() {
+    public void saveExerciseToDatabase() {
         String name = exerciseNameInput.getText().toString().trim();
         String muscleGroup = muscleGroupSpinner.getSelectedItem().toString();
         String equipment = equipmentSpinner.getSelectedItem().toString();

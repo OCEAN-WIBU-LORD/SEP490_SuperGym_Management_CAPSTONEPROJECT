@@ -349,12 +349,11 @@ public class Diet_Eating_Fragment extends Fragment {
         // Find the views inside dialog
         Spinner mealTypeSpinner = dialogView.findViewById(R.id.mealTypeSpinner);
         EditText foodDescriptionEditText = dialogView.findViewById(R.id.foodDescriptionEditText);
-
         EditText foodCaloriesText = dialogView.findViewById(R.id.foodCalories);
 
         // Validate that the Spinner and EditText exist
         if (mealTypeSpinner == null || foodDescriptionEditText == null || foodCaloriesText == null) {
-            Log.e("AddMealDialog", "MealTypeSpinner, FoodDescriptionEditText or Meal Calories is null!");
+            Log.e("AddMealDialog", "MealTypeSpinner, FoodDescriptionEditText, or FoodCalories is null!");
             return;
         }
 
@@ -363,24 +362,40 @@ public class Diet_Eating_Fragment extends Fragment {
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Validate inputs
                         String mealType = mealTypeSpinner.getSelectedItem().toString();
                         String foodDescription = foodDescriptionEditText.getText().toString().trim();
+                        String foodCaloriesInput = foodCaloriesText.getText().toString().trim();
                         String currentDate = dateButton.getText().toString().trim();
 
-                        Integer foodCalories = Integer.parseInt(foodCaloriesText.getText().toString().trim());
-                        // Check if food description is empty
-                        if (!foodDescription.isEmpty()) {
-                            addMealToRecyclerView(currentDate, mealType, foodDescription, foodCalories);
-                            Meal newMeal = new Meal(currentDate, mealType, foodDescription, foodCalories);
-                            addMealToFirebase(newMeal);
-                        } else {
+                        if (foodDescription.isEmpty()) {
                             Toast.makeText(getContext(), "Please enter a description.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
+
+                        if (foodCaloriesInput.isEmpty()) {
+                            Toast.makeText(getContext(), "Please enter the number of calories.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Integer foodCalories;
+                        try {
+                            foodCalories = Integer.parseInt(foodCaloriesInput);
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(getContext(), "Calories must be a valid number.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Proceed if all inputs are valid
+                        addMealToRecyclerView(currentDate, mealType, foodDescription, foodCalories);
+                        Meal newMeal = new Meal(currentDate, mealType, foodDescription, foodCalories);
+                        addMealToFirebase(newMeal);
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
+
 
 
 
