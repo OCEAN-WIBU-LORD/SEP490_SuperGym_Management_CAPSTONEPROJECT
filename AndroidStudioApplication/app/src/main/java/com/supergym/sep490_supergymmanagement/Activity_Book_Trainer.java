@@ -64,13 +64,12 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private List<String> extraEmails = new ArrayList<>();
     private List<SearchUser> userList;
     private UserAdapter userAdapter;
-
+    private EditText extraUserEditText;
     public ApiService apiService;
     public List<String> packageIds = new ArrayList<>();
     private List<String> trainerIds = new ArrayList<>();
     private List<TimeSlot> timeSlots = new ArrayList<>();
     private ImageView dropdownBtnPackage, dropdownBtn;
-
     CheckBox monday  , tuesday, saturday, wednesday, friday, thursday;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
         // Khởi tạo ApiService
 
-            apiService = RetrofitClient.getApiService(this);
+        apiService = RetrofitClient.getApiService(this);
 
         returnBtn = findViewById(R.id.returnBtn);
         returnBtn.setOnClickListener(new View.OnClickListener() {
@@ -539,12 +538,13 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         Toast.makeText(this, "You can add up to " + memberCount + " additional users.", Toast.LENGTH_SHORT).show();
 
         // Giới hạn số lượng email trong EditText
-        EditText extraUserEditText = findViewById(R.id.extraUser);
+        extraUserEditText = findViewById(R.id.extraUser);
         extraUserEditText.setHint("Enter up to " + memberCount + " email(s), separated by commas");
 
         // Khởi tạo logic tìm kiếm email
         setupSearchEmailLogic();
     }
+
 
 
     private void loadTrainerDetails(String trainerId) {
@@ -657,7 +657,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
     private void setupSearchEmailLogic() {
         // Khởi tạo RecyclerView
-        RecyclerView userRecyclerView = findViewById(R.id.userRecyclerView);
+        userRecyclerView = findViewById(R.id.userRecyclerView);
         if (userRecyclerView == null) {
             throw new NullPointerException("RecyclerView is not defined in the layout or ID does not match.");
         }
@@ -665,22 +665,24 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         userRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // Cài đặt LayoutManager
 
         // Khởi tạo danh sách và Adapter
-        List<SearchUser> userList = new ArrayList<>();
-        UserAdapter userAdapter = new UserAdapter(userList, user -> {
-            EditText extraUserEditText = findViewById(R.id.extraUser);
-            extraUserEditText.setText(user.getEmail());
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList, user -> {
+            addEmailToExtraUser(user.getEmail());
         });
 
         userRecyclerView.setAdapter(userAdapter); // Liên kết Adapter với RecyclerView
 
-        SearchView userSearchView = findViewById(R.id.userSearchView);
+        // Khởi tạo EditText và SearchView
+        extraUserEditText = findViewById(R.id.extraUser);
+        userSearchView = findViewById(R.id.userSearchView);
+
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query.isEmpty()) {
                     Toast.makeText(Activity_Book_Trainer.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
                 } else {
-                    searchUsers(query, userList, userAdapter);
+                    searchUsers(query);
                 }
                 return false;
             }
@@ -688,7 +690,11 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (!newText.isEmpty()) {
-                    searchUsers(newText, userList, userAdapter);
+                    searchUsers(newText);
+                } else {
+                    // Nếu xóa hết text trong SearchView, xóa danh sách kết quả
+                    userList.clear();
+                    userAdapter.notifyDataSetChanged();
                 }
                 return false;
             }
@@ -696,13 +702,45 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     }
 
 
+    private void addEmailToExtraUser(String email) {
+        String existingEmails = extraUserEditText.getText().toString().trim();
+
+        if (!existingEmails.isEmpty()) {
+            existingEmails += "," + email;
+        } else {
+            existingEmails = email;
+        }
+
+        extraUserEditText.setText(existingEmails);
+
+        // Reset SearchView sau khi thêm email
+        userSearchView.setQuery("", false);
+        userSearchView.clearFocus();
+
+        // Xóa danh sách kết quả tìm kiếm
+        userList.clear();
+        userAdapter.notifyDataSetChanged();
+    }
+
+
     // Tìm kiếm người dùng qua API
-    private void searchUsers(String email, List<SearchUser> userList, UserAdapter userAdapter) {
+    private void searchUsers(String email) {
         apiService.getUserByEmail(email).enqueue(new Callback<SearchUser>() {
             @Override
             public void onResponse(Call<SearchUser> call, Response<SearchUser> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     SearchUser user = response.body();
+
+                    // Kiểm tra xem email đã tồn tại trong EditText chưa
+                    String existingEmails = extraUserEditText.getText().toString().trim();
+                    List<String> emailList = new ArrayList<>(Arrays.asList(existingEmails.split(",\\s*")));
+
+                    if (emailList.contains(user.getEmail())) {
+                        Toast.makeText(Activity_Book_Trainer.this, "Email đã được thêm.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Cập nhật danh sách người dùng hiển thị
                     userList.clear();
                     userList.add(user);
                     userAdapter.notifyDataSetChanged();
@@ -717,6 +755,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void updateSpinner(Spinner spinner, List<UserResponse> items) {
         ArrayAdapter<UserResponse> adapter = new ArrayAdapter<UserResponse>(this, android.R.layout.simple_spinner_item, items) {
