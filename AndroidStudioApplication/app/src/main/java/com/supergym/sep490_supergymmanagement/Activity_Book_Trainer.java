@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
@@ -68,6 +69,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     public List<String> packageIds = new ArrayList<>();
     private List<String> trainerIds = new ArrayList<>();
     private List<TimeSlot> timeSlots = new ArrayList<>();
+    private ImageView dropdownBtnPackage, dropdownBtn;
 
     CheckBox monday  , tuesday, saturday, wednesday, friday, thursday;
     @Override
@@ -170,6 +172,11 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         trainerBioTextView = findViewById(R.id.bioTextView);
         extraUsersEditText = findViewById(R.id.extraUser);
         sessionCountEditText = findViewById(R.id.sessionCountEditText);
+        dropdownBtnPackage= findViewById(R.id.dropdownBtnPackage);
+        dropdownBtn = findViewById(R.id.dropdownBtn);
+        // Make the ImageView trigger the Spinner click
+        dropdownBtnPackage.setOnClickListener(v -> packageSpinner.performClick());
+        dropdownBtn.setOnClickListener(v -> trainerSpinner.performClick());
     }
 
     private void setupListeners() {

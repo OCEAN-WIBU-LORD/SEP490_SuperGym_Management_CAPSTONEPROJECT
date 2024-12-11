@@ -16,15 +16,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
    //   private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
-     private static final String BASE_URL = "http://192.168.59.107:5000"; // Use your network's IPv4 address
-      private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
+  //    private static final String BASE_URL = "http://192.168.59.107:5000"; // Use your network's IPv4 address
+ //     private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
+private static final String BASE_URL = "https://e8f2-1-52-29-185.ngrok-free.app"; // Local API URL for emulator
 
-  private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
+    // https://bcaf-199-187-211-23.ngrok-free.app   //NGROK SERVER
+    //https://58f6-58-186-240-10.ngrok-free.app
+   // private static final String BASE_URL = "https://bcaf-199-187-211-23.ngrok-free.app";
+
+ //private static final String BASE_URL = "http://192.168.0.101:5000";  // Mang cuc phat 4Gy
+
+//  private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
     //192.168.28.53
     //private static final String BASE_URL = "http://192.168.28.53:5000"; //mang Azzan
     //192.168.1.81 Mang SuperGym
     //10.33.44.115 Mang FU FPT
     //172.20.10.13 mang Iphone Minh
+    //192.168.0.101 Mang cuc phat 4G
   //  private static final String BASE_URL = "http://172.20.10.13:5000"; //mang Iphone Minh
    // private static final String BASE_URL = "http://10.33.44.115:5000"; // Mang FU FPT
    //   private static final String BASE_URL = "http://192.168.1.81:5000"; // Mang SuperGym

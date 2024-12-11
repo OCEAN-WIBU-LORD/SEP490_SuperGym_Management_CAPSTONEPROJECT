@@ -43,6 +43,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.supergym.sep490_supergymmanagement.RoleAdapter.UserRoleRetriever;
 import com.supergym.sep490_supergymmanagement.adapters.PostAdapter;
 import com.supergym.sep490_supergymmanagement.adapters.TrainerIdRetriever;
+import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
+import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
 import com.supergym.sep490_supergymmanagement.databinding.ActivityMainBinding;
 import com.supergym.sep490_supergymmanagement.databinding.ActivityViewMainContentBinding;
 import com.supergym.sep490_supergymmanagement.fragments.AppointmentFragment;
@@ -79,6 +81,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class    ViewMainContent extends AppCompatActivity {
 
     ActivityViewMainContentBinding binding;
@@ -94,6 +100,8 @@ public class    ViewMainContent extends AppCompatActivity {
     String fragmentType = "";
 
     private String trainerId;
+
+    private boolean isRegistered;
     FirebaseAuth mAuth;
     private String roleIdTxt, roleNameTxt;
     private View loadingOverlay;
@@ -195,7 +203,7 @@ public class    ViewMainContent extends AppCompatActivity {
 
        checkNullRoll();
 
-
+        checkRegistration(userId);
         fab.setOnClickListener(view -> showBottomDialog());
     }
     private void openSearchTrainerFragment() {
@@ -244,15 +252,18 @@ public class    ViewMainContent extends AppCompatActivity {
             replaceFragment(new DashBoardAdmin());
             MyApp app = (MyApp) getApplicationContext();
             app.setUserRole("admin"); // Set the role based on your logic
+            roleNameTxt = "admin";
             Toast.makeText(ViewMainContent.this, "You Logged In As Admin!", Toast.LENGTH_SHORT).show();
         } else  if(roleName.equals("pt")){
 
             MyApp app = (MyApp) getApplicationContext();
             app.setUserRole("pt"); // Set the role based on your logic
+            roleNameTxt = "pt";
             Toast.makeText(ViewMainContent.this, "You Logged In As PT!", Toast.LENGTH_SHORT).show();
         }else  if(roleName.equals("customer")){
 
             MyApp app = (MyApp) getApplicationContext();
+            roleNameTxt = "customer";
             app.setUserRole("customer"); // Set the role based on your logic
             Toast.makeText(ViewMainContent.this, "You Logged In As Customer!", Toast.LENGTH_SHORT).show();
         }
@@ -453,6 +464,35 @@ public class    ViewMainContent extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    private void checkRegistration(String registrationId) {
+        ApiService api = RetrofitClient.getApiService(getApplicationContext());
+
+
+
+        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isRegistered = response.body();
+                    if (isRegistered) {
+                        Log.d("HomeFragment", "User is registered");
+//Intent intent = new Intent(getApplicationContext(), Activity_Book_Trainer.class);
+           //             startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void showBottomDialog() {
 
         final Dialog dialog = new Dialog(this);
@@ -464,6 +504,9 @@ public class    ViewMainContent extends AppCompatActivity {
         LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
         LinearLayout layoutFaceID = dialog.findViewById(R.id.layoutFaceID);
         ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
+        if (isRegistered == false && roleNameTxt.equals("customer")) {
+            layoutFaceID.setVisibility(View.GONE);
+        }
         layoutFaceID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

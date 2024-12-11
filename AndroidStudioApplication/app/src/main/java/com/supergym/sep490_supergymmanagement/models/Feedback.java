@@ -1,47 +1,30 @@
 package com.supergym.sep490_supergymmanagement.models;
-// Inner class to represent the Feedback object
 
 public class Feedback {
 
-    private String userId;
-    private String feedbackType;
-    private String feedbackText;
-    private float rating;
+    private String message; // Feedback message
+    private float rating; // User rating
+    private String userId; // ID of the user who submitted the feedback
+    private String submittedAt; // Timestamp of feedback submission
 
     // Empty constructor required for Firebase
     public Feedback() {
     }
 
-    public Feedback(String userId, String feedbackType, String feedbackText, float rating) {
-        this.userId = userId;
-        this.feedbackType = feedbackType;
-        this.feedbackText = feedbackText;
+    public Feedback(String message, float rating, String userId, String submittedAt) {
+        this.message = message;
         this.rating = rating;
+        this.userId = userId;
+        this.submittedAt = submittedAt;
     }
 
     // Getters and Setters
-    public String getUserId() {
-        return userId;
+    public String getMessage() {
+        return message;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getFeedbackType() {
-        return feedbackType;
-    }
-
-    public void setFeedbackType(String feedbackType) {
-        this.feedbackType = feedbackType;
-    }
-
-    public String getFeedbackText() {
-        return feedbackText;
-    }
-
-    public void setFeedbackText(String feedbackText) {
-        this.feedbackText = feedbackText;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public float getRating() {
@@ -50,5 +33,21 @@ public class Feedback {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(String submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }
