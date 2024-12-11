@@ -5,14 +5,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class CheckInDatesResponse {
-    @SerializedName("checkInDates")
-    private List<String> checkInDates;
 
-    public List<String> getCheckInDates() {
+    @SerializedName("checkInDates")
+    private List<CheckInDateInfo> checkInDates;
+
+    // Getters và Setters
+    public List<CheckInDateInfo> getCheckInDates() {
         return checkInDates;
     }
 
-    public void setCheckInDates(List<String> checkInDates) {
+    public void setCheckInDates(List<CheckInDateInfo> checkInDates) {
         this.checkInDates = checkInDates;
     }
 }

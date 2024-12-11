@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.supergym.sep490_supergymmanagement.apiadapter.ApiService.ApiService;
 import com.supergym.sep490_supergymmanagement.apiadapter.RetrofitClient;
+import com.supergym.sep490_supergymmanagement.models.CheckInDateInfo;
 import com.supergym.sep490_supergymmanagement.models.CheckInDatesResponse;
 import com.supergym.sep490_supergymmanagement.models.Schedule2;
 import com.supergym.sep490_supergymmanagement.models.ScheduleForTrainer;
@@ -51,6 +52,7 @@ public class ViewCalendarActivity extends Fragment {
 
     private CompactCalendarView compactCalendarView;
     private TextView selectedDateInfo;
+    private TextView firstCheckInTimeInfo; // Thêm TextView mới để hiển thị thời gian check-in đầu tiên
     private LinearLayout notesContainer;
     private String userId;
     private String role;
@@ -59,7 +61,7 @@ public class ViewCalendarActivity extends Fragment {
 
     private HashMap<String, String> timeSlotMap = new HashMap<>();
     private List<String> highlightedDates = new ArrayList<>();
-    private List<String> allCheckInDates = new ArrayList<>();
+    private List<CheckInDateInfo> allCheckInDates = new ArrayList<>(); // Cập nhật kiểu dữ liệu
     private Button btnPreviousMonth;
     private Button btnNextMonth;
     private TextView monthYearTextView;
@@ -82,6 +84,7 @@ public class ViewCalendarActivity extends Fragment {
         compactCalendarView = view.findViewById(R.id.compactcalendar_view);
         compactCalendarView.setFirstDayOfWeek(java.util.Calendar.MONDAY);
         selectedDateInfo = view.findViewById(R.id.selectedDateInfo);
+        firstCheckInTimeInfo = view.findViewById(R.id.firstCheckInTimeInfo); // Khởi tạo TextView mới
         notesContainer = view.findViewById(R.id.notesContainer);
 
         btnPreviousMonth = view.findViewById(R.id.btnPreviousMonth);
@@ -307,11 +310,12 @@ public class ViewCalendarActivity extends Fragment {
         int currentYear = currentCal.get(Calendar.YEAR);
         int currentMonth = currentCal.get(Calendar.MONTH) + 1; // Months are 0-based
 
-        for (String date : allCheckInDates) {
+        for (CheckInDateInfo info : allCheckInDates) {
+            String dateStr = info.getDate();
             try {
-                Date dateObj = apiDateFormat.parse(date);
+                Date dateObj = apiDateFormat.parse(dateStr);
                 if (dateObj == null) {
-                    Log.e(TAG, "Parsed Date is null for date string: " + date);
+                    Log.e(TAG, "Parsed Date is null for date string: " + dateStr);
                     continue;
                 }
 
@@ -320,7 +324,7 @@ public class ViewCalendarActivity extends Fragment {
                 int dateYear = dateCal.get(Calendar.YEAR);
                 int dateMonth = dateCal.get(Calendar.MONTH) + 1;
 
-                Log.d(TAG, "Processing Check-In Date: " + date + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
+                Log.d(TAG, "Processing Check-In Date: " + dateStr + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
 
                 if (currentYear == dateYear && currentMonth == dateMonth) {
                     // Check if the date is already highlighted to prevent duplicates
@@ -334,22 +338,19 @@ public class ViewCalendarActivity extends Fragment {
                     }
 
                     if (!alreadyHighlighted) {
-                        highlightDate(date, Color.GREEN);
-                        Log.d(TAG, "Highlighted Check-In Date: " + date);
+                        highlightDate(dateStr, Color.GREEN);
+                        Log.d(TAG, "Highlighted Check-In Date: " + dateStr);
                     } else {
-                        Log.d(TAG, "Check-In Date already highlighted: " + date);
+                        Log.d(TAG, "Check-In Date already highlighted: " + dateStr);
                     }
                 }
             } catch (ParseException e) {
-                Log.e(TAG, "Invalid date format: " + date + " Error: " + e.getMessage());
+                Log.e(TAG, "Invalid date format: " + dateStr + " Error: " + e.getMessage());
             }
         }
     }
 
 
-    /**
-     * Highlights check-in dates when the month is scrolled.
-     */
     /**
      * Highlights check-in dates when the month is scrolled.
      */
@@ -377,11 +378,12 @@ public class ViewCalendarActivity extends Fragment {
         int currentYear = currentCal.get(Calendar.YEAR);
         int currentMonth = currentCal.get(Calendar.MONTH) + 1; // Months are 0-based
 
-        for (String date : allCheckInDates) {
+        for (CheckInDateInfo info : allCheckInDates) {
+            String dateStr = info.getDate();
             try {
-                Date dateObj = apiDateFormat.parse(date);
+                Date dateObj = apiDateFormat.parse(dateStr);
                 if (dateObj == null) {
-                    Log.e(TAG, "Parsed Date is null for date string: " + date);
+                    Log.e(TAG, "Parsed Date is null for date string: " + dateStr);
                     continue;
                 }
 
@@ -390,7 +392,7 @@ public class ViewCalendarActivity extends Fragment {
                 int dateYear = dateCal.get(Calendar.YEAR);
                 int dateMonth = dateCal.get(Calendar.MONTH) + 1;
 
-                Log.d(TAG, "Processing Check-In Date for new month: " + date + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
+                Log.d(TAG, "Processing Check-In Date for new month: " + dateStr + " (Year: " + dateYear + ", Month: " + dateMonth + ")");
 
                 if (currentYear == dateYear && currentMonth == dateMonth) {
                     // Check if the date is already highlighted to prevent duplicates
@@ -404,14 +406,14 @@ public class ViewCalendarActivity extends Fragment {
                     }
 
                     if (!alreadyHighlighted) {
-                        highlightDate(date, Color.GREEN);
-                        Log.d(TAG, "Highlighted Check-In Date for new month: " + date);
+                        highlightDate(dateStr, Color.GREEN);
+                        Log.d(TAG, "Highlighted Check-In Date for new month: " + dateStr);
                     } else {
-                        Log.d(TAG, "Check-In Date already highlighted for new month: " + date);
+                        Log.d(TAG, "Check-In Date already highlighted for new month: " + dateStr);
                     }
                 }
             } catch (ParseException e) {
-                Log.e(TAG, "Invalid date format: " + date + " Error: " + e.getMessage());
+                Log.e(TAG, "Invalid date format: " + dateStr + " Error: " + e.getMessage());
             }
         }
     }
@@ -491,6 +493,29 @@ public class ViewCalendarActivity extends Fragment {
                 Toast.makeText(getActivity(), "Error fetching appointments.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Hiển thị thông tin Check-In thời gian đầu tiên nếu có
+        String lastCheckInTime = getLastCheckInTimeForDate(selectedDate);
+        if (!TextUtils.isEmpty(lastCheckInTime)) {
+            firstCheckInTimeInfo.setText("Last Check-In Time: " + lastCheckInTime);
+        } else {
+            firstCheckInTimeInfo.setText("Last Check-In Time: N/A");
+        }
+    }
+
+    /**
+     * Retrieves the first check-in time for the selected date.
+     *
+     * @param selectedDate The selected date in "yyyy-MM-dd" format.
+     * @return The first check-in time in "HH:mm" format or null if not found.
+     */
+    private String getLastCheckInTimeForDate(String selectedDate) {
+        for (CheckInDateInfo info : allCheckInDates) {
+            if (info.getDate().startsWith(selectedDate)) {
+                return info.getLastCheckInTime();
+            }
+        }
+        return null;
     }
 
     /**
@@ -584,12 +609,6 @@ public class ViewCalendarActivity extends Fragment {
         container.addView(appointmentView);
     }
 
-    /**
-     * Static helper method to add a "no appointments" message to the container.
-     *
-     * @param container The LinearLayout container to add the message to.
-     * @param message   The message to display.
-     */
     /**
      * Static helper method to add a "no appointments" message to the container.
      *

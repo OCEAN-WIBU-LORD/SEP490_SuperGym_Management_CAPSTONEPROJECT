@@ -82,6 +82,14 @@
       android:textSize="16sp"
       android:textColor="@android:color/black" />
 
+    <TextView
+        android:id="@+id/firstCheckInTimeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Last Check-In Time: N/A"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
   <!-- Container cho các ghi chú -->
   <LinearLayout
       android:id="@+id/notesContainer"
