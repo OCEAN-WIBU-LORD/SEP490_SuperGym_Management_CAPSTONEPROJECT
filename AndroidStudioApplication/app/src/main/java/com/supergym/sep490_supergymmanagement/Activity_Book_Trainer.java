@@ -963,12 +963,15 @@ public class Activity_Book_Trainer extends AppCompatActivity {
                         Toast.makeText(this, "Number of sessions is not valid to register this membership.", Toast.LENGTH_LONG).show();
                     } else if (errorResponse.contains("Trainer is fully booked")) {
                         Toast.makeText(this, "Trainer is fully booked for one or more slot dates.", Toast.LENGTH_LONG).show();
-                    } else if (errorResponse.contains("One or more users already have active Trainer Rental Registrations")) {
+                    } else if (errorResponse.contains("One or more users already have active Trainer Rental Registrations.")) {
                         Toast.makeText(this, "One or more users already have active Trainer Rental Registrations.", Toast.LENGTH_LONG).show();
+                    }else if (errorResponse.contains("One or more users already have active Boxing Registrations.")) {
+                        Toast.makeText(this, "One or more users already have active Boxing Registrations.", Toast.LENGTH_LONG).show();
                     }else if(errorResponse.contains("Do not enter duplicate emails")){
                         Toast.makeText(this, "Do not enter duplicate emails.", Toast.LENGTH_LONG).show();
-                    }
-                    else {
+                    } else if (errorResponse.contains("One or more users do not have the required 'customer' role.")) {
+                        Toast.makeText(this, "One or more users do not have the required 'customer' role.", Toast.LENGTH_LONG).show();
+                    } else {
                         Toast.makeText(this, "Bad Request: " + errorResponse, Toast.LENGTH_LONG).show();
                     }
                 } else if (response.code() == 500) {
