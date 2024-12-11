@@ -68,10 +68,10 @@ public class ViewIncomeFragment extends Fragment {
         startDateButton = view.findViewById(R.id.startDateButton);
         endDateButton = view.findViewById(R.id.endDateButton);
         totalIncomeTextView = view.findViewById(R.id.totalIncome);
-        campusFilterSpinner = view.findViewById(R.id.campusFilterSpinner);
+     //   campusFilterSpinner = view.findViewById(R.id.campusFilterSpinner);
         filterTypeSpinner = view.findViewById(R.id.FilterTypeSpinner);
         btnDropDownCampus = view.findViewById(R.id.btnDropDown);
-        btnDropDownType = view.findViewById(R.id.btnDropDown2);
+       // btnDropDownType = view.findViewById(R.id.btnDropDown2);
 
         incomeRef = FirebaseDatabase.getInstance().getReference("Income");
         // Cấu hình XAxis của BarChart
@@ -83,8 +83,8 @@ public class ViewIncomeFragment extends Fragment {
         // Cấu hình thêm các thuộc tính khác cho BarChart nếu cần
         incomeBarChart.setFitBars(true);  // Đảm bảo các cột bar không bị cắt
         incomeBarChart.getDescription().setEnabled(false);  // Tắt mô tả mặc định
-        btnDropDownCampus.setOnClickListener(v -> campusFilterSpinner.performClick());
-        btnDropDownType.setOnClickListener(v -> filterTypeSpinner.performClick());
+     //   btnDropDownCampus.setOnClickListener(v -> campusFilterSpinner.performClick());
+       // btnDropDownType.setOnClickListener(v -> filterTypeSpinner.performClick());
         //fetchAndDisplayData();
         fetchAndCalculateMonthlyIncome();
     }
@@ -96,7 +96,7 @@ public class ViewIncomeFragment extends Fragment {
                 android.R.layout.simple_spinner_item
         );
         campusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        campusFilterSpinner.setAdapter(campusAdapter);
+      //  campusFilterSpinner.setAdapter(campusAdapter);
 
         ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(
                 getContext(),
@@ -106,7 +106,7 @@ public class ViewIncomeFragment extends Fragment {
         typeAdapter.setDropDownViewResource(R.layout.spinner_item_multiline);
         filterTypeSpinner.setAdapter(typeAdapter);
 
-        campusFilterSpinner.setOnItemSelectedListener(createSpinnerListener());
+     //   campusFilterSpinner.setOnItemSelectedListener(createSpinnerListener());
         filterTypeSpinner.setOnItemSelectedListener(createSpinnerListener());
     }
 
@@ -114,9 +114,11 @@ public class ViewIncomeFragment extends Fragment {
         return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == campusFilterSpinner) {
+               /* if (parent == campusFilterSpinner) {
                     selectedCampus = campusFilterSpinner.getSelectedItem().toString();
-                } else if (parent == filterTypeSpinner) {
+                } else */
+
+                    if (parent == filterTypeSpinner) {
                     selectedType = filterTypeSpinner.getSelectedItem().toString();
                 }
                 if (startDate != null && endDate != null) {

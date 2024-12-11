@@ -765,8 +765,9 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
                     if (!closestName.equals(lastRecognizedName)) {
                         lastRecognizedName = closestName;
+                        if( roleCheck == "admin"){
                         storeRecognizedFaceImage(bitmap, finalName);
-
+                        }
                         // Handle the check-in process
                         handleCheckIn(userFaceIdFinal, closestName);
                     }

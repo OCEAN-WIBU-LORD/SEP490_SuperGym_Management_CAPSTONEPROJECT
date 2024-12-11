@@ -1,4 +1,12 @@
 <resources>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- values/dimens.xml -->
+    <dimen name="text_size_title">24sp</dimen>
+    <dimen name="text_size_subtitle">16sp</dimen>
+    <dimen name="text_size_normal">18sp</dimen>
+    <dimen name="text_size_large">25sp</dimen>
+    <dimen name="card_corner_radius">15dp</dimen>
+    <dimen name="log_CardView">200dp</dimen>
 </resources>

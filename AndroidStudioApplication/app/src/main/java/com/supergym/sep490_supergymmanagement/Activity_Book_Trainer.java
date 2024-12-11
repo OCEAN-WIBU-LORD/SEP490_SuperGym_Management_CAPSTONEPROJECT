@@ -64,8 +64,8 @@ public class Activity_Book_Trainer extends AppCompatActivity {
     private List<SearchUser> userList;
     private UserAdapter userAdapter;
 
-    private ApiService apiService;
-    private List<String> packageIds = new ArrayList<>();
+    public ApiService apiService;
+    public List<String> packageIds = new ArrayList<>();
     private List<String> trainerIds = new ArrayList<>();
     private List<TimeSlot> timeSlots = new ArrayList<>();
 
@@ -377,7 +377,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
         trainerSpinner.setAdapter(adapter);
     }
 
-    private void loadPackages(String type) {
+    public void loadPackages(String type) {
         apiService.getPackagesAndTrainers(type).enqueue(new Callback<PackagesAndTrainersResponse>() {
             @Override
             public void onResponse(Call<PackagesAndTrainersResponse> call, Response<PackagesAndTrainersResponse> response) {
@@ -733,7 +733,7 @@ public class Activity_Book_Trainer extends AppCompatActivity {
 
 
 
-    private void registerPackage() {
+    public void registerPackage() {
         Button submitButton = findViewById(R.id.submit_button);
         ProgressBar progressBar = findViewById(R.id.progressBar);
 
