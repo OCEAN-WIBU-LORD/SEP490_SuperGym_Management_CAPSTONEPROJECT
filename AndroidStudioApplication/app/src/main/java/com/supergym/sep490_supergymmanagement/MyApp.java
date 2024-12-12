@@ -4,6 +4,15 @@ import android.app.Application;
 
 public class MyApp extends Application {
     private String userRole; // Global variable to store the user's role
+    private boolean isRegistration;
+    public boolean getIsRegistration() {
+        return isRegistration;
+    }
+
+    public void setIsRegistration(boolean isRegistration) {
+        this.isRegistration = isRegistration;
+    }
+
     //private String JWTtoken;
 
     public String getUserRole() {

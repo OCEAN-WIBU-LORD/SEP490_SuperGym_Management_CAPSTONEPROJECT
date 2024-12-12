@@ -256,7 +256,9 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    progressBar.setVisibility(View.GONE); // Added this line to hide progress bar when canceled
+                })
                 .show();
     }
     private void togglePasswordVisibility(EditText editText, boolean isPasswordField) {

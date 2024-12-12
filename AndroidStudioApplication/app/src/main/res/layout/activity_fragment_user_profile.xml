@@ -48,6 +48,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <ImageView
+                        android:id="@+id/membershipIcon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:elevation="8dp"
+                        android:visibility="gone"
+                        android:src="@drawable/crown_icon"
+                        android:layout_marginTop="-15dp"
+                        app:layout_constraintEnd_toEndOf="@+id/cardView6"
+                        app:layout_constraintStart_toStartOf="@+id/cardView6"
+                        app:layout_constraintTop_toBottomOf="@+id/cardView6"></ImageView>
                     <androidx.cardview.widget.CardView
                         android:id="@+id/editCardView"
                         android:layout_width="35dp"
@@ -86,7 +97,9 @@
                             android:scaleType="centerCrop"
                             android:src="@drawable/avatar_default" />
 
+
                     </androidx.cardview.widget.CardView>
+
 
                     <TextView
                         android:id="@+id/tvName"
@@ -535,7 +548,7 @@
 
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView24"
+                android:id="@+id/setting_cardview"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_gravity="center"
@@ -589,7 +602,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Button
-                        android:id="@+id/text_price43"
+                        android:id="@+id/setting_btn"
                         android:layout_width="35dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="16dp"
@@ -624,7 +637,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView24">
+                app:layout_constraintTop_toBottomOf="@+id/setting_cardview">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

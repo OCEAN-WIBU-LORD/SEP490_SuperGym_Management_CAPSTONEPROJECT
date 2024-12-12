@@ -41,6 +41,8 @@ import com.supergym.sep490_supergymmanagement.fragments.Diet_Eating_Fragment;
 import com.supergym.sep490_supergymmanagement.fragments.Diet_Fragment2;
 import com.supergym.sep490_supergymmanagement.fragments.FeedbackFragment;
 import com.supergym.sep490_supergymmanagement.fragments.HomeFragment;
+import com.supergym.sep490_supergymmanagement.fragments.SettingFragment;
+import com.supergym.sep490_supergymmanagement.fragments.SettingFragment;
 import com.supergym.sep490_supergymmanagement.models.MembershipPackage;
 import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
@@ -95,12 +97,12 @@ public class FragmentUserProfile extends Fragment {
     private static final int REQUEST_CALL_PHONE_PERMISSION = 1;
     private static final String PHONE_NUMBER = "0978788128";
     private Boolean isAuthenticated = false;
-    private Button takePermission, cardViewer, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn, resetPasswordBtn;
-    private CardView returnBtn,bmicardView, editProfile, gymPackageCardView, historyPaymentCardView, foodanddiet, feedbackCardView;
+    private Button takePermission, cardViewer, setting_btn, generateQrCodeBtn, btn_bmi_Statistic, btnFeedBack, dietBtn, resetPasswordBtn;
+    private CardView returnBtn,bmicardView, editProfile, gymPackageCardView, historyPaymentCardView, foodanddiet, feedbackCardView, setting_cardview;
     private FirebaseAuth mAuth;
 
     private String publicName;
-    private ImageView userAvatarImg ;
+    private ImageView userAvatarImg , membershipIcon;
     private TextView tvName, tvPhone, tvDob;
     private Button logOutBtn;
 
@@ -158,10 +160,12 @@ public class FragmentUserProfile extends Fragment {
         dietBtn = view.findViewById(R.id.dietBtn);
         resetPasswordBtn = view.findViewById(R.id.resetPasswordBtn);
         feedbackCardView = view.findViewById(R.id.feedbackCardView);
+        setting_btn =view.findViewById(R.id.setting_btn);
         mAuth = FirebaseAuth.getInstance();
         bmicardView = view.findViewById(R.id.bmicardView);
         returnBtn  = view.findViewById(R.id.returnBtn);
         editProfile = view.findViewById(R.id.editCardView);
+        membershipIcon = view.findViewById(R.id.membershipIcon);
         gymPackageCardView = view.findViewById(R.id.gymPackageCardView);
         //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
         editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
@@ -176,6 +180,7 @@ public class FragmentUserProfile extends Fragment {
                 startActivity(intent);
             }
         });
+        setting_btn.setOnClickListener(V -> replaceFragment(new SettingFragment()));
         btnFeedBack.setOnClickListener(V -> replaceFragment(new FeedbackFragment()));
         // Retrieve user role and perform the check
         MyApp app = (MyApp) requireContext().getApplicationContext();
@@ -229,6 +234,7 @@ public class FragmentUserProfile extends Fragment {
                         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.remove("userRole"); // Remove the role
+                        editor.remove("isRegistration");
                         editor.apply();
                         MyApp app = (MyApp) getActivity().getApplication();
                         app.setUserRole(null); // Assuming setUserRole() is a setter in your MyApp class
@@ -261,8 +267,13 @@ public class FragmentUserProfile extends Fragment {
             }
         });
 
+        MyApp myApp = (MyApp) getContext().getApplicationContext();
 
-
+        boolean userRole1 = myApp.getIsRegistration();
+        if (userRole1 == true) {
+         //   Toast.makeText(getContext(), "Vip Pro", Toast.LENGTH_SHORT).show();
+            membershipIcon.setVisibility(View.VISIBLE);
+        }
 
 
         // Find the button and set up a click listener

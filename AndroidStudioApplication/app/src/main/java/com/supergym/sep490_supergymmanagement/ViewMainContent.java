@@ -99,6 +99,7 @@ public class    ViewMainContent extends AppCompatActivity {
     private ProgressBar progressBar;
     String fragmentType = "";
 
+
     private String trainerId;
 
     private boolean isRegistered;
@@ -128,7 +129,7 @@ public class    ViewMainContent extends AppCompatActivity {
         setContentView(R.layout.activity_view_main_content);
         MyApp app = (MyApp) getApplicationContext();
         app.setUserRole(null); // Assuming setUserRole() is a setter in your MyApp class
-
+        app.setIsRegistration(false);
         loadUserDetails();
         loadingOverlay = findViewById(R.id.loading_overlay);
         // Check if we should load the AdminDashBoard fragment
@@ -474,12 +475,16 @@ public class    ViewMainContent extends AppCompatActivity {
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     isRegistered = response.body();
+                    MyApp app = (MyApp) getApplicationContext();
+                    app.setIsRegistration(isRegistered); // Set the role based on your logic
+
+
                     if (isRegistered) {
                         Log.d("HomeFragment", "User is registered");
 //Intent intent = new Intent(getApplicationContext(), Activity_Book_Trainer.class);
            //             startActivity(intent);
                     } else {
-                        Toast.makeText(getApplicationContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
+                      //      Toast.makeText(getApplicationContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
