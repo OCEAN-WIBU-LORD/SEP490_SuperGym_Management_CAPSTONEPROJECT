@@ -257,7 +257,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
 
             if (reviewId != null) {
                 // Create a Review object
-                Review review = new Review(reviewText, userId, trainerId); // Sample trainerId and userId
+                Review review = new Review(reviewText,  trainerId, userId); // Sample trainerId and userId
 
                 // Set the review data to Firebase under the new review ID
                 databaseReference.child(reviewId).setValue(review)

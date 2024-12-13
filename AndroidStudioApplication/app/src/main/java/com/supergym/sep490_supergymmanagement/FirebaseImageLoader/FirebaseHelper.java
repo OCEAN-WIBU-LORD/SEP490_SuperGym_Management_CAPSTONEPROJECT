@@ -12,11 +12,54 @@ import java.util.Date;
 public class FirebaseHelper {
 
     private FirebaseDatabase database;
+    private  DatabaseReference databaseReference;
 
     public FirebaseHelper() {
         // Initialize Firebase Database
         database = FirebaseDatabase.getInstance();
+        // Initialize the database reference pointing to "CheckIns" node
+        databaseReference = FirebaseDatabase.getInstance().getReference("CheckIns");
     }
+
+    public interface Callback {
+        void onResult(boolean exists);
+    }
+
+    public void isUserIdExistsForToday(String userId, String todayDate, final Callback callback) {
+        // Attach a listener to fetch data once
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean found = false;
+
+                // Iterate through the children of CheckIns
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    String currentUserId = childSnapshot.child("UserId").getValue(String.class);
+                    String currentTime = childSnapshot.child("Time").getValue(String.class);
+
+                    if (currentUserId != null && currentTime != null) {
+                        // Extract date from the currentTime field (assumes ISO8601 format)
+                        String currentDate = currentTime.split("T")[0]; // Get date part: YYYY-MM-DD
+
+                        if (userId.equals(currentUserId) && todayDate.equals(currentDate)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Pass the result back using the callback
+                callback.onResult(found);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle error (optional)
+                callback.onResult(false);
+            }
+        });
+    }
+
 
     // Callback interface to update the TextView from the Fragment
     public interface CountExpiredUsersCallback {
