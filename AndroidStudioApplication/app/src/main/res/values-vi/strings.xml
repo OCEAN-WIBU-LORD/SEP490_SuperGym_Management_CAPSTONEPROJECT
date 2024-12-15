@@ -13,6 +13,7 @@
         <string name="face_detected">Khuôn mặt được phát hiện</string>
         <string name="no_face_detected">Không phát hiện khuôn mặt!</string>
 
+        <string name="no_data_message">Không có thông tin check-in nào ngày hôm nay !</string>
         <string name="disease">Bệnh lý</string>
         <string name="record_list">Danh sách hồ sơ</string>
         <string name="no_records">Chưa có hồ sơ</string>

@@ -5,27 +5,48 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/lightGray"> <!-- Background color for a cleaner look -->
-
-    <!-- Back Button with CardView for Shadow and Rounded Corners -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/returnCardView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+    android:background="@color/waterColor"> <!-- Background color for a cleaner look -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="16dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="4dp"
-        android:layout_gravity="start">
+        android:layout_marginBottom="16dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:src="@drawable/move_back_icon"
-            app:tint="@color/black" />
-    </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/returnCardView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+
+            android:layout_gravity="start"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/move_back_icon"
+                app:tint="@color/black" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posts List"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Back Button with CardView for Shadow and Rounded Corners -->
 
     <!-- Search View with Padding and Margin for Spacing -->
     <androidx.appcompat.widget.SearchView
@@ -46,18 +67,26 @@
         android:background="@drawable/spinner_background" /> <!-- Custom background with rounded corners -->
 
     <!-- Button for Manage My Posts (initially hidden) -->
-    <Button
-        android:id="@+id/managePostButton"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        app:cardCornerRadius="15dp"
         android:layout_marginBottom="16dp"
-        android:padding="12dp"
-        android:text="Manage My Posts"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/primaryColor"
-        android:visibility="gone"
-        android:drawableLeft="@drawable/ic_manage_posts"
-        android:drawablePadding="8dp" /> <!-- Icon for better visual representation -->
+        >
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/managePostButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="Manage My Posts"
+            android:textColor="@color/white"
+            android:background="@color/light_red"
+            android:visibility="gone"
+            android:drawableLeft="@drawable/ic_manage_posts"
+             />
+    </androidx.cardview.widget.CardView>
+ <!-- Icon for better visual representation -->
 
     <!-- RecyclerView to display post list -->
     <androidx.recyclerview.widget.RecyclerView

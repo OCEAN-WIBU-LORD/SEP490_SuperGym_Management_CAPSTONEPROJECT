@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ public class DashBoardAdmin extends Fragment {
     private int userCount = 0, ptCount = 0;
     private TextView userCountTextView, ptCountTextView, totalMembership, nearBirthDate, tvExpiredUsersCount, paidCourseThisMonth;
 
+
+    private  ProgressBar progressBar;
     public DashBoardAdmin() {
         // Required empty public constructor
     }
@@ -65,34 +68,48 @@ public class DashBoardAdmin extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dash_board_admin, container, false);
 
+        progressBar = view.findViewById(R.id.progressBarOverlay);
+
+        // Show progress bar before data loads
+        progressBar.setVisibility(View.VISIBLE);
         // Initialize TextViews for displaying counts
         userCountTextView = view.findViewById(R.id.userCountTextView);
         ptCountTextView = view.findViewById(R.id.ptCountTextView);
         totalMembership = view.findViewById(R.id.totalMembership);
         nearBirthDate = view.findViewById(R.id.nearBirthDate);
         paidCourseThisMonth = view.findViewById(R.id.paidCourseThisMonth);
-        // Call method to get total user count from Firebase
-        getTotalUserCountWithRole("customer", "pt");
         tvExpiredUsersCount = view.findViewById(R.id.tvExpiredUsersCount);
 
-        // Call the method to count expired users
+        // Initialize the ProgressBar
+
+
+        // Fetch data and hide progress bar after loading
+        fetchData(progressBar);
+
+        return view;
+    }
+
+    private void fetchData(ProgressBar progressBar) {
+        // Initialize data fetching processes
+        getTotalUserCountWithRole("customer", "pt");
+        fetchRegistrationGrowthData();
+        countUsersWithDOBInCurrentOrNextMonth();
+
+        // Simulate FirebaseHelper counting expired users (you can chain your methods here)
         FirebaseHelper firebaseHelper = new FirebaseHelper();
         firebaseHelper.countExpiredUsers(new FirebaseHelper.CountExpiredUsersCallback() {
             @Override
             public void onCountExpiredUsers(int count) {
-                // Update the TextView with the count
-                tvExpiredUsersCount.setText(String.valueOf(count) );
+                tvExpiredUsersCount.setText(String.valueOf(count));
+
+                // Once all data is loaded, hide the progress bar
+                progressBar.setVisibility(View.GONE);
             }
         });
-
-        // Fetch registration growth data from the API after the view is created
-        fetchRegistrationGrowthData();
-        countUsersWithDOBInCurrentOrNextMonth();
-        return view;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {

@@ -85,7 +85,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
              userId = user.getUid();
         }
 
-        checkRegistration(userId);
+
 
         bookingBtn.setOnClickListener(v -> {
 
@@ -116,6 +116,8 @@ public class ViewTrainerDetails extends AppCompatActivity {
             editBtn.setVisibility(View.VISIBLE);
             editTrainingImageCardView.setVisibility(View.VISIBLE);
             bookCardView.setVisibility(View.GONE);
+        }else{
+            checkRegistration(userId);
         }
 
         Button viewTrainingImageButton = findViewById(R.id.viewTrainingImage);

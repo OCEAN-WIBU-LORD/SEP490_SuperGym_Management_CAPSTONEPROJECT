@@ -160,6 +160,7 @@ public class FragmentUserProfile extends Fragment {
         dietBtn = view.findViewById(R.id.dietBtn);
         resetPasswordBtn = view.findViewById(R.id.resetPasswordBtn);
         feedbackCardView = view.findViewById(R.id.feedbackCardView);
+        setting_cardview = view.findViewById(R.id.setting_cardview);
         setting_btn =view.findViewById(R.id.setting_btn);
         mAuth = FirebaseAuth.getInstance();
         bmicardView = view.findViewById(R.id.bmicardView);
@@ -198,6 +199,7 @@ public class FragmentUserProfile extends Fragment {
             foodanddiet.setVisibility(View.GONE);
             feedbackCardView.setVisibility(View.GONE);
             bmicardView.setVisibility(View.GONE);
+            setting_cardview.setVisibility(View.GONE);
         }
         resetPasswordBtn.setOnClickListener( new View.OnClickListener() {
             @Override

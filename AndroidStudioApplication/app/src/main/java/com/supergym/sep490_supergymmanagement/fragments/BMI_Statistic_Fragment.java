@@ -14,6 +14,9 @@ import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +70,7 @@ public class BMI_Statistic_Fragment extends Fragment {
     private DatabaseReference databaseReference;
 
     private Button saveBtn, clearButton;
-
+    private boolean isButtonClickable = true;
     // Views
     private CardView selectDateButton;
     private LinearLayout advanceInfoContentLayout;
@@ -171,6 +174,15 @@ public class BMI_Statistic_Fragment extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null && selectedDate != null) {
             getUserStatisticsFromFirebase(userId, selectedDate);
+
+            // Add this line to ensure water level is displayed after data is retrieved
+            // Use a post-delayed method to ensure UI is updated
+            txtWaterTextView.post(new Runnable() {
+                @Override
+                public void run() {
+                    displayWaterLevel();
+                }
+            });
         }
     }
     private void displayWaterLevel2(){
@@ -185,19 +197,19 @@ public class BMI_Statistic_Fragment extends Fragment {
 
     private void displayWaterLevel() {
         String waterText = txtWaterTextView.getText().toString().trim();
+        float waterInLiters = 0.0f; // Default to 0 liters
         try {
-            // Create a NumberFormat instance for Vietnamese locale
             NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
             Number waterNumber = numberFormat.parse(waterText);
-            float waterInLiters = waterNumber.floatValue();
-
-            float maxLiters = 2.0f; // The maximum capacity of the cup is 2 liters
-            cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters); // Set the initial water level
-        } catch (ParseException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Invalid number format for water intake!", Toast.LENGTH_SHORT).show();
+            waterInLiters = waterNumber.floatValue();
+        } catch (Exception e) {
+            Log.e("WaterLevel", "Failed to parse water level, defaulting to 0 liters");
         }
+
+        float maxLiters = 2.0f; // Maximum capacity of the cup
+        cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters);
     }
+
 
 
 
@@ -300,9 +312,20 @@ public class BMI_Statistic_Fragment extends Fragment {
             datePickerDialog.show();
         });
 
+
+
         userWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Check if the button is currently clickable
+                if (!isButtonClickable) {
+                    return;
+                }
+
+                // Disable the button immediately
+                isButtonClickable = false;
+
+                // Start animation
                 v.startAnimation(cardClickAnimation);
                 String datePicked = DatePicked.getText().toString().trim();
 
@@ -335,18 +358,39 @@ public class BMI_Statistic_Fragment extends Fragment {
                             // Trigger animations and display water level
                             controlWaterAnimation();
                             displayWaterLevel();
+
+                            // Re-enable the button after 1 second
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    isButtonClickable = true;
+                                }
+                            }, 1000);
+
                         } catch (ParseException e) {
                             e.printStackTrace();
                             Toast.makeText(getContext(), "Invalid water input format!", Toast.LENGTH_SHORT).show();
+
+                            // Re-enable the button
+                            isButtonClickable = true;
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                             Toast.makeText(getContext(), "Please enter valid numeric values!", Toast.LENGTH_SHORT).show();
+
+                            // Re-enable the button
+                            isButtonClickable = true;
                         }
                     } else {
                         Toast.makeText(getContext(), "Please check again. The input is null.", Toast.LENGTH_SHORT).show();
+
+                        // Re-enable the button
+                        isButtonClickable = true;
                     }
                 } else {
                     Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
+
+                    // Re-enable the button
+                    isButtonClickable = true;
                 }
             }
         });
@@ -581,15 +625,15 @@ public class BMI_Statistic_Fragment extends Fragment {
 
 
     private void displayNoData() {
-        // Display "None" in all TextViews when no data is found for the selected date
         txtBMITextView.setText("None");
         txtBMIStatus.setText("None");
         txtcaloriesTextView.setText("0");
         stepsTextView.setText("0");
         txtWaterTextView.setText("0");
 
-        // Optionally, update the DatePicked TextView as well
         DatePicked3.setText("No data available");
+
+        // Ensure water level is displayed even when no data
         displayWaterLevel();
     }
 

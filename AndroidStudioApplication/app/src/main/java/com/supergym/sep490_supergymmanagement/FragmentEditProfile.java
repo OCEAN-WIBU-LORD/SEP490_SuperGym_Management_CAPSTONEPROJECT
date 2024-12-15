@@ -359,6 +359,14 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
             Toast.makeText(getActivity(), "User not authenticated", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Validate name length
+        String name = editName.getText().toString().trim();
+        if (name.length() > 36) {
+            Toast.makeText(getActivity(), "Name must be 36 characters or less", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         String userId = user.getUid();
 
@@ -367,7 +375,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
             public void onCallback(List<User> users) {
                 if (users != null && !users.isEmpty()) {
                     User updatedUser = users.get(0);
-                    updatedUser.setName(editName.getText().toString().trim());
+                    updatedUser.setName(name);
 
                     // Handle Date of Birth and save it as a timestamp
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -388,9 +396,8 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                     updatedUser.setAddress(addressText.getText().toString().trim());
                     updatedUser.setGender(genderText.getText().toString().trim());
 
-
                     try {
-                        updatedUser.setIdCard( cccdText.getText().toString().trim());
+                        updatedUser.setIdCard(cccdText.getText().toString().trim());
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getActivity(), "Error setting ID card", Toast.LENGTH_SHORT).show();
