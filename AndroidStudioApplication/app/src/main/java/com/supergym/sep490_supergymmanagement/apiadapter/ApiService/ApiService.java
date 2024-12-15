@@ -92,8 +92,10 @@ public interface ApiService {
             @Part("categoryId") RequestBody categoryId
     );
 
-    @DELETE("posts/{postId}.json")
+    @DELETE("api/Posts/posts/{postId}")
     Call<Void> deletePost(@Path("postId") String postId);
+
+
 
     // 7. Cập nhật bài viết
     @PUT("api/posts/posts/{postId}")

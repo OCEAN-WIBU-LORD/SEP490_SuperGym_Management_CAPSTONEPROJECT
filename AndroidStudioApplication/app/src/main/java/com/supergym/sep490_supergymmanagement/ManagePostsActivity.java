@@ -60,9 +60,12 @@ public class ManagePostsActivity extends AppCompatActivity {
             startActivity(intent);
         });
         // Gọi API để tải bài viết của người dùng hiện tại
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
         loadUserPosts(currentUser.getUid());
     }
-
     private void loadUserPosts(String userId) {
         Call<List<Post>> call = RetrofitClient.getApiService(this).getPostsByUserId(userId);
         call.enqueue(new Callback<List<Post>>() {

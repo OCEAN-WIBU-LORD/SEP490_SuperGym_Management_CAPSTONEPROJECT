@@ -103,8 +103,13 @@ public class PostListActivity extends AppCompatActivity {
         postRecyclerView.setAdapter(postAdapter);
 
         loadCategories();
-        loadPosts();
         setupSearchFilter();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadPosts();
     }
 
     private void checkUserRole(String userId) {

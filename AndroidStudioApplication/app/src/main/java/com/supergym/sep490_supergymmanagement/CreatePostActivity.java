@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -51,17 +53,22 @@ public class CreatePostActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private ApiService apiService;
 
+    // ProgressBar
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
 
+        // Khởi tạo các view
         etTitle = findViewById(R.id.etTitle);
         etContent = findViewById(R.id.etContent);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         btnSelectImage = findViewById(R.id.btnSelectImage);
         btnSubmitPost = findViewById(R.id.btnSubmitPost);
         ivSelectedImage = findViewById(R.id.ivSelectedImage);
+        progressBar = findViewById(R.id.progressBar); // Khởi tạo ProgressBar
 
         // Khởi tạo Firebase Storage và Database
         storageReference = FirebaseStorage.getInstance().getReference("post");
@@ -130,6 +137,12 @@ public class CreatePostActivity extends AppCompatActivity {
             Toast.makeText(this, "Please complete all fields and select an image", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Ẩn nút Submit và hiển thị ProgressBar
+        btnSubmitPost.setVisibility(View.GONE); // Ẩn nút submit
+        progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar
+
+        // Upload ảnh và lưu bài viết
         uploadImageAndSavePost(title, content, categoryId);
     }
 
@@ -139,7 +152,12 @@ public class CreatePostActivity extends AppCompatActivity {
         fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
             String imageUrl = uri.toString();
             savePostToDatabase(title, content, categoryId, imageUrl);
-        })).addOnFailureListener(e -> Toast.makeText(CreatePostActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        })).addOnFailureListener(e -> {
+            // Hiển thị lại nút submit và ẩn ProgressBar khi upload thất bại
+            btnSubmitPost.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(CreatePostActivity.this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void savePostToDatabase(String title, String content, String categoryId, String imageUrl) {
@@ -152,12 +170,17 @@ public class CreatePostActivity extends AppCompatActivity {
 
         databaseReference.child(postId).setValue(post).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                // Đăng bài thành công
                 Toast.makeText(CreatePostActivity.this, "Post created successfully", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
+                // Đăng bài thất bại
+                btnSubmitPost.setVisibility(View.VISIBLE); // Hiển thị lại nút Submit
+                progressBar.setVisibility(View.GONE); // Ẩn ProgressBar
                 Toast.makeText(CreatePostActivity.this, "Failed to create post", Toast.LENGTH_SHORT).show();
             }
         });
     }
 }
+
 
