@@ -636,6 +636,36 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
             }
         });
     }
+    // Define a callback interface
+    public interface RegistrationCallback {
+        void onResult(boolean isRegistered);
+    }
+
+    // Function to check registration status and use the callback to return the result
+    private void checkRegistrationVer2(String registrationId, RegistrationCallback callback) {
+        ApiService api = RetrofitClient.getApiService(getApplicationContext());
+
+        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Pass the result to the callback
+                    callback.onResult(response.body());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                    // Pass false as the default in case of failure
+                    callback.onResult(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                // Pass false as the default in case of error
+                callback.onResult(false);
+            }
+        });
+    }
 
 
 
@@ -812,7 +842,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     float minDistance = Float.MAX_VALUE;
                     String closestName = "unknown";
-
+                    String closestUserId = "unknown";
 
                     for (DataSnapshot faceSnapshot : dataSnapshot.getChildren()) {
                         String name = faceSnapshot.child("name").getValue(String.class);
@@ -834,13 +864,14 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                                 minDistance = distance;
                                 closestName = name;
                                 userFaceIdFinal = userFaceId;
+                                closestUserId = userFaceId;
                             }
                         }
                     }
 
                     // Evaluate the result
                     if (minDistance < 0.800f) {
-                        delayedWelcomeMessage(closestName);
+                        delayedWelcomeMessage(closestName, closestUserId);
                         finalName = closestName;
 
                     } else {
@@ -951,31 +982,180 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     }
 
 
-    public void delayedWelcomeMessage(final String closestName) {
-        // Check if the welcome message is already playing
+    public void delayedWelcomeMessage(final String closestName, final String closestUserId) {
+        // Retrieve the role of the user
+        loadUserRole(closestUserId, new RoleNameCallback() {
+            @Override
+            public void onRoleNameRetrieved(String roleName) {
+                // Check if the role is "customer"
+                if ("customer".equalsIgnoreCase(roleName)) {
+                    // If the role is "customer," check registration before triggering the welcome message
+                    checkRegistrationVer2(closestUserId, new RegistrationCallback() {
+                        @Override
+                        public void onResult(boolean isRegistered) {
+                            if (isRegistered) {
+                                playWelcomeMessage(closestName);
+                            } else {
+                                playNonRegisteredMessage(closestName);
+                            }
+                        }
+                    });
+                } else {
+                    // For non-customer roles, directly trigger the welcome message
+                    playWelcomeMessage(closestName);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                // Handle errors in fetching the role
+                Toast.makeText(FaceCaptureActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void playNonRegisteredMessage(final String closestName) {
         if (!isWelcomeMessagePlaying) {
             isWelcomeMessagePlaying = true; // Set flag to prevent multiple calls
 
-            // Delay the execution of playWelcomeMessage by 5 seconds
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playWelcomeMessage(closestName);
-                }
-            }, 0000); // 5000 ms = 5 seconds
+            String message = closestName + ", User is not Registered Membership or the Membership is Overdue.";
+            playMessage(message);
         }
     }
 
-    public void playWelcomeMessage(String closestName) {
+    private void playMessage(String message) {
+        if (tts != null && isWelcomeMessagePlaying) {
+            HashMap<String, String> params = new HashMap<>();
+            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "messagePlayback");
+
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+                    // No action needed when the message starts
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    if ("messagePlayback".equals(utteranceId)) {
+                        isWelcomeMessagePlaying = false; // Reset flag when playback finishes
+                    }
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    if ("messagePlayback".equals(utteranceId)) {
+                        isWelcomeMessagePlaying = false; // Reset flag if there’s an error
+                    }
+                }
+            });
+
+            tts.speak(message, TextToSpeech.QUEUE_FLUSH, params);
+        }
+    }
+
+    private void playWelcomeMessage(String closestName) {
+        if (!isWelcomeMessagePlaying) {
+            isWelcomeMessagePlaying = true; // Set flag to prevent multiple calls
+
+            String welcomeMessage = "Welcome to SuperGym, " + closestName + "!";
+            playMessage(welcomeMessage);
+        }
+    }
+
+
+
+
+
+    public interface RoleNameCallback {
+        void onRoleNameRetrieved(String roleName);
+        void onFailure(String errorMessage);
+    }
+
+
+    private void loadUserRole(String userId, RoleNameCallback callback) {
+        // Reference to the user's details in the database
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve the roleId of the user
+                    String roleId = dataSnapshot.child("roleId").getValue(String.class);
+
+                    if (roleId != null) {
+                        // Fetch role name based on roleId
+                        DatabaseReference roleRef = FirebaseDatabase.getInstance().getReference("Roles").child(roleId.trim());
+                        roleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot roleSnapshot) {
+                                if (roleSnapshot.exists()) {
+                                    // Retrieve role name
+                                    String roleName = roleSnapshot.child("RoleName").getValue(String.class);
+                                    if (roleName != null) {
+                                        callback.onRoleNameRetrieved(roleName.trim());
+                                    } else {
+                                        callback.onFailure("Role name not found.");
+                                    }
+                                } else {
+                                    callback.onFailure("Role ID not found.");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                callback.onFailure("Failed to retrieve role name: " + databaseError.getMessage());
+                            }
+                        });
+                    } else {
+                        callback.onFailure("Role ID is null.");
+                    }
+                } else {
+                    callback.onFailure("User not found.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onFailure("Failed to load user details: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
+   /* public void playWelcomeMessage(String closestName) {
         if (tts != null && isWelcomeMessagePlaying) {
             String welcomeMessage = "Welcome to SuperGym, " + closestName + "!";
             HashMap<String, String> params = new HashMap<>();
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "welcomeMessage");
 
-            // Queue the message to play to completion
+            // Set an utterance progress listener to reset the flag after completion
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {
+                    // No action needed when the message starts
+                }
+
+                @Override
+                public void onDone(String utteranceId) {
+                    if ("welcomeMessage".equals(utteranceId)) {
+                        isWelcomeMessagePlaying = false; // Reset the flag when playback finishes
+                    }
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    if ("welcomeMessage".equals(utteranceId)) {
+                        isWelcomeMessagePlaying = false; // Reset the flag if there’s an error
+                    }
+                }
+            });
+
+            // Queue the message to play
             tts.speak(welcomeMessage, TextToSpeech.QUEUE_FLUSH, params);
         }
-    }
+    }*/
+
     // Helper method to calculate distance between two embeddings
     private float calculateDistance(float[] embedding1, float[] embedding2) {
         float sum = 0;
