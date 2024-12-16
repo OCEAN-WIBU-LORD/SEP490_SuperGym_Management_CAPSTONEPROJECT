@@ -1,24 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="500dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Your content goes here -->
-    <LinearLayout
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:padding="20dp">
-
-        <ImageView
-            android:id="@+id/btnCloseDialog"
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dialogLineChart"
+        android:layout_alignParentStart="true"
+        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="44dp"
+        app:cardCornerRadius="15dp">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDatePicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_close"
-            android:contentDescription="Close" />
+            android:padding="10dp"
+            android:background="@color/light_red"
+            android:text="Choose Month and Year" />
+    </androidx.cardview.widget.CardView>
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/dialogLineChart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tvNoData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="200dp"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:text="No data available for the selected month."
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/dialogLineChart"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp" />" />
 
-    </LinearLayout>
-
+    <ImageView
+        android:id="@+id/btnCloseDialog"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/dialogLineChart"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="44dp"
+        android:src="@drawable/ic_close" />
+</RelativeLayout>

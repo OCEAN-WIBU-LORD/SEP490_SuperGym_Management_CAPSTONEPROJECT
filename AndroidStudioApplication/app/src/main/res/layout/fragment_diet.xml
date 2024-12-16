@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-
+android:layout_marginBottom="80dp"
     tools:context=".MainActivity">
 
 
@@ -380,7 +380,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mealsRecyclerView"
             android:layout_width="0dp"
-            android:layout_height="220dp"
+            android:layout_height="160dp"
             android:layout_marginTop="4dp"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -396,7 +396,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Add Meal"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="10dp"
         android:src="@drawable/baseline_add_24"
         app:backgroundTint="@color/green"
         app:layout_constraintBottom_toBottomOf="parent"

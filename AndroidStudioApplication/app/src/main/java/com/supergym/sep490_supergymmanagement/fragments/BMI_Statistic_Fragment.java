@@ -1,6 +1,10 @@
 package com.supergym.sep490_supergymmanagement.fragments;
 
 
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.supergym.sep490_supergymmanagement.animations.CupOfWaterView;
 import com.supergym.sep490_supergymmanagement.models.UserStatistics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +31,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import android.app.AlertDialog;
@@ -39,6 +44,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.cardview.widget.CardView;
@@ -63,6 +69,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.components.Description;
+
+
+
 public class BMI_Statistic_Fragment extends Fragment {
 
     FirebaseAuth mAuth;
@@ -80,6 +94,8 @@ public class BMI_Statistic_Fragment extends Fragment {
     // Get the current year, month, and day
     // Set up the Calendar instance for the current date
     Calendar calendar = Calendar.getInstance();
+
+    private TextView tvNoData;
 
     private int year, month , day ;
      private String userId,  selectedDate, datePicked;
@@ -113,7 +129,6 @@ public class BMI_Statistic_Fragment extends Fragment {
         txtBMIStatus = view.findViewById(R.id.txtBMIStatus);
         editCaloriesCard = view.findViewById(R.id.editCaloriesCard);
         editStepsCard = view.findViewById(R.id.editStepsCard);
-        editCaloriesCard = view.findViewById(R.id.editCaloriesCard);
         txtcaloriesTextView = view.findViewById(R.id.txtcaloriesTextView);
         stepsTextView = view.findViewById(R.id.stepsTextView);
         txtWaterTextView = view.findViewById(R.id.txtWaterTextView);
@@ -141,7 +156,7 @@ public class BMI_Statistic_Fragment extends Fragment {
 
         // Set the DatePicked TextView to the current date
         String currentDate = day + "/" + (month + 1) + "/" + year;
-        DatePicked.setText(currentDate);
+       // DatePicked.setText(currentDate);
 
 // Find the allTimeStatistic button
         allTimeStatistic = view.findViewById(R.id.allTimeStatistic);
@@ -163,13 +178,14 @@ public class BMI_Statistic_Fragment extends Fragment {
         // Inside the onCreateView method
         clearButton = view.findViewById(R.id.clearButton);
         functionAllButton();
-        displayWaterLevel();
+        displayWaterLevel2();
         displayTodayData(currentDate);
         return view;
     }
 
     private void displayTodayData(String currentDate){
         String selectedDate = currentDate;
+        displayWaterLevel2();
         // Now fetch the statistics for the selected date
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null && selectedDate != null) {
@@ -180,20 +196,25 @@ public class BMI_Statistic_Fragment extends Fragment {
             txtWaterTextView.post(new Runnable() {
                 @Override
                 public void run() {
-                    displayWaterLevel();
+                    displayWaterLevel2();
                 }
             });
         }
     }
-    private void displayWaterLevel2(){
-        // Assuming txtWaterTextView contains the water in liters (for supergym "1")
-        String waterText = txtWaterTextView.getText().toString();
-        float waterInLiters = Float.parseFloat(waterText);  // Convert to float
+    private void displayWaterLevel2() {
+        try {
+            // Replace commas with dots for consistency
+            String waterText = txtWaterTextView.getText().toString().replace(",", ".");
+            float waterInLiters = Float.parseFloat(waterText);  // Convert to float
+            float maxLiters = 2.0f;
 
-        float maxLiters = 2.0f;  // The maximum capacity of the cup is 2 liters
-        cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters);  // Set the initial water level
-
+            // Update water level view
+            cupOfWaterView.setWaterLevelInLiters(waterInLiters, maxLiters);
+        } catch (NumberFormatException e) {
+            Log.e("WaterLevel", "Invalid water input: " + e.getMessage());
+        }
     }
+
 
     private void displayWaterLevel() {
         String waterText = txtWaterTextView.getText().toString().trim();
@@ -226,31 +247,51 @@ public class BMI_Statistic_Fragment extends Fragment {
         });
 
         // Set OnClickListener for Calories Burned Card
+        // Set OnClickListener for Calories Burned Card
         editCaloriesCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showInputDialog(txtcaloriesTextView, "Edit Calories Burned", "Enter calories burned");
+                showInputDialog("Edit Calories Burned", "Enter calories burned", new InputCallback() {
+                    @Override
+                    public void onInputConfirmed(String input) {
+                        txtcaloriesTextView.setText(input);
+                    }
+                });
             }
         });
 
-        // Set OnClickListener for Steps Walked Card
+// Set OnClickListener for Steps Walked Card
         editStepsCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showInputDialog(stepsTextView, "Edit Steps Walked", "Enter steps walked");
+                showInputDialog("Edit Steps Walked", "Enter steps walked", new InputCallback() {
+                    @Override
+                    public void onInputConfirmed(String input) {
+                        stepsTextView.setText(input);
+                    }
+                });
             }
         });
+
 
         // Set OnClickListener for Water Intake Card
         editWaterIntakeCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showInputDialog(txtWaterTextView, "Edit Water Intake", "Enter water intake (liters)");
-                displayWaterLevel();
+                showInputDialog("Edit Water Intake", "Enter water intake (liters)", new InputCallback() {
+                    @Override
+                    public void onInputConfirmed(String input) {
+                        // Update the water intake TextView
+                        txtWaterTextView.setText(input);
+
+                        // Update water level display
+                        displayWaterLevel2();
+                    }
+                });
             }
-
-
         });
+
+
 
         // Set an OnClickListener on the button to show the DatePickerDialog
         selectDateButton.setOnClickListener(v -> {
@@ -271,7 +312,7 @@ public class BMI_Statistic_Fragment extends Fragment {
                     },
                     year, month, day
             );
-            displayWaterLevel();
+            displayWaterLevel2();
 
             // Show the DatePickerDialog
             datePickerDialog.show();
@@ -281,7 +322,7 @@ public class BMI_Statistic_Fragment extends Fragment {
         allTimeStatistic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showLineChartDialog();
+                showBarChartDialog();
             }
         });
 
@@ -357,7 +398,7 @@ public class BMI_Statistic_Fragment extends Fragment {
 
                             // Trigger animations and display water level
                             controlWaterAnimation();
-                            displayWaterLevel();
+                            displayWaterLevel2();
 
                             // Re-enable the button after 1 second
                             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -403,10 +444,10 @@ public class BMI_Statistic_Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String datePicked = DatePicked.getText().toString().trim();
-                String bmiText = txtBMITextView.getText().toString().trim();
+                String bmiText = txtBMITextView.getText().toString().trim().replace(",", "."); // Standardize input
                 String caloriesText = txtcaloriesTextView.getText().toString().trim();
                 String stepsText = stepsTextView.getText().toString().trim();
-                String waterText = txtWaterTextView.getText().toString().trim();
+                String waterText = txtWaterTextView.getText().toString().trim().replace(",", ".");
 
                 // Validate fields
                 if (bmiText.isEmpty() || caloriesText.isEmpty() || stepsText.isEmpty() || waterText.isEmpty()) {
@@ -415,14 +456,11 @@ public class BMI_Statistic_Fragment extends Fragment {
                 }
 
                 try {
-                    // Create a NumberFormat instance for the Vietnamese locale
-                    NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
-
-                    // Parse the numeric values
-                    double bmi = numberFormat.parse(bmiText).doubleValue();
-                    int calories = Integer.parseInt(caloriesText); // Integers are locale-independent
+                    // Parse numeric values
+                    double bmi = Double.parseDouble(bmiText); // Locale-independent parsing
+                    int calories = Integer.parseInt(caloriesText);
                     int steps = Integer.parseInt(stepsText);
-                    double water = numberFormat.parse(waterText).doubleValue();
+                    double water = Double.parseDouble(waterText);
 
                     if (compareDates(datePicked)) {
                         // Save statistics to Firebase
@@ -437,19 +475,17 @@ public class BMI_Statistic_Fragment extends Fragment {
                         );
 
                         // Update water level display
-                        displayWaterLevel();
+                        displayWaterLevel2();
                     } else {
                         Toast.makeText(getContext(), "You cannot update statistics for a future day!", Toast.LENGTH_SHORT).show();
                     }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Invalid number format. Please check your input!", Toast.LENGTH_SHORT).show();
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Please enter valid numeric values!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
 
 
 
@@ -595,17 +631,46 @@ public class BMI_Statistic_Fragment extends Fragment {
                     UserStatistics userStatistics = dataSnapshot.getValue(UserStatistics.class);
 
                     if (userStatistics != null) {
-                        // Update the corresponding TextViews with the fetched data
-                        txtBMITextView.setText(String.format("%.2f", userStatistics.getBmi()));
-                        txtBMIStatus.setText(userStatistics.getBmiStatus());
-                        txtcaloriesTextView.setText(String.valueOf(userStatistics.getCalories()));
-                        stepsTextView.setText(String.valueOf(userStatistics.getSteps()));
-                        txtWaterTextView.setText(String.format("%.2f", userStatistics.getWaterIntake()));
+                        // Get current and fallback locales
+                        Locale currentLocale = Locale.getDefault();
+                        Locale vietnameseLocale = new Locale("vi", "VN");
+                        Locale englishLocale = Locale.US;
 
-                        // Update the DatePicked TextView with the selected date
-                        DatePicked.setText(selectedDate);
-                        DatePicked3.setText("");
-                        displayWaterLevel();
+                        // Create multiple NumberFormat instances
+                        NumberFormat[] formatters = {
+                                NumberFormat.getInstance(currentLocale),
+                                NumberFormat.getInstance(vietnameseLocale),
+                                NumberFormat.getInstance(englishLocale)
+                        };
+
+                        // Try parsing with different locales
+                        double bmi = parseNumberSafely(String.valueOf(userStatistics.getBmi()), formatters);
+                        double waterIntake = parseNumberSafely(String.valueOf(userStatistics.getWaterIntake()), formatters);
+
+                        try {
+                            // Update TextViews with parsed values
+                            txtBMITextView.setText(String.format(currentLocale, "%.2f", bmi));
+                            txtBMIStatus.setText(userStatistics.getBmiStatus());
+
+                            // Integers are typically locale-independent
+                            txtcaloriesTextView.setText(String.valueOf(userStatistics.getCalories()));
+                            stepsTextView.setText(String.valueOf(userStatistics.getSteps()));
+
+                            txtWaterTextView.setText(String.format(currentLocale, "%.2f", waterIntake));
+
+                            // Update the DatePicked TextView with the selected date
+                            DatePicked.setText(selectedDate);
+                            DatePicked3.setText("");
+
+                            // Refresh water level display
+                            displayWaterLevel2();
+
+                        } catch (Exception e) {
+                            // Log any unexpected errors during UI update
+                            Log.e("StatisticsUpdate", "Error updating UI", e);
+                            Toast.makeText(getContext(), "Error updating statistics display", Toast.LENGTH_SHORT).show();
+                            clearAllFields();
+                        }
                     }
                 } else {
                     // Handle case where no data exists for the selected date
@@ -617,11 +682,31 @@ public class BMI_Statistic_Fragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle database errors
+                Log.e("FirebaseError", "Error retrieving data", databaseError.toException());
                 Toast.makeText(getContext(), "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                clearAllFields();
             }
         });
-        displayWaterLevel();
     }
+
+    // Safe number parsing method with multiple locale support
+    private double parseNumberSafely(String numberString, NumberFormat[] formatters) {
+        // Replace commas with dots to standardize float format
+        numberString = numberString.replace(",", ".");
+
+        for (NumberFormat formatter : formatters) {
+            try {
+                return formatter.parse(numberString).doubleValue();
+            } catch (ParseException | NumberFormatException e) {
+                continue;
+            }
+        }
+
+        // Log failure and return 0.0 as default
+        Log.w("NumberParsing", "Could not parse number: " + numberString);
+        return 0.0;
+    }
+
 
 
     private void displayNoData() {
@@ -634,7 +719,7 @@ public class BMI_Statistic_Fragment extends Fragment {
         DatePicked3.setText("No data available");
 
         // Ensure water level is displayed even when no data
-        displayWaterLevel();
+        displayWaterLevel2();
     }
 
     // Create a method to clear all input fields and reset the date
@@ -654,7 +739,7 @@ public class BMI_Statistic_Fragment extends Fragment {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         String currentDate = day + "/" + (month + 1) + "/" + year;
-        DatePicked.setText(currentDate);
+       // DatePicked.setText(currentDate);
 
         // Optionally reset any other UI elements or variables
         Toast.makeText(getContext(), "All fields have been cleared", Toast.LENGTH_SHORT).show();
@@ -665,55 +750,178 @@ public class BMI_Statistic_Fragment extends Fragment {
 
 
 
-    private void showLineChartDialog() {
-        // Create a dialog using the activity context
+    private void showBarChartDialog() {
+        // Create a dialog
         Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.dialog_chart);
 
-        // Initialize LineChart inside the dialog
-        LineChart dialogLineChart = dialog.findViewById(R.id.dialogLineChart);
+        // Initialize BarChart and TextView
+        BarChart barChart = dialog.findViewById(R.id.dialogLineChart);
+         tvNoData = dialog.findViewById(R.id.tvNoData); // TextView for "no data" message
 
-        // Initialize close button and set OnClickListener
+        // Initialize close button
         ImageView btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
         btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
 
-        // Data for the LineChart
-        ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(0, 2000));  // Jan
-        entries.add(new Entry(1, 4000));  // Feb
-        entries.add(new Entry(2, 2678));  // Mar
-        entries.add(new Entry(3, 5000));  // Apr
-        entries.add(new Entry(4, 7000));  // May
-        entries.add(new Entry(5, 3000));  // Jun
-        entries.add(new Entry(6, 4500));  // Jul
-        entries.add(new Entry(7, 3200));  // Aug
-        entries.add(new Entry(8, 6000));  // Sep
-        entries.add(new Entry(9, 7000));  // Oct
+        // DatePicker button
+        Button btnDatePicker = dialog.findViewById(R.id.btnDatePicker);
+        btnDatePicker.setOnClickListener(v -> showDatePicker(barChart, tvNoData));
 
-        LineDataSet lineDataSet = new LineDataSet(entries, "Earnings");
-        lineDataSet.setColor(getResources().getColor(R.color.blue));
-        lineDataSet.setValueTextColor(getResources().getColor(R.color.black));
-        lineDataSet.setLineWidth(2f);
+        // Default chart data for current month and year
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Months are 0-indexed
+        int currentYear = calendar.get(Calendar.YEAR);
 
-        LineData lineData = new LineData(lineDataSet);
-        dialogLineChart.setData(lineData);
+        loadChartData(barChart, tvNoData, currentMonth, currentYear); // Load default data
 
-        // Hide description label
-        Description description = new Description();
-        description.setText("");
-        dialogLineChart.setDescription(description);
-
-        dialogLineChart.invalidate();  // Refresh chart
-
-        // Show the dialog
+        // Show dialog
         dialog.show();
     }
+
+
+    // Show DatePicker for selecting month and year
+    private void showDatePicker(BarChart barChart, TextView tvNoData) {
+        // Create a custom dialog
+        final Dialog datePickerDialog = new Dialog(getActivity());
+        datePickerDialog.setContentView(R.layout.dialog_month_year_picker);
+        datePickerDialog.setTitle("Select Month and Year");
+
+        // Initialize NumberPickers for Month and Year
+        NumberPicker npMonth = datePickerDialog.findViewById(R.id.npMonth);
+        NumberPicker npYear = datePickerDialog.findViewById(R.id.npYear);
+
+        // Set month picker values
+        String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        npMonth.setMinValue(1);
+        npMonth.setMaxValue(12);
+        npMonth.setDisplayedValues(months);
+        npMonth.setValue(Calendar.getInstance().get(Calendar.MONTH) + 1); // Default to current month
+
+        // Set year picker values
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        npYear.setMinValue(currentYear - 10); // Allow 10 years in the past
+        npYear.setMaxValue(currentYear + 10); // Allow 10 years in the future
+        npYear.setValue(currentYear); // Default to current year
+
+        // Handle "OK" button click
+        Button btnOk = datePickerDialog.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(v -> {
+            int selectedMonth = npMonth.getValue(); // Selected month (1-12)
+            int selectedYear = npYear.getValue();   // Selected year
+
+            // Load chart data for the selected month and year
+            loadChartData(barChart, tvNoData, selectedMonth, selectedYear);
+
+            // Dismiss the dialog
+            datePickerDialog.dismiss();
+        });
+
+        // Handle "Cancel" button click
+        Button btnCancel = datePickerDialog.findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(v -> datePickerDialog.dismiss());
+
+        // Display the dialog
+        datePickerDialog.show();
+    }
+
+
+
+    // Load chart data based on selected month and year
+    private void loadChartData(BarChart barChart,TextView tvNoData, int selectedMonth, int selectedYear) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Fetch current user's ID
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("Statistics")
+                .child(userId);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<BarEntry> stepsEntries = new ArrayList<>();
+                ArrayList<BarEntry> caloriesEntries = new ArrayList<>();
+                ArrayList<BarEntry> bmiEntries = new ArrayList<>();
+                boolean hasData = false;
+
+                int index = 0;
+
+                // Loop through the days of the selected month
+                for (DataSnapshot daySnapshot : snapshot.getChildren()) {
+                    String dayKey = daySnapshot.getKey(); // Day "1", "2", etc.
+                    if (daySnapshot.hasChild(String.valueOf(selectedMonth))) {
+                        DataSnapshot monthSnapshot = daySnapshot.child(String.valueOf(selectedMonth));
+                        if (monthSnapshot.hasChild(String.valueOf(selectedYear))) {
+                            hasData = true;
+                            DataSnapshot dataSnapshot = monthSnapshot.child(String.valueOf(selectedYear));
+
+                            // Extract data
+                            float steps = dataSnapshot.child("steps").getValue(Float.class) != null
+                                    ? dataSnapshot.child("steps").getValue(Float.class) : 0;
+                            float calories = dataSnapshot.child("calories").getValue(Float.class) != null
+                                    ? dataSnapshot.child("calories").getValue(Float.class) : 0;
+                            float bmi = dataSnapshot.child("bmi").getValue(Float.class) != null
+                                    ? dataSnapshot.child("bmi").getValue(Float.class) : 0;
+
+                            // Add entries for chart
+                            stepsEntries.add(new BarEntry(index, steps));
+                            caloriesEntries.add(new BarEntry(index, calories));
+                            bmiEntries.add(new BarEntry(index, bmi));
+                            index++;
+                        }
+                    }
+                }
+
+                if (hasData) {
+                    // Prepare datasets
+                    BarDataSet stepsDataSet = new BarDataSet(stepsEntries, "Steps");
+                    stepsDataSet.setColor(getResources().getColor(R.color.blue));
+
+                    BarDataSet caloriesDataSet = new BarDataSet(caloriesEntries, "Calories");
+                    caloriesDataSet.setColor(getResources().getColor(R.color.red));
+
+                    BarDataSet bmiDataSet = new BarDataSet(bmiEntries, "BMI");
+                    bmiDataSet.setColor(getResources().getColor(R.color.green));
+
+                    // Combine datasets
+                    BarData barData = new BarData(stepsDataSet, caloriesDataSet, bmiDataSet);
+                    barData.setBarWidth(0.2f); // Adjust bar width for better visibility
+
+                    // Configure chart
+                    barChart.setData(barData);
+                    barChart.groupBars(0, 0.3f, 0.05f); // Group the bars
+                    barChart.getDescription().setEnabled(false);
+                    barChart.getXAxis().setGranularity(1f);
+                    barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                    barChart.getAxisLeft().setGranularity(1f);
+
+                    // Refresh chart
+                    barChart.invalidate();
+                    barChart.setVisibility(View.VISIBLE);
+                    tvNoData.setVisibility(View.GONE);
+                } else {
+                    // No data available for the selected month
+                    barChart.setVisibility(View.GONE);
+                    tvNoData.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Failed to load data!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
+
+
 
 
 
     //Show Input for Calories, Steps and Water
     // Generic method to handle input dialogs for Calories, Steps, and Water Intake
-    private void showInputDialog(final TextView targetTextView, String dialogTitle, String hint) {
+    private void showInputDialog(String dialogTitle, String hint, InputCallback callback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.edit_input_dialog, null);  // Reuse dialog layout
@@ -726,9 +934,14 @@ public class BMI_Statistic_Fragment extends Fragment {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String newValue = editInput.getText().toString();
+                String newValue = editInput.getText().toString().trim();
                 if (!newValue.isEmpty()) {
-                    targetTextView.setText(newValue);
+                    // Use the callback to handle the input
+                    if (callback != null) {
+                        callback.onInputConfirmed(newValue);
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Input cannot be empty!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -742,6 +955,9 @@ public class BMI_Statistic_Fragment extends Fragment {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+    public interface InputCallback {
+        void onInputConfirmed(String input);
     }
 
 

@@ -52,13 +52,12 @@
                         android:id="@+id/membershipIcon"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_marginTop="-5dp"
                         android:elevation="8dp"
                         android:src="@drawable/crown_icon"
                         android:visibility="gone"
+                        app:layout_constraintBottom_toTopOf="@+id/cardView6"
                         app:layout_constraintEnd_toEndOf="@+id/cardView6"
-                        app:layout_constraintStart_toStartOf="@+id/cardView6"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView6"></ImageView>
+                        app:layout_constraintStart_toStartOf="@+id/cardView6"></ImageView>
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/editCardView"
@@ -134,8 +133,8 @@
                         android:id="@+id/tvDob"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="32dp"
                         android:layout_marginTop="10dp"
+                        android:layout_marginBottom="32dp"
                         android:textFontWeight="700"
                         android:textSize="14dp"
                         app:layout_constraintBottom_toBottomOf="parent"

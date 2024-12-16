@@ -788,7 +788,7 @@
                     android:id="@+id/textView9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Progress"
+                    android:text="Progress Overtime"
                     android:textColor="@color/light_red"
                     android:textSize="20sp"
                     android:textStyle="bold"
