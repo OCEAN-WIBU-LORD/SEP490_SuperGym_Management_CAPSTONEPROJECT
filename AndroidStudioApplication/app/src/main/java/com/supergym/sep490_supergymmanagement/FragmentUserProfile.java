@@ -48,7 +48,6 @@ import com.supergym.sep490_supergymmanagement.models.QrCodeRequest;
 import com.supergym.sep490_supergymmanagement.models.QrCodeResponse;
 import com.supergym.sep490_supergymmanagement.models.User;
 import com.supergym.sep490_supergymmanagement.repositories.UserResp;
-import com.supergym.sep490_supergymmanagement.repositories.callbacks.Callback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -90,6 +89,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FragmentUserProfile extends Fragment {
@@ -105,7 +105,7 @@ public class FragmentUserProfile extends Fragment {
     private ImageView userAvatarImg , membershipIcon;
     private TextView tvName, tvPhone, tvDob;
     private Button logOutBtn;
-
+    private boolean isRegistered;
     private String dobText;
 
 
@@ -295,6 +295,45 @@ public class FragmentUserProfile extends Fragment {
 
         return view;
     }
+
+
+    private void checkRegistration(String registrationId) {
+        ApiService api = RetrofitClient.getApiService(getContext());
+
+
+
+        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isRegistered = response.body();
+                    MyApp app = (MyApp) getContext();
+                    app.setIsRegistration(isRegistered); // Set the role based on your logic
+
+
+                    if (isRegistered) {
+                        Log.d("HomeFragment", "User is registered");
+//Intent intent = new Intent(getApplicationContext(), Activity_Book_Trainer.class);
+                        //             startActivity(intent);
+                    } else {
+                        //      Toast.makeText(getApplicationContext(), "You are not a Member. Please register for a package.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+
+
     // Show the loading spinner
 
     private void loadUserInfor() {

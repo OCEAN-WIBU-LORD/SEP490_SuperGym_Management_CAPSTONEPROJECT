@@ -32,6 +32,9 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -163,22 +166,24 @@ public class MembershipActivity extends AppCompatActivity {
                         Toast.makeText(MembershipActivity.this, "No QR codes available", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Check if the error body contains the message from the exception
+                    // Parse the error message from the JSON
                     try {
-                        // Assuming the error message is in the response body
-                        String errorMessage = response.errorBody().string();
-                        Toast.makeText(MembershipActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-                    } catch (IOException e) {
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String errorMessage = jsonObject.optString("message", "An error occurred");
+                        Toast.makeText(MembershipActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    } catch (IOException | JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(MembershipActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
 
+
             @Override
             public void onFailure(Call<List<QrCodeResponse.QrItem>> call, Throwable t) {
                 hideLoading();
-                Toast.makeText(MembershipActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MembershipActivity.this,  t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

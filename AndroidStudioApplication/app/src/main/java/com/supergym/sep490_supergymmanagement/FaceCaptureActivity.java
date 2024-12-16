@@ -134,6 +134,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     private static final int OUTPUT_SIZE=192;
 
     private static String finalName ="NotFound";
+    private boolean isRegistered;
 
     private String  nameFinal = null;
     private CardView btnReturn;
@@ -507,7 +508,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         // Conditionally add an email input for admin role
         final EditText emailInput = new EditText(this);
 
-        // Use null-safe comparison
         if ("admin".equals(roleCheck)) {
             emailInput.setHint("Enter Email Address");
             emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -533,7 +533,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
             if ("admin".equals(roleCheck) && !email.isEmpty()) {
                 // Admin logic: fetch userId by email
                 getUserIdByEmail(email).addOnSuccessListener(userId -> {
-                    registerFace(faceName, userId);
+                    checkFaceAndRegisterOrUpdate(faceName, userId); // Check if the face exists
                 }).addOnFailureListener(e -> {
                     Toast.makeText(getApplicationContext(), "Failed to find user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     start = true;
@@ -550,6 +550,91 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         });
 
         builder.show();
+    }
+    private void checkFaceAndRegisterOrUpdate(String faceName, String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+
+        databaseRef.orderByChild("userId").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // Face already registered
+                            new AlertDialog.Builder(FaceCaptureActivity.this)
+                                    .setTitle("Face Already Registered")
+                                    .setMessage("A face is already registered for this user. Do you want to update the face data?")
+                                    .setPositiveButton("Update", (dialog, which) -> {
+                                        updateFaceData(faceName, userId); // Update face data
+                                    })
+                                    .setNegativeButton("Cancel", (dialog, which) -> {
+                                        start = true; // Allow restarting the face capture
+                                    })
+                                    .show();
+                        } else {
+                            // No face registered, proceed with registration
+                            registerFace(faceName, userId);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(getApplicationContext(), "Error checking data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        start = true;
+                    }
+                });
+    }
+
+    private void updateFaceData(String faceName, String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("faces");
+
+        // Prepare updated data
+        List<List<Float>> embeddingList = new ArrayList<>();
+        for (float[] row : embeddings) {
+            List<Float> rowList = new ArrayList<>();
+            for (float value : row) {
+                rowList.add(value);
+            }
+            embeddingList.add(rowList);
+        }
+
+        Map<String, Object> faceData = new HashMap<>();
+        faceData.put("userId", userId);
+        faceData.put("name", faceName);
+        faceData.put("embeddings", embeddingList);
+
+        // Update the existing record in Firebase
+        databaseRef.child(faceName).setValue(faceData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getApplicationContext(), "Face data updated successfully in Firebase", Toast.LENGTH_SHORT).show();
+                    start = true;
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Failed to update face data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    start = true;
+                });
+    }
+
+    private void checkRegistration(String registrationId) {
+        ApiService api = RetrofitClient.getApiService(getApplicationContext());
+
+
+
+        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    isRegistered = response.body();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
@@ -767,9 +852,10 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                         lastRecognizedName = closestName;
                         if( roleCheck == "admin"){
                         storeRecognizedFaceImage(bitmap, finalName);
-                        }
+
                         // Handle the check-in process
                         handleCheckIn(userFaceIdFinal, closestName);
+                        }
                     }
                 }
 
@@ -825,7 +911,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 @Override
                 public void onFailure(Call<CheckInResponse> call, Throwable t) {
                     // Show a Toast message for the error
-                    Toast.makeText(FaceCaptureActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FaceCaptureActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
 
                     // Write the error to Logcat
                     Log.e("FaceCaptureActivity", "Network error occurred", t);
