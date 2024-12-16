@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment {
         isRegistered = false;
         mAuth = FirebaseAuth.getInstance();
         btnBookTrainer = rootView.findViewById(R.id.btnBookTrainer);
+
         // If the user is not logged in, redirect to LoginActivity
         userDetails = mAuth.getCurrentUser();
         if (userDetails == null) {
@@ -106,7 +107,7 @@ public class HomeFragment extends Fragment {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 Toast.makeText(getContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 userId42 = user.getUid();
                 checkRegistration(userId42);
             }
@@ -123,9 +124,7 @@ public class HomeFragment extends Fragment {
                 if ("pt".equals(userRole)) {
                     Toast.makeText(requireContext(), "You are a Trainer, booking is not allowed!", Toast.LENGTH_SHORT).show();
                     return;
-                }else if ("customer".equals(userRole)) {
-                  //  Toast.makeText(requireContext(), "You are a Customer, Okey", Toast.LENGTH_SHORT).show();
-
+                } else if ("customer".equals(userRole)) {
                     return;
                 }
             }
@@ -140,11 +139,17 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Fetch the latest posts and update the RecyclerView
-        fetchLatestPosts();
-
+        // Return the root view
         return rootView;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Always fetch latest posts when the fragment is resumed (each time the user returns to this fragment)
+        fetchLatestPosts();
+    }
+
 
     private void checkRegistration(String registrationId) {
         ApiService api = RetrofitClient.getApiService(requireContext());
@@ -177,11 +182,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-
-
-
-
 
     private void fetchLatestPosts() {
         RetrofitClient.getApiService(requireContext()).getLatestPosts().enqueue(new Callback<List<Post>>() {

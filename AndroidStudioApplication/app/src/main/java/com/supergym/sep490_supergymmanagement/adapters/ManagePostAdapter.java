@@ -78,26 +78,31 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Ma
     }
 
     private void deletePost(Post post, int position) {
+        Log.d("DeletePost", "Attempting to delete post with ID: " + post.getPostId());  // Debugging
         apiService.deletePost(post.getPostId()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
+                    // Nếu xóa thành công, loại bỏ bài viết khỏi danh sách
                     posts.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Post deleted", Toast.LENGTH_SHORT).show();
                 } else {
+                    // Nếu có lỗi khi xóa, hiển thị mã lỗi và thông báo
                     Log.e("ManagePostAdapter", "Delete failed: " + response.code() + " - " + response.message());
-                    Toast.makeText(context, "Failed to delete post", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Failed to delete post. Error: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                // Xử lý lỗi nếu yêu cầu API gặp sự cố
                 Log.e("ManagePostAdapter", "API call failed: " + t.getMessage(), t);
                 Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     public static class ManagePostViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvTitle;

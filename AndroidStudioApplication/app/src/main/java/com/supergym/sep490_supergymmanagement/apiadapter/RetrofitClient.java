@@ -15,10 +15,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-   //   private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
+      private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
   //    private static final String BASE_URL = "http://192.168.59.107:5000"; // Use your network's IPv4 address
  //     private static final String BASE_URL = "http://10.0.2.2:5000"; // Local API URL for emulator
-private static final String BASE_URL = "https://e8f2-1-52-29-185.ngrok-free.app"; // Local API URL for emulator
+//private static final String BASE_URL = "https://e8f2-1-52-29-185.ngrok-free.app"; // Local API URL for emulator
 
     // https://bcaf-199-187-211-23.ngrok-free.app   //NGROK SERVER
     //https://58f6-58-186-240-10.ngrok-free.app
