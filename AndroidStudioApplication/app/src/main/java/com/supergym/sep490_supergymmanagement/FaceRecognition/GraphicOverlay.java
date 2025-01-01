@@ -15,8 +15,12 @@ import androidx.annotation.Nullable;
 
 
 public class GraphicOverlay extends View {
+
+
+    private final Paint circlePaint = new Paint();
     private static final String TAG = "MainActivity";
     private final Paint rectPaint = new Paint();
+
     private float scaleX = 1.0f;
     private float scaleY = 1.0f;
     private final Paint textPaint = new Paint();
@@ -48,7 +52,11 @@ public class GraphicOverlay extends View {
             canvas.drawText(name, rectF.left + 15.0f , rectF.bottom - 15.0f, textPaint);
             rectPaint.setColor(Color.BLUE);
         } else {
-            rectPaint.setColor(Color.RED);
+            //Change Color
+            rectPaint.setColor(Color.YELLOW);
+       //     circlePaint.setColor(Color.RED);
+
+
         }
 
         if(rectF != null) {
@@ -58,6 +66,49 @@ public class GraphicOverlay extends View {
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, rectPaint);
         }
     }
+
+
+/*    @Override
+    public void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (name != null && !name.trim().isEmpty() && rectF != null && !name.equals("unknown")) {
+            labelPaint.setColor(Color.BLUE);
+            labelPaint.setStyle(Paint.Style.FILL);
+            canvas.drawRect(
+                    rectF.left,
+                    rectF.bottom - 40.0f,
+                    (float) (rectF.left + (rectF.right - rectF.left) * 0.75),
+                    rectF.bottom,
+                    labelPaint
+            );
+            textPaint.setColor(Color.WHITE);
+            textPaint.setTextSize(30.0f);
+            textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+            canvas.drawText(name, rectF.left + 15.0f, rectF.bottom - 15.0f, textPaint);
+            circlePaint.setColor(Color.BLUE);
+        } else {
+            // Change Color
+            circlePaint.setColor(Color.YELLOW);
+        }
+
+        if (rectF != null) {
+            circlePaint.setStrokeWidth(8.0f);
+            circlePaint.setStyle(Paint.Style.STROKE);
+
+            // Calculate center and radius
+            float centerX = rectF.centerX();
+            float centerY = rectF.centerY();
+            float radius = Math.min(rectF.width(), rectF.height()) / 2.0f;
+
+            // Draw circle
+            canvas.drawCircle(centerX, centerY, radius, circlePaint);
+        }
+    }*/
+
+
+
+
 
     public void draw(Rect rect, float scaleX, float scaleY, String name) {
         RectF adjustedRect = adjustBoundingRect(rect);

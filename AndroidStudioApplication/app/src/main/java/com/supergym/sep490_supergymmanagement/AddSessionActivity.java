@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,8 @@ import java.util.List;
 public class AddSessionActivity extends AppCompatActivity {
 
     private EditText sessionNameInput;
+
+    private CardView returnBtn;
     private Button selectMuscleGroupsButton, addExerciseButton, startTimerButton, stopTimerButton, saveSessionButton;
     private TextView timerTextView;
     private RecyclerView exerciseRecyclerView;
@@ -89,6 +92,8 @@ public class AddSessionActivity extends AppCompatActivity {
         timerTextView = findViewById(R.id.timer_text_view);
         saveSessionButton = findViewById(R.id.save_session_button);
         exerciseRecyclerView = findViewById(R.id.exercise_recycler_view);
+        returnBtn = findViewById(R.id.returnBtn);
+
     }
 
     /**
@@ -118,6 +123,7 @@ public class AddSessionActivity extends AppCompatActivity {
         saveSessionButton.setOnClickListener(v -> saveSession());
         selectMuscleGroupsButton.setOnClickListener(v -> showMuscleGroupDialog());
         addExerciseButton.setOnClickListener(v -> openSelectExerciseActivity());
+        returnBtn.setOnClickListener(v -> onBackPressed());
     }
 
     /**

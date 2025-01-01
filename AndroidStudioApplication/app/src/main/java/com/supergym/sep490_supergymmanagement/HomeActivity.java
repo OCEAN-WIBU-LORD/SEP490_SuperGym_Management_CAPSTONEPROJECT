@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     private SessionAdapter sessionAdapter;
     private List<Session> sessionList;
     private DatabaseReference sessionsRef;
+    private CardView returnBtn;
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
     private FirebaseUser userDetails;
@@ -78,7 +80,8 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, AddSessionActivity.class);
             startActivity(intent);
         });
-
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(v -> onBackPressed());
         // Nút thêm bài tập mới
         addExercise = findViewById(R.id.add_exercise_button);
         addExercise.setVisibility(View.GONE);

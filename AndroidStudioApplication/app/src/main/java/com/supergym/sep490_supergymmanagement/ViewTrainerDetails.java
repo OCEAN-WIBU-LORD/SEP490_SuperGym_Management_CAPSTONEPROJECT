@@ -169,10 +169,10 @@ public class ViewTrainerDetails extends AppCompatActivity {
         // Set a listener for the submit button
 
 
-        loadReview();
+        loadReview(trainerId);
     }
 
-    private void loadReview() {
+    private void loadReview(final String trainerId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Review");
         List<Review> reviewList = new ArrayList<>();
         ReviewAdapter adapter = new ReviewAdapter(this, reviewList);
@@ -187,7 +187,10 @@ public class ViewTrainerDetails extends AppCompatActivity {
                 reviewList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Review review = dataSnapshot.getValue(Review.class);
-                    reviewList.add(review);
+                    // Filter reviews by the specific trainerId
+                    if (review != null && trainerId.equals(review.getTrainerId())) {
+                        reviewList.add(review);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -198,6 +201,7 @@ public class ViewTrainerDetails extends AppCompatActivity {
             }
         });
     }
+
 
     private void fetchTrainerDetails(String trainerId) {
         trainerResp.getTrainerById(trainerId, new Callback<Trainer>() {
@@ -243,41 +247,74 @@ public class ViewTrainerDetails extends AppCompatActivity {
 
     private void uploadReview() {
         String reviewText = reviewEditText.getText().toString().trim();
-        if(reviewText == null){
-            Toast.makeText(this, "No review found, Please write Review!", Toast.LENGTH_SHORT).show();
+        if (reviewText.isEmpty()) {
+            Toast.makeText(this, "Please write a review before submitting!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
             return;
         }
+
         String userId = user.getUid();
-        if (!reviewText.isEmpty()) {
-            // Create a unique review key using push() or a static key
-            String reviewId = databaseReference.push().getKey(); // Or you can use a fixed key like "review01"
 
-            if (reviewId != null) {
-                // Create a Review object
-                Review review = new Review(reviewText,  trainerId, userId); // Sample trainerId and userId
+        // Check registration before allowing review submission
+        checkRegistrationVer2(userId, new FaceCaptureActivity.RegistrationCallback() {
+            @Override
+            public void onResult(boolean isRegistered) {
+                if (isRegistered) {
+                    // User is registered, proceed with uploading the review
+                    String reviewId = databaseReference.push().getKey(); // Create a unique key for the review
 
-                // Set the review data to Firebase under the new review ID
-                databaseReference.child(reviewId).setValue(review)
-                        .addOnSuccessListener(aVoid -> {
-                            // Handle success, maybe show a toast message
-                            reviewEditText.setText(""); // Clear the text field after submission
-                            // Show a success message
-                        })
-                        .addOnFailureListener(e -> {
-                            // Handle failure, maybe show an error message
-                        });
+                    if (reviewId != null) {
+                        // Create the Review object
+                        Review review = new Review(reviewText, trainerId, userId);
+
+                        // Save the review to Firebase
+                        databaseReference.child(reviewId).setValue(review)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(ViewTrainerDetails.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
+                                    reviewEditText.setText(""); // Clear the text field after submission
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(ViewTrainerDetails.this, "Failed to submit review. Try again.", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                } else {
+                    // User is not registered
+                    Toast.makeText(ViewTrainerDetails.this, "You must have a valid membership to submit a review.", Toast.LENGTH_SHORT).show();
+                }
             }
-        } else {
-            // Handle empty review case, show a message
-        }
+        });
     }
 
 
+    private void checkRegistrationVer2(String registrationId, FaceCaptureActivity.RegistrationCallback callback) {
+        ApiService api = RetrofitClient.getApiService(getApplicationContext());
+
+        api.checkRegistration(registrationId).enqueue(new retrofit2.Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Pass the result to the callback
+                    callback.onResult(response.body());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
+                    // Pass false as the default in case of failure
+                    callback.onResult(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                // Pass false as the default in case of error
+                callback.onResult(false);
+            }
+        });
+    }
 
     private void loadUserInfor(String userId1) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

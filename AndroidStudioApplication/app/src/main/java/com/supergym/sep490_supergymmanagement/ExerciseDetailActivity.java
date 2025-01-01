@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ public class ExerciseDetailActivity extends AppCompatActivity {
     private ExerciseSetDetailAdapter setsAdapter;
     private List<Set> setsList;
     private Button addSetButton;
+    private CardView returnBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,8 @@ public class ExerciseDetailActivity extends AppCompatActivity {
 
         addSetButton = findViewById(R.id.button_add_set);
         addSetButton.setOnClickListener(v -> showAddSetDialog());
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(v -> onBackPressed());
     }
 
     @Override

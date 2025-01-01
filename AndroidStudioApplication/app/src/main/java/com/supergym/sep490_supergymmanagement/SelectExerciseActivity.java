@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ public class SelectExerciseActivity extends AppCompatActivity {
     private List<Exercise> originalExerciseList = new ArrayList<>();
     private List<Exercise> selectedExercises = new ArrayList<>();
     private Button doneButton;
+    private CardView returnBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +53,8 @@ public class SelectExerciseActivity extends AppCompatActivity {
         exerciseAdapter = new ExerciseSelectionAdapter(exerciseList, selectedExercises);
         exerciseListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         exerciseListRecyclerView.setAdapter(exerciseAdapter);
-
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(v -> onBackPressed());
         // Tính năng tìm kiếm
         searchExerciseInput.addTextChangedListener(new TextWatcher() {
             @Override

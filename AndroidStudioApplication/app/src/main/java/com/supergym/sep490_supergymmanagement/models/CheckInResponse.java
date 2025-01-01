@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 // Response Model
 public class CheckInResponse {
-    @SerializedName("message")
+
     private String message;
 
     public String getMessage() {

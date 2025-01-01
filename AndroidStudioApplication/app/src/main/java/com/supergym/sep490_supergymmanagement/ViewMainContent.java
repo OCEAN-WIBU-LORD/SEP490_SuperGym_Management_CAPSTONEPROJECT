@@ -509,7 +509,7 @@ public class    ViewMainContent extends AppCompatActivity {
         LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
         LinearLayout layoutFaceID = dialog.findViewById(R.id.layoutFaceID);
         ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
-        if (isRegistered == false && "customer".equals(roleNameTxt)) {
+        if ("customer".equals(roleNameTxt)) {
             layoutFaceID.setVisibility(View.GONE);
         }
         layoutFaceID.setOnClickListener(new View.OnClickListener() {

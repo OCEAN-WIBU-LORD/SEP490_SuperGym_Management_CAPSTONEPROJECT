@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,7 @@ public class SessionDetailActivity extends AppCompatActivity {
     private List<Exercise> exerciseList;
     private String sessionId;
     private String userId;  // Thêm userId để xác định user
+    private CardView returnBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,8 @@ public class SessionDetailActivity extends AppCompatActivity {
         sessionTime = findViewById(R.id.session_time);
         sessionMuscleGroups = findViewById(R.id.session_muscle_groups);
         exerciseRecyclerView = findViewById(R.id.exercise_recycler_view);
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(v -> onBackPressed());
         exerciseList = new ArrayList<>();
 
         // Khởi tạo ExerciseAdapter với danh sách bài tập rỗng

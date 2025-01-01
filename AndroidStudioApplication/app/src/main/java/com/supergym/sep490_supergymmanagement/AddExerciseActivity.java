@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.supergym.sep490_supergymmanagement.models.Exercise;
 import com.supergym.sep490_supergymmanagement.object.Equipment;
@@ -26,6 +27,7 @@ public class AddExerciseActivity extends AppCompatActivity {
     public Spinner equipmentSpinner;
     private Button saveExerciseButton;
     public DatabaseReference exercisesRef;
+    private CardView returnBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +39,8 @@ public class AddExerciseActivity extends AppCompatActivity {
         muscleGroupSpinner = findViewById(R.id.muscle_group_spinner);
         equipmentSpinner = findViewById(R.id.equipment_spinner);
         saveExerciseButton = findViewById(R.id.save_exercise_button);
-
+        returnBtn = findViewById(R.id.returnBtn);
+        returnBtn.setOnClickListener(v -> onBackPressed());
         exercisesRef = FirebaseDatabase.getInstance().getReference("exercises");
 
         ArrayAdapter<String> muscleGroupAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, MuscleGroup.getAllMuscleGroups());
