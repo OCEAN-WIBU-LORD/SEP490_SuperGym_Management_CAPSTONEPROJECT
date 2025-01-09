@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="Enter Enter Password"
+                android:hint="Enter Password"
                 android:id="@+id/password"
                 android:drawableEnd="@drawable/password_icon"/>
 

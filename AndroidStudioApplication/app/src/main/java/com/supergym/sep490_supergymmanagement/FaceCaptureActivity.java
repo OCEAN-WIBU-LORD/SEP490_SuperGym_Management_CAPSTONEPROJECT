@@ -250,33 +250,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     }
 
 
-    private Task<String> getUserNameByUserId(String userId) {
-        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
 
-        // Query Firebase to get the user's name by userId
-        databaseRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String userName = dataSnapshot.child("dob").child("name").getValue(String.class);
-                    taskCompletionSource.setResult(userName); // Complete the task with the user's name
-                } else {
-                    taskCompletionSource.setException(new Exception("No user found with the given userId."));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                taskCompletionSource.setException(new Exception("Database error: " + databaseError.getMessage()));
-            }
-        });
-
-        return taskCompletionSource.getTask();
-    }
-
-
-//Referenced Code:
     private void setupCamera() {
         final ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
                 ProcessCameraProvider.getInstance(this);
@@ -294,11 +268,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
     }
     //Compare Faces by distance between face embeddings
 
-
-
-
-
-//End ReferencedCode
 
 
     //Referenced Code
@@ -474,7 +443,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
         // Set up the input for the user's name
         final EditText nameInput = new EditText(this);
-        nameInput.setText(nameFinal);
+        nameInput.setHint("Enter Name");
         nameInput.setInputType(InputType.TYPE_CLASS_TEXT);
         nameInput.setMaxWidth(200);
 
@@ -486,20 +455,16 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         // Conditionally add an email input for admin role
         final EditText emailInput = new EditText(this);
 
-        if ("admin".equals(roleCheck)) {
-            emailInput.setHint("Enter Email Address");
-            emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            emailInput.setMaxWidth(200);
-            layout.addView(emailInput);
 
-            // Allow admins to edit the name
-            nameInput.setFocusable(true);
-            nameInput.setClickable(true);
-        } else {
-            // Make the name field non-editable for non-admin users
-            nameInput.setFocusable(false);
-            nameInput.setClickable(false);
-        }
+        emailInput.setHint("Enter Email Address");
+        emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        emailInput.setMaxWidth(200);
+        layout.addView(emailInput);
+
+        // Allow admins to edit the name
+        nameInput.setFocusable(true);
+        nameInput.setClickable(true);
+
 
         builder.setView(layout);
 
@@ -507,19 +472,12 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         builder.setPositiveButton("ADD", (dialog, which) -> {
             String faceName = nameInput.getText().toString().trim(); // Name (editable for admin)
             String email = emailInput.getText().toString().trim(); // Email (only for admin)
-
-            if ("admin".equals(roleCheck) && !email.isEmpty()) {
-                // Admin logic: fetch userId by email
                 getUserIdByEmail(email).addOnSuccessListener(userId -> {
                     checkFaceAndRegisterOrUpdate(faceName, userId); // Check if the face exists
                 }).addOnFailureListener(e -> {
                     Toast.makeText(getApplicationContext(), "Failed to find user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     start = true;
                 });
-            } else {
-                // Non-admin logic: use the logged-in userId
-                registerFace(faceName, userId);
-            }
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> {
@@ -565,7 +523,9 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
             //Converted Bitmap To Embedding.
             embeddings = new float[1][OUTPUT_SIZE]; // Output will be stored here
+
             outputMap.put(0, embeddings);
+
             tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
 
             // Retrieve registered faces from Firebase
@@ -614,12 +574,12 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
                     if (!closestName.equals(lastRecognizedName)) {
                         lastRecognizedName = closestName;
-                        if( roleCheck == "admin"){
+
                         storeRecognizedFaceImage(bitmap, finalName);
 
                         // Handle the check-in process
                         handleCheckIn(userFaceIdFinal, closestName);
-                        }
+
                     }
                 }
 
@@ -843,6 +803,34 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
 
 
+    private Task<String> getUserNameByUserId(String userId) {
+        TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+
+        // Query Firebase to get the user's name by userId
+        databaseRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userName = dataSnapshot.child("dob").child("name").getValue(String.class);
+                    taskCompletionSource.setResult(userName); // Complete the task with the user's name
+                } else {
+                    taskCompletionSource.setException(new Exception("No user found with the given userId."));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                taskCompletionSource.setException(new Exception("Database error: " + databaseError.getMessage()));
+            }
+        });
+
+        return taskCompletionSource.getTask();
+    }
+
+
+
+
 
     //End Referenced Code
     private void checkFaceAndRegisterOrUpdate(String faceName, String userId) {
@@ -908,28 +896,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 });
     }
 
-    private void checkRegistration(String registrationId) {
-        ApiService api = RetrofitClient.getApiService(getApplicationContext());
 
-
-
-        api.checkRegistration(registrationId).enqueue(new Callback<Boolean>() {
-            @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    isRegistered = response.body();
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Failed to fetch registration status.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
     // Define a callback interface
     public interface RegistrationCallback {
         void onResult(boolean isRegistered);
@@ -1041,34 +1008,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
 
 
 
-
-    // Callback interface for asynchronous operations
-    public interface FirebaseCallback {
-        void onSuccess(String userId);
-        void onFailure(String errorMessage);
-    }
-
-
-    private void sendFaceDataToApi(Map<String, Object> faceData) {
-        ApiService apiService = getApiService(this);
-        Call<Void> call = apiService.registerFace(faceData);
-
-        call.enqueue(new retrofit2.Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "Face data successfully sent to API", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "API call failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
 
     private void loadUserInfor() {
@@ -1355,42 +1294,6 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         void onRoleNameRetrieved(String roleName);
         void onFailure(String errorMessage);
     }
-
-
-   /* public void playWelcomeMessage(String closestName) {
-        if (tts != null && isWelcomeMessagePlaying) {
-            String welcomeMessage = "Welcome to SuperGym, " + closestName + "!";
-            HashMap<String, String> params = new HashMap<>();
-            params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "welcomeMessage");
-
-            // Set an utterance progress listener to reset the flag after completion
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override
-                public void onStart(String utteranceId) {
-                    // No action needed when the message starts
-                }
-
-                @Override
-                public void onDone(String utteranceId) {
-                    if ("welcomeMessage".equals(utteranceId)) {
-                        isWelcomeMessagePlaying = false; // Reset the flag when playback finishes
-                    }
-                }
-
-                @Override
-                public void onError(String utteranceId) {
-                    if ("welcomeMessage".equals(utteranceId)) {
-                        isWelcomeMessagePlaying = false; // Reset the flag if there’s an error
-                    }
-                }
-            });
-
-            // Queue the message to play
-            tts.speak(welcomeMessage, TextToSpeech.QUEUE_FLUSH, params);
-        }
-    }*/
-
-    // Helper method to calculate distance between two embeddings
 
 
 
