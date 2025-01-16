@@ -1051,7 +1051,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
         } else {
             currentDateTime = new java.util.Date();
         }
-        if( roleCheck == "admin"){
+
             CheckInRequest request = new CheckInRequest();
             request.setUserId(userFaceIdFinaltxt); // Replace with the actual user ID
             SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
@@ -1084,7 +1084,7 @@ public class FaceCaptureActivity extends AppCompatActivity  implements TextToSpe
                 }
             });
 
-        }
+
 
     }
 
